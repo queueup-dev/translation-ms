@@ -1,0 +1,22 @@
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://127.0.0.1/qup-translations
+    username: qup-translations
+    password: qup-translations
+  jpa:
+    hibernate:
+      ddl-auto: create
+      use-new-id-generator-mappings: true
+    generate-ddl: true
+    show-sql: true
+    database: postgresql
+    open-in-view: true
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: "2MB"
+logging:
+  level:
+    ROOT: info
+  register-shutdown-hook: true
