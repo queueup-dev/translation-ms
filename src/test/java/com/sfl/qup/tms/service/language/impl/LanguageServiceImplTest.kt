@@ -60,4 +60,56 @@ class LanguageServiceImplTest {
         Assert.assertEquals(lang, result.lang)
     }
 
+    @Test
+    fun findByLangTest() {
+        // test data
+        val lang = "NL"
+        val language = Language().apply {
+            this.lang = lang
+        }
+        // mock
+        `when`(languageRepository.findByLang(lang)).thenReturn(language)
+        // sut
+        val result = languageService.find(lang)
+        // verify
+        verify(languageRepository, times(1)).findByLang(lang)
+        Assert.assertNotNull(lang, result)
+        Assert.assertEquals(lang, result!!.lang)
+    }
+
+    @Test
+    fun createLanguageWhenLanguageAlreadyExistsTest() {
+        // test data
+        val lang = "NL"
+        val language = Language().apply {
+            this.lang = lang
+        }
+        // mock
+        `when`(languageRepository.findByLang(lang)).thenReturn(language)
+        // sut
+        val result = languageService.create(lang)
+        // verify
+        verify(languageRepository, times(1)).findByLang(lang)
+        Assert.assertNotNull("Language should not be null", result)
+        Assert.assertEquals(lang, result.lang)
+    }
+
+    @Test
+    fun createLanguageWhenLanguageDoesNotExistsTest() {
+        // test data
+        val lang = "NL"
+        val language = Language().apply {
+            this.lang = lang
+        }
+        // mock
+        `when`(languageRepository.findByLang(lang)).thenReturn(null)
+        `when`(languageRepository.save(ArgumentMatchers.any(Language::class.java))).thenReturn(language)
+        // sut
+        val result = languageService.create(lang)
+        // verify
+        verify(languageRepository, times(1)).findByLang(lang)
+        verify(languageRepository, times(1)).save(ArgumentMatchers.any(Language::class.java))
+        Assert.assertNotNull("Language should not be null", result)
+        Assert.assertEquals(lang, result.lang)
+    }
 }

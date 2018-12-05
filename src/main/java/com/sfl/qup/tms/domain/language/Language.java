@@ -25,7 +25,7 @@ public class Language extends AbstractEntity {
 
     //region Properties
 
-    @Column(name = "name", nullable = false)
+    @Column(name = "lang", nullable = false)
     private String lang;
 
     //endregion
@@ -74,7 +74,7 @@ public class Language extends AbstractEntity {
     public String toString() {
         return new ToStringBuilder(this)
                 .appendSuper(super.toString())
-                .append("name", lang)
+                .append("lang", lang)
                 .toString();
     }
 
