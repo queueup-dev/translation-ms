@@ -9,6 +9,7 @@ import com.sfl.qup.tms.api.endpoints.AbstractBaseController.Companion.ok
 import com.sfl.qup.tms.api.endpoints.language.model.response.LanguageResponseModel
 import com.sfl.qup.tms.service.language.LanguageService
 import com.sfl.qup.tms.service.language.exception.LanguageNotFoundByLangException
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RequestMapping
@@ -34,12 +35,25 @@ class LanguageController {
 
     @RequestMapping(value = ["/"], method = [RequestMethod.GET])
     fun get(@RequestParam("lang") lang: String): ResponseEntity<ResultModel<out AbstractApiModel>> = try {
-        languageService.get(lang).let { ok(LanguageResponseModel(it.lang)) }
+        logger.trace("Retrieving language for provided lang - {}", lang)
+        languageService.get(lang)
+                .let { ok(LanguageResponseModel(it.lang)) }
+                .also { logger.debug("Retrieved language for provided lang - {} ", lang) }
     } catch (e: LanguageNotFoundByLangException) {
         notFound(EntityNotFoundErrorModel(e.localizedMessage))
     }
 
     @RequestMapping(value = ["/"], method = [RequestMethod.POST])
-    fun create(@RequestParam("lang") lang: String): ResponseEntity<ResultModel<out AbstractApiModel>> = languageService.create(lang).let { created(LanguageResponseModel(it.lang)) }
+    fun create(@RequestParam("lang") lang: String): ResponseEntity<ResultModel<out AbstractApiModel>> = lang
+            .also { logger.trace("Retrieving language for provided lang - {} ", lang) }
+            .let {
+                languageService.create(it)
+                        .let { created(LanguageResponseModel(it.lang)) }
+                        .also { logger.debug("Retrieved language for provided lang - {} ", lang) }
+            }
 
+    companion object {
+        @JvmStatic
+        private val logger = LoggerFactory.getLogger(LanguageController::class.java)
+    }
 }
