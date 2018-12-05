@@ -16,9 +16,15 @@ import org.springframework.http.ResponseEntity
 abstract class AbstractBaseController {
     companion object {
         @JvmStatic
+        fun ok(response: AbstractApiResponseModel): ResponseEntity<ResultModel<out AbstractApiModel>> = ResponseEntity(ResultModel(response), HttpStatus.OK)
+
+        @JvmStatic
         fun created(response: AbstractApiResponseModel): ResponseEntity<ResultModel<out AbstractApiModel>> = ResponseEntity(ResultModel(response), HttpStatus.CREATED)
 
         @JvmStatic
         fun badRequest(errorType: ErrorType): ResponseEntity<ResultModel<out AbstractApiModel>> = ResponseEntity(ResultModel(listOf(ErrorModel(errorType))), HttpStatus.BAD_REQUEST)
+
+        @JvmStatic
+        fun notFound(errorType: ErrorType): ResponseEntity<ResultModel<out AbstractApiModel>> = ResponseEntity(ResultModel(listOf(ErrorModel(errorType))), HttpStatus.NOT_FOUND)
     }
 }

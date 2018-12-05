@@ -33,6 +33,9 @@ public class TranslatableEntity extends AbstractEntity {
     @Column(name = "uuid", nullable = false)
     private String uuid;
 
+    @Column(name = "name", nullable = false)
+    private String name;
+
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "entity")
     private Set<TranslatableEntityTranslation> translations;
 
@@ -46,6 +49,14 @@ public class TranslatableEntity extends AbstractEntity {
 
     public void setUuid(final String uuid) {
         this.uuid = uuid;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(final String name) {
+        this.name = name;
     }
 
     public Set<TranslatableEntityTranslation> getTranslations() {
@@ -75,6 +86,7 @@ public class TranslatableEntity extends AbstractEntity {
         return new EqualsBuilder()
                 .appendSuper(super.equals(obj))
                 .append(this.uuid, rhs.uuid)
+                .append(this.name, rhs.name)
                 .append(this.translations, rhs.translations)
                 .isEquals();
     }
@@ -84,6 +96,7 @@ public class TranslatableEntity extends AbstractEntity {
         return new HashCodeBuilder()
                 .appendSuper(super.hashCode())
                 .append(uuid)
+                .append(name)
                 .append(translations)
                 .toHashCode();
     }
@@ -93,6 +106,7 @@ public class TranslatableEntity extends AbstractEntity {
         return new ToStringBuilder(this)
                 .appendSuper(super.toString())
                 .append("uuid", uuid)
+                .append("name", name)
                 .append("translations", translations)
                 .toString();
     }

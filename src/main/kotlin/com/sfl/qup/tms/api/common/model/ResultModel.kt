@@ -40,13 +40,9 @@ class ResultModel<T : AbstractApiModel> : AbstractApiModel {
 
     //region Public methods
 
-    fun checkIfErrorExists(errorType: ErrorType): Boolean {
-        return hasErrors() && errors!!.stream().anyMatch { error -> errorType == error.errorType }
-    }
+    fun checkIfErrorExists(errorType: ErrorType): Boolean = hasErrors() && errors!!.stream().anyMatch { error -> errorType == error.errorType }
 
-    fun hasErrors(): Boolean {
-        return errors != null && !errors!!.isEmpty()
-    }
+    private fun hasErrors(): Boolean = errors != null && !errors!!.isEmpty()
 
     //endregion
 
