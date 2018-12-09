@@ -10,7 +10,7 @@ import org.apache.commons.lang3.StringUtils
  * Date: 12/5/18
  * Time: 4:22 PM
  */
-data class TranslatableEntityTranslationsCreateRequestModel(val uuid: String, val name: String, val translations: Set<TranslatableEntityTranslationCreateRequestModel>) : AbstractApiRequestModel() {
+data class TranslatableEntityTranslationsCreateRequestModel(val uuid: String, val translations: Set<TranslatableEntityTranslationCreateRequestModel>) : AbstractApiRequestModel() {
     override fun validateRequiredFields(): List<ErrorModel> = ArrayList<ErrorModel>()
             .apply {
                 if (StringUtils.isEmpty(uuid)) {

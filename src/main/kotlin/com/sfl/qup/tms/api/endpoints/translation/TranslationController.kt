@@ -14,16 +14,16 @@ import com.sfl.qup.tms.api.endpoints.translation.response.entity.TranslatableEnt
 import com.sfl.qup.tms.api.endpoints.translation.response.entity.TranslatableEntityTranslationsCreateResponseModel
 import com.sfl.qup.tms.api.endpoints.translation.response.field.TranslatableEntityFieldCreateResponseModel
 import com.sfl.qup.tms.service.language.exception.LanguageNotFoundByLangException
-import com.sfl.qup.tms.service.translatable.field.TranslatableEntityFieldService
 import com.sfl.qup.tms.service.translatable.entity.TranslatableEntityService
 import com.sfl.qup.tms.service.translatable.entity.TranslatableEntityTranslationService
 import com.sfl.qup.tms.service.translatable.entity.dto.TranslatableEntityDto
 import com.sfl.qup.tms.service.translatable.entity.dto.TranslatableEntityTranslationDto
-import com.sfl.qup.tms.service.translatable.field.dto.TranslatableEntityFieldDto
 import com.sfl.qup.tms.service.translatable.entity.exception.TranslatableEntityExistsByUuidException
-import com.sfl.qup.tms.service.translatable.field.exception.TranslatableEntityFieldExistsForTranslatableEntityException
 import com.sfl.qup.tms.service.translatable.entity.exception.TranslatableEntityNotFoundByUuidException
 import com.sfl.qup.tms.service.translatable.entity.exception.TranslatableEntityTranslationExistException
+import com.sfl.qup.tms.service.translatable.field.TranslatableEntityFieldService
+import com.sfl.qup.tms.service.translatable.field.dto.TranslatableEntityFieldDto
+import com.sfl.qup.tms.service.translatable.field.exception.TranslatableEntityFieldExistsForTranslatableEntityException
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
@@ -96,7 +96,7 @@ class TranslationController {
     fun createTranslatableEntityField(@RequestBody request: TranslatableEntityFieldCreateRequestModel): ResponseEntity<ResultModel<out AbstractApiModel>> = try {
         request
                 .also { logger.trace("Creating new translatable entity field for provided request - {} ", it) }
-                .let { translatableEntityFieldService.create(TranslatableEntityFieldDto(it.uuid, it.name)) }
+                .let { translatableEntityFieldService.create(TranslatableEntityFieldDto(it.entityUuid, it.fieldName)) }
                 .let { created(TranslatableEntityFieldCreateResponseModel(it.entity.uuid, it.name)) }
                 .also { logger.debug("Successfully created translatable entity field for provided request - {} ", request) }
     } catch (e: TranslatableEntityFieldExistsForTranslatableEntityException) {

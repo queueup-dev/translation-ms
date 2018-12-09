@@ -5,4 +5,4 @@ package com.sfl.qup.tms.service.translatable.field.dto
  * Date: 12/5/18
  * Time: 6:09 PM
  */
-data class TranslatableEntityFieldDto(val entityUuid: String, val name: String)
+data class TranslatableEntityFieldDto(val entityUuid: String, val fieldName: String)

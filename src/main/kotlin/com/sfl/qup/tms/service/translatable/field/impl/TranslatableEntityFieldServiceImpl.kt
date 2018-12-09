@@ -58,16 +58,16 @@ class TranslatableEntityFieldServiceImpl : TranslatableEntityFieldService {
             .let {
                 val translatableEntity = translatableEntityService.getByUuid(dto.entityUuid)
 
-                findByNameAndEntityUuid(dto.name, dto.entityUuid).let {
+                findByNameAndEntityUuid(dto.fieldName, dto.entityUuid).let {
                     if (it == null) {
                         TranslatableEntityField()
-                                .apply { name = dto.name }
+                                .apply { name = dto.fieldName }
                                 .apply { entity = translatableEntity }
                                 .let { translatableEntityFieldRepository.save(it) }
                                 .also { logger.debug("Successfully created new TranslatableEntityField for provided dto - {}", dto) }
                     } else {
                         logger.error("Unable to create new TranslatableEntityField for provided dto - {}. Already exists.", dto)
-                        throw TranslatableEntityFieldExistsForTranslatableEntityException(dto.name, dto.entityUuid)
+                        throw TranslatableEntityFieldExistsForTranslatableEntityException(dto.fieldName, dto.entityUuid)
                     }
                 }
             }
