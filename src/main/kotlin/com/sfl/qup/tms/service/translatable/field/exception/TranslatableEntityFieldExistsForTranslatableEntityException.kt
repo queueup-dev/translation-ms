@@ -1,4 +1,4 @@
-package com.sfl.qup.tms.service.translatable.exception
+package com.sfl.qup.tms.service.translatable.field.exception
 
 /**
  * User: Vazgen Danielyan

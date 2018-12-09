@@ -1,4 +1,4 @@
-package com.sfl.qup.tms.service.translatable.dto.field
+package com.sfl.qup.tms.service.translatable.field.dto
 
 /**
  * User: Vazgen Danielyan

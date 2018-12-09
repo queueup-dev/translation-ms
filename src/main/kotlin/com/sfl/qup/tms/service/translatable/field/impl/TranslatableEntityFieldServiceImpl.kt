@@ -1,12 +1,12 @@
-package com.sfl.qup.tms.service.translatable.impl
+package com.sfl.qup.tms.service.translatable.field.impl
 
 import com.sfl.qup.tms.domain.translatable.TranslatableEntityField
 import com.sfl.qup.tms.persistence.translatable.TranslatableEntityFieldRepository
-import com.sfl.qup.tms.service.translatable.TranslatableEntityFieldService
-import com.sfl.qup.tms.service.translatable.TranslatableEntityService
-import com.sfl.qup.tms.service.translatable.dto.field.TranslatableEntityFieldDto
-import com.sfl.qup.tms.service.translatable.exception.TranslatableEntityFieldExistsForTranslatableEntityException
-import com.sfl.qup.tms.service.translatable.exception.TranslatableEntityNotFoundByUuidException
+import com.sfl.qup.tms.service.translatable.field.TranslatableEntityFieldService
+import com.sfl.qup.tms.service.translatable.entity.TranslatableEntityService
+import com.sfl.qup.tms.service.translatable.field.dto.TranslatableEntityFieldDto
+import com.sfl.qup.tms.service.translatable.field.exception.TranslatableEntityFieldExistsForTranslatableEntityException
+import com.sfl.qup.tms.service.translatable.entity.exception.TranslatableEntityNotFoundByUuidException
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service

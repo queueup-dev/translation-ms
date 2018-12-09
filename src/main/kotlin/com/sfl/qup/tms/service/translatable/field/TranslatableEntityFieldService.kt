@@ -1,7 +1,7 @@
-package com.sfl.qup.tms.service.translatable
+package com.sfl.qup.tms.service.translatable.field
 
 import com.sfl.qup.tms.domain.translatable.TranslatableEntityField
-import com.sfl.qup.tms.service.translatable.dto.field.TranslatableEntityFieldDto
+import com.sfl.qup.tms.service.translatable.field.dto.TranslatableEntityFieldDto
 
 /**
  * User: Vazgen Danielyan
@@ -10,7 +10,7 @@ import com.sfl.qup.tms.service.translatable.dto.field.TranslatableEntityFieldDto
  */
 interface TranslatableEntityFieldService {
 
-    fun create(dto: TranslatableEntityFieldDto): TranslatableEntityField
-
     fun find(name: String, uuid:String): TranslatableEntityField?
+
+    fun create(dto: TranslatableEntityFieldDto): TranslatableEntityField
 }

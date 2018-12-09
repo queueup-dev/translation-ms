@@ -1,7 +1,7 @@
-package com.sfl.qup.tms.service.translatable
+package com.sfl.qup.tms.service.translatable.entity
 
 import com.sfl.qup.tms.domain.translatable.TranslatableEntityTranslation
-import com.sfl.qup.tms.service.translatable.dto.entity.TranslatableEntityTranslationDto
+import com.sfl.qup.tms.service.translatable.entity.dto.TranslatableEntityTranslationDto
 
 /**
  * User: Vazgen Danielyan

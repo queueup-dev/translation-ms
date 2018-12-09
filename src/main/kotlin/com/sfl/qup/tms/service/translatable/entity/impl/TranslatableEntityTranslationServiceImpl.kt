@@ -1,12 +1,12 @@
-package com.sfl.qup.tms.service.translatable.impl
+package com.sfl.qup.tms.service.translatable.entity.impl
 
 import com.sfl.qup.tms.domain.translatable.TranslatableEntityTranslation
 import com.sfl.qup.tms.persistence.translatable.TranslatableEntityTranslationRepository
 import com.sfl.qup.tms.service.language.LanguageService
-import com.sfl.qup.tms.service.translatable.TranslatableEntityService
-import com.sfl.qup.tms.service.translatable.TranslatableEntityTranslationService
-import com.sfl.qup.tms.service.translatable.dto.entity.TranslatableEntityTranslationDto
-import com.sfl.qup.tms.service.translatable.exception.TranslatableEntityTranslationExistException
+import com.sfl.qup.tms.service.translatable.entity.TranslatableEntityService
+import com.sfl.qup.tms.service.translatable.entity.TranslatableEntityTranslationService
+import com.sfl.qup.tms.service.translatable.entity.dto.TranslatableEntityTranslationDto
+import com.sfl.qup.tms.service.translatable.entity.exception.TranslatableEntityTranslationExistException
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service

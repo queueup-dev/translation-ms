@@ -6,11 +6,12 @@ import com.sfl.qup.tms.domain.translatable.TranslatableEntityTranslation
 import com.sfl.qup.tms.persistence.translatable.TranslatableEntityTranslationRepository
 import com.sfl.qup.tms.service.language.LanguageService
 import com.sfl.qup.tms.service.language.exception.LanguageNotFoundByLangException
-import com.sfl.qup.tms.service.translatable.TranslatableEntityService
-import com.sfl.qup.tms.service.translatable.TranslatableEntityTranslationService
-import com.sfl.qup.tms.service.translatable.dto.entity.TranslatableEntityTranslationDto
-import com.sfl.qup.tms.service.translatable.exception.TranslatableEntityNotFoundByUuidException
-import com.sfl.qup.tms.service.translatable.exception.TranslatableEntityTranslationExistException
+import com.sfl.qup.tms.service.translatable.entity.TranslatableEntityService
+import com.sfl.qup.tms.service.translatable.entity.TranslatableEntityTranslationService
+import com.sfl.qup.tms.service.translatable.entity.dto.TranslatableEntityTranslationDto
+import com.sfl.qup.tms.service.translatable.entity.impl.TranslatableEntityTranslationServiceImpl
+import com.sfl.qup.tms.service.translatable.entity.exception.TranslatableEntityNotFoundByUuidException
+import com.sfl.qup.tms.service.translatable.entity.exception.TranslatableEntityTranslationExistException
 import org.junit.Assert
 import org.junit.Test
 import org.junit.runner.RunWith

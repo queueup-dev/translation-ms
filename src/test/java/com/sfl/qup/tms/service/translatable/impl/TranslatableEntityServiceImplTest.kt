@@ -2,10 +2,11 @@ package com.sfl.qup.tms.service.translatable.impl
 
 import com.sfl.qup.tms.domain.translatable.TranslatableEntity
 import com.sfl.qup.tms.persistence.translatable.TranslatableEntityRepository
-import com.sfl.qup.tms.service.translatable.TranslatableEntityService
-import com.sfl.qup.tms.service.translatable.dto.entity.TranslatableEntityDto
-import com.sfl.qup.tms.service.translatable.exception.TranslatableEntityExistsByUuidException
-import com.sfl.qup.tms.service.translatable.exception.TranslatableEntityNotFoundByUuidException
+import com.sfl.qup.tms.service.translatable.entity.TranslatableEntityService
+import com.sfl.qup.tms.service.translatable.entity.dto.TranslatableEntityDto
+import com.sfl.qup.tms.service.translatable.entity.impl.TranslatableEntityServiceImpl
+import com.sfl.qup.tms.service.translatable.entity.exception.TranslatableEntityExistsByUuidException
+import com.sfl.qup.tms.service.translatable.entity.exception.TranslatableEntityNotFoundByUuidException
 import org.junit.Assert
 import org.junit.Test
 import org.junit.runner.RunWith

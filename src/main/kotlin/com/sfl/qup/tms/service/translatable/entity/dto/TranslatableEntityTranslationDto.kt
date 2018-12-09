@@ -1,4 +1,4 @@
-package com.sfl.qup.tms.service.translatable.dto.entity
+package com.sfl.qup.tms.service.translatable.entity.dto
 
 /**
  * User: Vazgen Danielyan
