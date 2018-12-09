@@ -1,4 +1,4 @@
-package com.sfl.qup.tms.service.translatable.impl
+package com.sfl.qup.tms.service.translatable.entity.impl
 
 import com.sfl.qup.tms.domain.language.Language
 import com.sfl.qup.tms.domain.translatable.TranslatableEntity
@@ -9,7 +9,6 @@ import com.sfl.qup.tms.service.language.exception.LanguageNotFoundByLangExceptio
 import com.sfl.qup.tms.service.translatable.entity.TranslatableEntityService
 import com.sfl.qup.tms.service.translatable.entity.TranslatableEntityTranslationService
 import com.sfl.qup.tms.service.translatable.entity.dto.TranslatableEntityTranslationDto
-import com.sfl.qup.tms.service.translatable.entity.impl.TranslatableEntityTranslationServiceImpl
 import com.sfl.qup.tms.service.translatable.entity.exception.TranslatableEntityNotFoundByUuidException
 import com.sfl.qup.tms.service.translatable.entity.exception.TranslatableEntityTranslationExistException
 import org.junit.Assert
