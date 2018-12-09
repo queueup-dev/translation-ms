@@ -9,9 +9,9 @@ import com.sfl.qup.tms.domain.language.Language
  */
 interface LanguageService {
 
-    fun get(lang: String): Language
+    fun findByLang(lang: String): Language?
 
-    fun find(lang: String): Language?
+    fun getByLang(lang: String): Language
 
     fun create(lang: String): Language
 }

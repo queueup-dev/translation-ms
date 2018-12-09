@@ -51,9 +51,9 @@ class ActionRequestValidationAspect {
 
         @JvmStatic
         private fun getActionRequest(args: Array<Any>): AbstractApiRequestModel? {
-            for (arg in args) {
-                if (arg is AbstractApiRequestModel) {
-                    return arg
+            args.forEach {
+                if (it is AbstractApiRequestModel) {
+                    return it
                 }
             }
             return null

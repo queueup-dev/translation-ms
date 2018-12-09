@@ -15,15 +15,15 @@ import javax.persistence.*;
  */
 @Entity
 @Table(
-        name = "translatable_entity_translation",
+        name = "translatable_entity_field_translation",
         uniqueConstraints = {
-                @UniqueConstraint(name = "uk_te_entity_language", columnNames = {"entity_id", "language_id"})
+                @UniqueConstraint(name = "uk_tef_field_language", columnNames = {"field_id", "language_id"})
         }
 )
 @SequenceGenerator(name = "sequence_generator", sequenceName = "translatable_entity_translation_seq", allocationSize = 1)
-public class TranslatableEntityTranslation extends AbstractEntity {
+public class TranslatableEntityFieldTranslation extends AbstractEntity {
 
-    private static final long serialVersionUID = 3735056767504297785L;
+    private static final long serialVersionUID = 1588050404336971076L;
 
     //region Properties
 
@@ -31,11 +31,11 @@ public class TranslatableEntityTranslation extends AbstractEntity {
     private String text;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "entity_id", nullable = false, foreignKey = @ForeignKey(name = "fk_te_entity_id"))
-    private TranslatableEntity entity;
+    @JoinColumn(name = "field_id", nullable = false, foreignKey = @ForeignKey(name = "fk_tef_field_id"))
+    private TranslatableEntityField field;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "language_id", nullable = false, foreignKey = @ForeignKey(name = "fk_te_language_id"))
+    @JoinColumn(name = "language_id", nullable = false, foreignKey = @ForeignKey(name = "fk_tef_language_id"))
     private Language language;
 
     //endregion
@@ -50,12 +50,12 @@ public class TranslatableEntityTranslation extends AbstractEntity {
         this.text = text;
     }
 
-    public TranslatableEntity getEntity() {
-        return entity;
+    public TranslatableEntityField getField() {
+        return field;
     }
 
-    public void setEntity(final TranslatableEntity entity) {
-        this.entity = entity;
+    public void setField(final TranslatableEntityField field) {
+        this.field = field;
     }
 
     public Language getLanguage() {
@@ -81,11 +81,11 @@ public class TranslatableEntityTranslation extends AbstractEntity {
         if (obj.getClass() != getClass()) {
             return false;
         }
-        TranslatableEntityTranslation rhs = (TranslatableEntityTranslation) obj;
+        TranslatableEntityFieldTranslation rhs = (TranslatableEntityFieldTranslation) obj;
         return new EqualsBuilder()
                 .appendSuper(super.equals(obj))
                 .append(this.text, rhs.text)
-                .append(this.entity, rhs.entity)
+                .append(this.field, rhs.field)
                 .append(this.language, rhs.language)
                 .isEquals();
     }
@@ -95,7 +95,7 @@ public class TranslatableEntityTranslation extends AbstractEntity {
         return new HashCodeBuilder()
                 .appendSuper(super.hashCode())
                 .append(text)
-                .append(entity)
+                .append(field)
                 .append(language)
                 .toHashCode();
     }
@@ -105,7 +105,7 @@ public class TranslatableEntityTranslation extends AbstractEntity {
         return new ToStringBuilder(this)
                 .appendSuper(super.toString())
                 .append("text", text)
-                .append("entity", entity)
+                .append("field", field)
                 .append("language", language)
                 .toString();
     }

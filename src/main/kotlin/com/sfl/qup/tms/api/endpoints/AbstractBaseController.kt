@@ -26,5 +26,8 @@ abstract class AbstractBaseController {
 
         @JvmStatic
         fun notFound(errorType: ErrorType): ResponseEntity<ResultModel<out AbstractApiModel>> = ResponseEntity(ResultModel(listOf(ErrorModel(errorType))), HttpStatus.NOT_FOUND)
+
+        @JvmStatic
+        fun internal(errorType: ErrorType): ResponseEntity<ResultModel<out AbstractApiModel>> = ResponseEntity(ResultModel(listOf(ErrorModel(errorType))), HttpStatus.INTERNAL_SERVER_ERROR)
     }
 }

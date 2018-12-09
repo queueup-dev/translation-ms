@@ -1,6 +1,6 @@
 package com.sfl.qup.tms.persistence.translatable
 
-import com.sfl.qup.tms.domain.translatable.TranslatableEntity
+import com.sfl.qup.tms.domain.translatable.TranslatableEntityFieldTranslation
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
 
@@ -10,8 +10,4 @@ import org.springframework.stereotype.Repository
  * Time: 6:09 PM
  */
 @Repository
-interface TranslatableEntityRepository : JpaRepository<TranslatableEntity, Long> {
-
-    fun findByUuid(uuid: String): TranslatableEntity?
-
-}
+interface TranslatableEntityFieldTranslationRepository : JpaRepository<TranslatableEntityFieldTranslation, Long>

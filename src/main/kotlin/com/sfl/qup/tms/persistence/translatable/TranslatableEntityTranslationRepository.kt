@@ -10,4 +10,8 @@ import org.springframework.stereotype.Repository
  * Time: 6:09 PM
  */
 @Repository
-interface TranslatableEntityTranslationRepository : JpaRepository<TranslatableEntityTranslation, Long>
+interface TranslatableEntityTranslationRepository : JpaRepository<TranslatableEntityTranslation, Long> {
+
+    fun findByLanguage_IdAndEntity_Id(languageId: Long, entityId: Long): TranslatableEntityTranslation?
+
+}

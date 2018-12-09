@@ -4,7 +4,7 @@ group = "com.sfl.qup.tms"
 version = "0.0.1-SNAPSHOT"
 
 plugins {
-    val kotlinVersion = "1.3.10"
+    val kotlinVersion = "1.3.11"
     val springBootVersion = "2.1.1.RELEASE"
 
     kotlin("jvm") version kotlinVersion

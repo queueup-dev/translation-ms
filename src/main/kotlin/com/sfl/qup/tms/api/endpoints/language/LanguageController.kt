@@ -36,7 +36,7 @@ class LanguageController {
     @RequestMapping(value = ["/"], method = [RequestMethod.GET])
     fun get(@RequestParam("lang") lang: String): ResponseEntity<ResultModel<out AbstractApiModel>> = try {
         logger.trace("Retrieving language for provided lang - {}", lang)
-        languageService.get(lang)
+        languageService.getByLang(lang)
                 .let { ok(LanguageResponseModel(it.lang)) }
                 .also { logger.debug("Retrieved language for provided lang - {} ", lang) }
     } catch (e: LanguageNotFoundByLangException) {
@@ -45,12 +45,10 @@ class LanguageController {
 
     @RequestMapping(value = ["/"], method = [RequestMethod.POST])
     fun create(@RequestParam("lang") lang: String): ResponseEntity<ResultModel<out AbstractApiModel>> = lang
-            .also { logger.trace("Retrieving language for provided lang - {} ", lang) }
-            .let {
-                languageService.create(it)
-                        .let { created(LanguageResponseModel(it.lang)) }
-                        .also { logger.debug("Retrieved language for provided lang - {} ", lang) }
-            }
+            .also { logger.trace("Creating new language for provided lang - {} ", lang) }
+            .let { languageService.create(it) }
+            .let { created(LanguageResponseModel(it.lang)) }
+            .also { logger.debug("Successfully created language for provided lang - {} ", lang) }
 
     companion object {
         @JvmStatic

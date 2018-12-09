@@ -15,44 +15,31 @@ import java.util.Set;
  */
 @Entity
 @Table(
-        name = "translatable_entity",
-        indexes = {
-                @Index(name = "idx_translatable_entity_uuid", columnList = "uuid")
-        },
+        name = "translatable_entity_field",
         uniqueConstraints = {
-                @UniqueConstraint(name = "uk_translatable_entity_uuid", columnNames = "uuid")
+                @UniqueConstraint(name = "uk_tef_name_entity_id", columnNames = {"name", "entity_id"})
         }
 )
-@SequenceGenerator(name = "sequence_generator", sequenceName = "translatable_entity_seq", allocationSize = 1)
-public class TranslatableEntity extends AbstractEntity {
+@SequenceGenerator(name = "sequence_generator", sequenceName = "translatable_entity_field_seq", allocationSize = 1)
+public class TranslatableEntityField extends AbstractEntity {
 
-    private static final long serialVersionUID = -2779008497944621143L;
+    private static final long serialVersionUID = -7215198975946459345L;
 
     //region Properties
-
-    @Column(name = "uuid", nullable = false)
-    private String uuid;
 
     @Column(name = "name", nullable = false)
     private String name;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "entity")
-    private Set<TranslatableEntityField> fields;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "entity_id", nullable = false, foreignKey = @ForeignKey(name = "fk_tef_entity_id"))
+    private TranslatableEntity entity;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "entity")
-    private Set<TranslatableEntityTranslation> translations;
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "field")
+    private Set<TranslatableEntityFieldTranslation> translations;
 
     //endregion
 
     //region Getters and setters
-
-    public String getUuid() {
-        return uuid;
-    }
-
-    public void setUuid(final String uuid) {
-        this.uuid = uuid;
-    }
 
     public String getName() {
         return name;
@@ -62,19 +49,19 @@ public class TranslatableEntity extends AbstractEntity {
         this.name = name;
     }
 
-    public Set<TranslatableEntityField> getFields() {
-        return fields;
+    public TranslatableEntity getEntity() {
+        return entity;
     }
 
-    public void setFields(final Set<TranslatableEntityField> fields) {
-        this.fields = fields;
+    public void setEntity(final TranslatableEntity entity) {
+        this.entity = entity;
     }
 
-    public Set<TranslatableEntityTranslation> getTranslations() {
+    public Set<TranslatableEntityFieldTranslation> getTranslations() {
         return translations;
     }
 
-    public void setTranslations(final Set<TranslatableEntityTranslation> translations) {
+    public void setTranslations(final Set<TranslatableEntityFieldTranslation> translations) {
         this.translations = translations;
     }
 
@@ -93,11 +80,11 @@ public class TranslatableEntity extends AbstractEntity {
         if (obj.getClass() != getClass()) {
             return false;
         }
-        TranslatableEntity rhs = (TranslatableEntity) obj;
+        TranslatableEntityField rhs = (TranslatableEntityField) obj;
         return new EqualsBuilder()
                 .appendSuper(super.equals(obj))
-                .append(this.uuid, rhs.uuid)
                 .append(this.name, rhs.name)
+                .append(getIdOrNull(this.entity), getIdOrNull(rhs.entity))
                 .isEquals();
     }
 
@@ -105,8 +92,8 @@ public class TranslatableEntity extends AbstractEntity {
     public int hashCode() {
         return new HashCodeBuilder()
                 .appendSuper(super.hashCode())
-                .append(uuid)
                 .append(name)
+                .append(getIdOrNull(entity))
                 .toHashCode();
     }
 
@@ -114,8 +101,8 @@ public class TranslatableEntity extends AbstractEntity {
     public String toString() {
         return new ToStringBuilder(this)
                 .appendSuper(super.toString())
-                .append("uuid", uuid)
                 .append("name", name)
+                .append("entity", getIdOrNull(entity))
                 .toString();
     }
 
