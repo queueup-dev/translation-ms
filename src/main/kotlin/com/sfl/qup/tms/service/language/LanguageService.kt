@@ -1,6 +1,7 @@
 package com.sfl.qup.tms.service.language
 
 import com.sfl.qup.tms.domain.language.Language
+import com.sfl.qup.tms.service.language.exception.LanguageNotFoundByIdException
 
 /**
  * User: Vazgen Danielyan
@@ -12,6 +13,8 @@ interface LanguageService {
     fun findByLang(lang: String): Language?
 
     fun getByLang(lang: String): Language
+
+    fun get(id: Long): Language
 
     fun create(lang: String): Language
 }

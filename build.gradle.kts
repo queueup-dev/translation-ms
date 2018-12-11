@@ -46,6 +46,7 @@ dependencies {
     implementation("org.postgresql:postgresql:42.2.5")
 
     implementation("org.apache.commons:commons-lang3:")
+    implementation("com.google.code.gson:gson:2.8.5")
 
     implementation("io.springfox:springfox-swagger2:2.9.2")
     implementation("io.springfox:springfox-swagger-ui:2.9.2")

@@ -20,6 +20,9 @@ class ResultModel<T : AbstractApiModel> : AbstractApiModel {
     @JsonProperty(value = "errors")
     var errors: List<ErrorModel>? = null
 
+    @JsonProperty(value = "success")
+    val success: Boolean = !hasErrors()
+
     //endregion
 
     //region Constructors

@@ -6,13 +6,18 @@ import com.sfl.qup.tms.api.common.model.ResultModel
 import com.sfl.qup.tms.api.common.model.error.type.EntityExistsErrorModel
 import com.sfl.qup.tms.api.endpoints.AbstractBaseController.Companion.created
 import com.sfl.qup.tms.api.endpoints.AbstractBaseController.Companion.internal
+import com.sfl.qup.tms.api.endpoints.AbstractBaseController.Companion.ok
 import com.sfl.qup.tms.api.endpoints.translation.request.entity.TranslatableEntityCreateRequestModel
 import com.sfl.qup.tms.api.endpoints.translation.request.entity.TranslatableEntityTranslationsCreateRequestModel
 import com.sfl.qup.tms.api.endpoints.translation.request.field.TranslatableEntityFieldCreateRequestModel
+import com.sfl.qup.tms.api.endpoints.translation.request.statics.TranslatableStaticCreateRequestModel
 import com.sfl.qup.tms.api.endpoints.translation.response.entity.TranslatableEntityCreateResponseModel
 import com.sfl.qup.tms.api.endpoints.translation.response.entity.TranslatableEntityTranslationCreateResponseModel
 import com.sfl.qup.tms.api.endpoints.translation.response.entity.TranslatableEntityTranslationsCreateResponseModel
 import com.sfl.qup.tms.api.endpoints.translation.response.field.TranslatableEntityFieldCreateResponseModel
+import com.sfl.qup.tms.api.endpoints.translation.response.statics.TranslatableStaticResponseModel
+import com.sfl.qup.tms.api.endpoints.translation.response.statics.TranslatableStaticsPageResponseModel
+import com.sfl.qup.tms.service.language.exception.LanguageNotFoundByIdException
 import com.sfl.qup.tms.service.language.exception.LanguageNotFoundByLangException
 import com.sfl.qup.tms.service.translatable.entity.TranslatableEntityService
 import com.sfl.qup.tms.service.translatable.entity.TranslatableEntityTranslationService
@@ -24,13 +29,13 @@ import com.sfl.qup.tms.service.translatable.entity.exception.TranslatableEntityT
 import com.sfl.qup.tms.service.translatable.field.TranslatableEntityFieldService
 import com.sfl.qup.tms.service.translatable.field.dto.TranslatableEntityFieldDto
 import com.sfl.qup.tms.service.translatable.field.exception.TranslatableEntityFieldExistsForTranslatableEntityException
+import com.sfl.qup.tms.service.translatablestatics.TranslatableStaticsService
+import com.sfl.qup.tms.service.translatablestatics.dto.TranslatableStaticDto
+import com.sfl.qup.tms.service.translatablestatics.exception.TranslatableStaticsExistException
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestMethod
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 
 /**
  * User: Vazgen Danielyan
@@ -51,6 +56,9 @@ class TranslationController {
 
     @Autowired
     private lateinit var translatableEntityFieldService: TranslatableEntityFieldService
+
+    @Autowired
+    private lateinit var translatableStaticsService: TranslatableStaticsService
 
     //endregion
 
@@ -105,13 +113,33 @@ class TranslationController {
 
     //endregion
 
-    fun getTranslatableEntityTranslation() {
+    //region Static translations
 
+    @ValidateActionRequest
+    @RequestMapping(value = ["/static"], method = [RequestMethod.POST])
+    fun createTranslatableStatic(@RequestBody request: TranslatableStaticCreateRequestModel): ResponseEntity<ResultModel<out AbstractApiModel>> = try {
+        request
+                .also { logger.trace("Creating new TranslatableStatic for provided request - {} ", it) }
+                .let { translatableStaticsService.create(TranslatableStaticDto(it.key, it.value, it.languageId)) }
+                .let { created(TranslatableStaticResponseModel(it.key, it.value, it.language.lang)) }
+                .also { logger.debug("Successfully created translatable entity field for provided request - {} ", request) }
+    } catch (e: LanguageNotFoundByIdException) {
+        internal(EntityExistsErrorModel(e.localizedMessage))
+    } catch (e: TranslatableStaticsExistException) {
+        internal(EntityExistsErrorModel(e.localizedMessage))
     }
 
-    fun getTranslatableEntityFieldTranslation() {
+    @ValidateActionRequest
+    @RequestMapping(value = ["/static"], method = [RequestMethod.GET])
+    fun getStaticTranslations(@RequestParam("term", required = false) term: String?, @RequestParam("page", required = false) page: Int?) = term
+            .also { logger.trace("Retrieving TranslatableStatic for provided term - {}, page - {} ", it, page) }
+            .let { translatableStaticsService.search(it, page) }
+            .map { TranslatableStaticResponseModel(it.key, it.value, it.language.lang) }
+            .groupBy { it.lang }
+            .let { ok(TranslatableStaticsPageResponseModel(it)) }
+            .also { logger.debug("Retrieved TranslatableStatic for provided term - {}, page - {} ", term, page) }
 
-    }
+    //endregion
 
     companion object {
         @JvmStatic

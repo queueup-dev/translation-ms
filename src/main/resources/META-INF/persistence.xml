@@ -15,6 +15,8 @@
         <class>com.sfl.qup.tms.domain.translatable.TranslatableEntityField</class>
         <class>com.sfl.qup.tms.domain.translatable.TranslatableEntityFieldTranslation</class>
 
+        <class>com.sfl.qup.tms.domain.translatablestastics.TranslatableStatic</class>
+
         <properties>
             <property name="hibernate.temp.use_jdbc_metadata_defaults" value="false"/>
         </properties>
