@@ -1,4 +1,4 @@
-package com.sfl.qup.tms.domain.translatablestastics;
+package com.sfl.qup.tms.domain.translatablestastic;
 
 import com.sfl.qup.tms.domain.AbstractEntity;
 import com.sfl.qup.tms.domain.language.Language;

@@ -1,13 +1,13 @@
-package com.sfl.qup.tms.service.translatablestatics.impl
+package com.sfl.qup.tms.service.translatablestatic.impl
 
-import com.sfl.qup.tms.domain.translatablestastics.TranslatableStatic
-import com.sfl.qup.tms.persistence.translatablestastics.TranslatableStaticsRepository
+import com.sfl.qup.tms.domain.translatablestastic.TranslatableStatic
+import com.sfl.qup.tms.persistence.translatablestastics.TranslatableStaticRepository
 import com.sfl.qup.tms.service.language.LanguageService
-import com.sfl.qup.tms.service.language.exception.LanguageNotFoundByIdException
-import com.sfl.qup.tms.service.translatablestatics.TranslatableStaticsService
-import com.sfl.qup.tms.service.translatablestatics.dto.TranslatableStaticDto
-import com.sfl.qup.tms.service.translatablestatics.exception.TranslatableStaticNotFoundByKeyAndLanguageIdException
-import com.sfl.qup.tms.service.translatablestatics.exception.TranslatableStaticsExistException
+import com.sfl.qup.tms.service.translatablestatic.TranslatableStaticService
+import com.sfl.qup.tms.service.translatablestatic.dto.TranslatableStaticDto
+import com.sfl.qup.tms.service.translatablestatic.exception.TranslatableStaticExistException
+import com.sfl.qup.tms.service.translatablestatic.exception.TranslatableStaticNotFoundByKeyAndLanguageIdException
+import com.sfl.qup.tms.service.translatablestatic.exception.TranslatableStaticNotFoundByKeyException
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.PageRequest
@@ -20,12 +20,12 @@ import org.springframework.transaction.annotation.Transactional
  * Time: 1:51 AM
  */
 @Service
-class TranslatableStaticsServiceImpl : TranslatableStaticsService {
+class TranslatableStaticServiceImpl : TranslatableStaticService {
 
     //region Injection
 
     @Autowired
-    private lateinit var translatableStaticsRepository: TranslatableStaticsRepository
+    private lateinit var translatableStaticRepository: TranslatableStaticRepository
 
     @Autowired
     private lateinit var languageService: LanguageService
@@ -35,7 +35,7 @@ class TranslatableStaticsServiceImpl : TranslatableStaticsService {
     @Transactional(readOnly = true)
     override fun findByKeyAndLanguageId(key: String, languageId: Long): TranslatableStatic? = key
             .also { logger.trace("Retrieving TranslatableStatic for provided key - {}, language id- {}", key, languageId) }
-            .let { translatableStaticsRepository.findByKeyAndLanguage_Id(it, languageId) }
+            .let { translatableStaticRepository.findByKeyAndLanguage_Id(it, languageId) }
             .also { logger.debug("Retrieved TranslatableStatic for provided key - {}, language id- {}", key, languageId) }
 
     @Throws(TranslatableStaticNotFoundByKeyAndLanguageIdException::class)
@@ -53,18 +53,33 @@ class TranslatableStaticsServiceImpl : TranslatableStaticsService {
                 }
             }
 
-    @Throws(TranslatableStaticsExistException::class, LanguageNotFoundByIdException::class)
-    @Transactional(rollbackFor = [Exception::class])
+    @Throws(TranslatableStaticNotFoundByKeyException::class)
+    @Transactional(readOnly = true)
+    override fun getByKey(key: String): List<TranslatableStatic> = key
+            .also { logger.trace("Retrieving TranslatableStatic for provided key - {}", it) }
+            .let {
+                translatableStaticRepository.findByKey(it).let {
+                    if (it.isEmpty()) {
+                        logger.error("Can't find TranslatableStatic for key - {}", key)
+                        throw TranslatableStaticNotFoundByKeyException(key)
+                    }
+                    logger.debug("Retrieved TranslatableStatic for provided key - {}", key)
+                    it
+                }
+            }
+
+    @Throws(TranslatableStaticExistException::class)
+    @Transactional
     override fun create(dto: TranslatableStaticDto): TranslatableStatic {
         logger.trace("Creating new TranslatableStatic for provided dto - {} ", dto)
 
         val searchedLanguage = languageService.get(dto.languageId)
 
-        val translatableStatics = translatableStaticsRepository.findByKeyAndLanguage_Id(dto.key, searchedLanguage.id)
+        val translatableStatics = translatableStaticRepository.findByKeyAndLanguage_Id(dto.key, searchedLanguage.id)
 
         if (translatableStatics != null) {
             logger.error("Unable to create new TranslatableStatic for provided dto - {}. Already exists.", dto)
-            throw TranslatableStaticsExistException(dto.key, searchedLanguage.lang)
+            throw TranslatableStaticExistException(dto.key, dto.languageId)
         }
 
         // Create new translation
@@ -72,25 +87,33 @@ class TranslatableStaticsServiceImpl : TranslatableStaticsService {
                 .apply { key = dto.key }
                 .apply { value = dto.value }
                 .apply { language = searchedLanguage }
-                .let { translatableStaticsRepository.save(it) }
+                .let { translatableStaticRepository.save(it) }
                 .also { logger.debug("Successfully created new TranslatableStatic for provided dto - {}", dto) }
     }
+
+    @Transactional
+    override fun update(dto: TranslatableStaticDto): TranslatableStatic = dto
+            .also { logger.trace("Updating TranslatableStatic for provided dto - {} ", it) }
+            .let { getByKeyAndLanguageId(dto.key, dto.languageId) }
+            .apply { value = dto.value }
+            .let { translatableStaticRepository.save(it) }
+            .also { logger.debug("Successfully updated TranslatableStatic for provided dto - {}", dto) }
 
     @Transactional(readOnly = true)
     override fun search(term: String?, page: Int?): List<TranslatableStatic> = PageRequest.of(page ?: 0, 15)
             .also { logger.trace("Retrieving TranslatableStatic for provided search term - {}, page id - {}", term, page) }
             .let {
                 if (term == null) {
-                    translatableStaticsRepository.findByOrderByKeyAsc(it)
+                    translatableStaticRepository.findByOrderByKeyAsc(it)
                 } else {
-                    translatableStaticsRepository.findByKeyLikeOrderByKeyAsc("$term%", it)
+                    translatableStaticRepository.findByKeyLikeOrderByKeyAsc("$term%", it)
                 }
             }
             .also { logger.debug("Retrieved TranslatableStatic for provided term - {}, page - {}", term, page) }
 
     companion object {
         @JvmStatic
-        private val logger = LoggerFactory.getLogger(TranslatableStaticsServiceImpl::class.java)
+        private val logger = LoggerFactory.getLogger(TranslatableStaticServiceImpl::class.java)
     }
 
 }

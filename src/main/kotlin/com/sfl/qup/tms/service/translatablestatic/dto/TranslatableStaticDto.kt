@@ -1,4 +1,4 @@
-package com.sfl.qup.tms.service.translatablestatics.dto
+package com.sfl.qup.tms.service.translatablestatic.dto
 
 /**
  * User: Vazgen Danielyan

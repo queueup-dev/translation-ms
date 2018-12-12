@@ -1,4 +1,4 @@
-package com.sfl.qup.tms.service.translatablestatics.exception
+package com.sfl.qup.tms.service.translatablestatic.exception
 
 /**
  * User: Vazgen Danielyan

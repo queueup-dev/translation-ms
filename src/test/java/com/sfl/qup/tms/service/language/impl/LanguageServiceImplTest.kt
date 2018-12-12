@@ -4,6 +4,7 @@ import com.sfl.qup.tms.domain.language.Language
 import com.sfl.qup.tms.persistence.language.LanguageRepository
 import com.sfl.qup.tms.service.language.LanguageService
 import com.sfl.qup.tms.service.language.exception.LanguageExistByLangException
+import com.sfl.qup.tms.service.language.exception.LanguageNotFoundByIdException
 import com.sfl.qup.tms.service.language.exception.LanguageNotFoundByLangException
 import org.junit.Assert
 import org.junit.Test
@@ -13,6 +14,7 @@ import org.mockito.InjectMocks
 import org.mockito.Mock
 import org.mockito.Mockito.*
 import org.mockito.junit.MockitoJUnitRunner
+import java.util.*
 
 /**
  * User: Vazgen Danielyan
@@ -31,6 +33,23 @@ class LanguageServiceImplTest {
     private var languageService: LanguageService = LanguageServiceImpl()
 
     //endregion
+
+    @Test
+    fun findByLangTest() {
+        // test data
+        val lang = "NL"
+        val language = Language().apply {
+            this.lang = lang
+        }
+        // mock
+        `when`(languageRepository.findByLang(lang)).thenReturn(language)
+        // sut
+        val result = languageService.findByLang(lang)
+        // verify
+        verify(languageRepository, times(1)).findByLang(lang)
+        Assert.assertNotNull(lang, result)
+        Assert.assertEquals(lang, result!!.lang)
+    }
 
     @Test(expected = LanguageNotFoundByLangException::class)
     fun getByLangWhenLanguageNotFoundTest() {
@@ -60,21 +79,28 @@ class LanguageServiceImplTest {
         Assert.assertEquals(lang, result.lang)
     }
 
-    @Test
-    fun findByLangTest() {
+    @Test(expected = LanguageNotFoundByIdException::class)
+    fun getByIdWhenLanguageNotFoundTest() {
         // test data
-        val lang = "NL"
-        val language = Language().apply {
-            this.lang = lang
-        }
+        val id = 1L
         // mock
-        `when`(languageRepository.findByLang(lang)).thenReturn(language)
+        `when`(languageRepository.findById(id)).thenReturn(Optional.ofNullable<Language>(null))
         // sut
-        val result = languageService.findByLang(lang)
+        languageService.get(id)
         // verify
-        verify(languageRepository, times(1)).findByLang(lang)
-        Assert.assertNotNull(lang, result)
-        Assert.assertEquals(lang, result!!.lang)
+        verify(languageRepository, times(1)).findById(ArgumentMatchers.eq(id))
+    }
+
+    @Test
+    fun getByIdWhenLanguageFoundTest() {
+        // test data
+        val id = 1L
+        // mock
+        `when`(languageRepository.findById(id)).thenReturn(Optional.of<Language>(Language()))
+        // sut
+        languageService.get(id)
+        // verify
+        verify(languageRepository, times(1)).findById(ArgumentMatchers.eq(id))
     }
 
     @Test(expected = LanguageExistByLangException::class)

@@ -2,8 +2,8 @@ package com.sfl.qup.tms
 
 import com.google.gson.Gson
 import com.sfl.qup.tms.service.language.LanguageService
-import com.sfl.qup.tms.service.translatablestatics.TranslatableStaticsService
-import com.sfl.qup.tms.service.translatablestatics.dto.TranslatableStaticDto
+import com.sfl.qup.tms.service.translatablestatic.TranslatableStaticService
+import com.sfl.qup.tms.service.translatablestatic.dto.TranslatableStaticDto
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.CommandLineRunner
 import org.springframework.boot.SpringApplication
@@ -15,7 +15,7 @@ class TmsApplication {
     //region Injection
 
     @Autowired
-    private lateinit var translatableStaticsService: TranslatableStaticsService
+    private lateinit var translatableStaticService: TranslatableStaticService
 
     @Autowired
     private lateinit var languageService: LanguageService
@@ -37,10 +37,10 @@ class TmsApplication {
         fromJson.forEach { k, v ->
             if (v is Map<*, *>) {
                 v.forEach { k2, v2 ->
-                    translatableStaticsService.create(TranslatableStaticDto(k as String + "_" + k2 as String, v2 as String, findByLang.id))
+                    translatableStaticService.create(TranslatableStaticDto(k as String + "_" + k2 as String, v2 as String, findByLang.id))
                 }
             } else {
-                translatableStaticsService.create(TranslatableStaticDto(k as String, v as String, findByLang.id))
+                translatableStaticService.create(TranslatableStaticDto(k as String, v as String, findByLang.id))
             }
         }
     }

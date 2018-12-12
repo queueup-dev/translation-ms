@@ -1,6 +1,6 @@
 package com.sfl.qup.tms.persistence.translatablestastics
 
-import com.sfl.qup.tms.domain.translatablestastics.TranslatableStatic
+import com.sfl.qup.tms.domain.translatablestastic.TranslatableStatic
 import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
@@ -13,7 +13,9 @@ import org.springframework.stereotype.Repository
  * Time: 1:51 AM
  */
 @Repository
-interface TranslatableStaticsRepository : JpaRepository<TranslatableStatic, Long> {
+interface TranslatableStaticRepository : JpaRepository<TranslatableStatic, Long> {
+
+    fun findByKey(key: String): List<TranslatableStatic>
 
     fun findByKeyAndLanguage_Id(key: String, languageId: Long): TranslatableStatic?
 

@@ -1,7 +1,6 @@
 package com.sfl.qup.tms.service.language
 
 import com.sfl.qup.tms.domain.language.Language
-import com.sfl.qup.tms.service.language.exception.LanguageNotFoundByIdException
 
 /**
  * User: Vazgen Danielyan
