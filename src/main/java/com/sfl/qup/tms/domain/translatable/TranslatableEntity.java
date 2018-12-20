@@ -39,9 +39,6 @@ public class TranslatableEntity extends AbstractEntity {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "entity")
     private Set<TranslatableEntityField> fields;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "entity")
-    private Set<TranslatableEntityTranslation> translations;
-
     //endregion
 
     //region Getters and setters
@@ -68,14 +65,6 @@ public class TranslatableEntity extends AbstractEntity {
 
     public void setFields(final Set<TranslatableEntityField> fields) {
         this.fields = fields;
-    }
-
-    public Set<TranslatableEntityTranslation> getTranslations() {
-        return translations;
-    }
-
-    public void setTranslations(final Set<TranslatableEntityTranslation> translations) {
-        this.translations = translations;
     }
 
     //endregion

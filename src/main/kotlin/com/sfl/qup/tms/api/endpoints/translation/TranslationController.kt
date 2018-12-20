@@ -8,25 +8,17 @@ import com.sfl.qup.tms.api.endpoints.AbstractBaseController.Companion.created
 import com.sfl.qup.tms.api.endpoints.AbstractBaseController.Companion.internal
 import com.sfl.qup.tms.api.endpoints.AbstractBaseController.Companion.ok
 import com.sfl.qup.tms.api.endpoints.translation.request.entity.TranslatableEntityCreateRequestModel
-import com.sfl.qup.tms.api.endpoints.translation.request.entity.TranslatableEntityTranslationsCreateRequestModel
 import com.sfl.qup.tms.api.endpoints.translation.request.field.TranslatableEntityFieldCreateRequestModel
 import com.sfl.qup.tms.api.endpoints.translation.request.statics.TranslatableStaticCreateRequestModel
 import com.sfl.qup.tms.api.endpoints.translation.request.statics.TranslatableStaticUpdateRequestModel
 import com.sfl.qup.tms.api.endpoints.translation.response.entity.TranslatableEntityCreateResponseModel
-import com.sfl.qup.tms.api.endpoints.translation.response.entity.TranslatableEntityTranslationCreateResponseModel
-import com.sfl.qup.tms.api.endpoints.translation.response.entity.TranslatableEntityTranslationsCreateResponseModel
 import com.sfl.qup.tms.api.endpoints.translation.response.field.TranslatableEntityFieldCreateResponseModel
 import com.sfl.qup.tms.api.endpoints.translation.response.statics.TranslatableStaticResponseModel
 import com.sfl.qup.tms.api.endpoints.translation.response.statics.TranslatableStaticsPageResponseModel
 import com.sfl.qup.tms.service.language.exception.LanguageNotFoundByIdException
-import com.sfl.qup.tms.service.language.exception.LanguageNotFoundByLangException
 import com.sfl.qup.tms.service.translatable.entity.TranslatableEntityService
-import com.sfl.qup.tms.service.translatable.entity.TranslatableEntityTranslationService
 import com.sfl.qup.tms.service.translatable.entity.dto.TranslatableEntityDto
-import com.sfl.qup.tms.service.translatable.entity.dto.TranslatableEntityTranslationDto
 import com.sfl.qup.tms.service.translatable.entity.exception.TranslatableEntityExistsByUuidException
-import com.sfl.qup.tms.service.translatable.entity.exception.TranslatableEntityNotFoundByUuidException
-import com.sfl.qup.tms.service.translatable.entity.exception.TranslatableEntityTranslationExistException
 import com.sfl.qup.tms.service.translatable.field.TranslatableEntityFieldService
 import com.sfl.qup.tms.service.translatable.field.dto.TranslatableEntityFieldDto
 import com.sfl.qup.tms.service.translatable.field.exception.TranslatableEntityFieldExistsForTranslatableEntityException
@@ -55,9 +47,6 @@ class TranslationController {
     private lateinit var translatableEntityService: TranslatableEntityService
 
     @Autowired
-    private lateinit var translatableEntityTranslationService: TranslatableEntityTranslationService
-
-    @Autowired
     private lateinit var translatableEntityFieldService: TranslatableEntityFieldService
 
     @Autowired
@@ -76,25 +65,6 @@ class TranslationController {
                 .let { created(TranslatableEntityCreateResponseModel(it.uuid, it.name)) }
                 .also { logger.debug("Successfully created TranslatableEntity for provided request - {} ", request) }
     } catch (e: TranslatableEntityExistsByUuidException) {
-        internal(EntityExistsErrorModel(e.localizedMessage))
-    }
-
-    @ValidateActionRequest
-    @RequestMapping(value = ["/entity/translations"], method = [RequestMethod.POST])
-    fun createTranslatableEntityWithTranslations(@RequestBody request: TranslatableEntityTranslationsCreateRequestModel): ResponseEntity<ResultModel<out AbstractApiModel>> = try {
-        request
-                .also { logger.trace("Creating new TranslatableEntityTranslations for provided request - {} ", it) }
-                .let {
-                    it.translations
-                            .map { translatableEntityTranslationService.create(TranslatableEntityTranslationDto(request.uuid, it.lang, it.text)) }
-                            .let { created(TranslatableEntityTranslationsCreateResponseModel(request.uuid, it.map { TranslatableEntityTranslationCreateResponseModel(it.text, it.language.lang) })) }
-                }
-                .also { logger.debug("Successfully created TranslatableEntityTranslations for provided request - {} ", request) }
-    } catch (e: LanguageNotFoundByLangException) {
-        internal(EntityExistsErrorModel(e.localizedMessage))
-    } catch (e: TranslatableEntityNotFoundByUuidException) {
-        internal(EntityExistsErrorModel(e.localizedMessage))
-    } catch (e: TranslatableEntityTranslationExistException) {
         internal(EntityExistsErrorModel(e.localizedMessage))
     }
 

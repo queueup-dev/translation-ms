@@ -10,7 +10,6 @@
         <class>com.sfl.qup.tms.domain.language.Language</class>
 
         <class>com.sfl.qup.tms.domain.translatable.TranslatableEntity</class>
-        <class>com.sfl.qup.tms.domain.translatable.TranslatableEntityTranslation</class>
 
         <class>com.sfl.qup.tms.domain.translatable.TranslatableEntityField</class>
         <class>com.sfl.qup.tms.domain.translatable.TranslatableEntityFieldTranslation</class>
