@@ -13,6 +13,8 @@ interface LanguageService {
 
     fun getByLang(lang: String): Language
 
+    fun getAll(): List<Language>
+
     fun get(id: Long): Language
 
     fun create(lang: String): Language

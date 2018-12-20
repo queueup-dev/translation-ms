@@ -7,6 +7,7 @@ import com.sfl.qup.tms.api.endpoints.AbstractBaseController.Companion.created
 import com.sfl.qup.tms.api.endpoints.AbstractBaseController.Companion.notFound
 import com.sfl.qup.tms.api.endpoints.AbstractBaseController.Companion.ok
 import com.sfl.qup.tms.api.endpoints.language.model.response.LanguageResponseModel
+import com.sfl.qup.tms.api.endpoints.language.model.response.LanguagesResponseModel
 import com.sfl.qup.tms.service.language.LanguageService
 import com.sfl.qup.tms.service.language.exception.LanguageNotFoundByLangException
 import org.slf4j.LoggerFactory
@@ -34,10 +35,13 @@ class LanguageController {
     //endregion
 
     @RequestMapping(value = ["/"], method = [RequestMethod.GET])
-    fun get(@RequestParam("lang") lang: String): ResponseEntity<ResultModel<out AbstractApiModel>> = try {
+    fun get(@RequestParam("lang", required = false) lang: String?): ResponseEntity<ResultModel<out AbstractApiModel>> = try {
         logger.trace("Retrieving language for provided lang - {}", lang)
-        languageService.getByLang(lang)
-                .let { ok(LanguageResponseModel(it.lang)) }
+        if (lang == null) {
+            languageService.getAll().map { LanguageResponseModel(it.lang) }.let { ok(LanguagesResponseModel(it)) }
+        } else {
+            languageService.getByLang(lang).let { ok(LanguageResponseModel(it.lang)) }
+        }
                 .also { logger.debug("Retrieved language for provided lang - {} ", lang) }
     } catch (e: LanguageNotFoundByLangException) {
         notFound(EntityNotFoundErrorModel(e.localizedMessage))

@@ -47,6 +47,12 @@ class LanguageServiceImpl : LanguageService {
                 }
             }
 
+    @Transactional(readOnly = true)
+    override fun getAll(): List<Language> {
+        logger.trace("Retrieving all languages")
+        return languageRepository.findAll().also { logger.debug("Retrieved all languages") }
+    }
+
     @Throws(LanguageNotFoundByIdException::class)
     @Transactional(readOnly = true)
     override fun get(id: Long): Language = id

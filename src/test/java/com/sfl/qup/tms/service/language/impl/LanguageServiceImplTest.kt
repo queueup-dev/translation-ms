@@ -79,6 +79,24 @@ class LanguageServiceImplTest {
         Assert.assertEquals(lang, result.lang)
     }
 
+    @Test
+    fun getAllLanguagesTest() {
+        // test data
+        val lang = "NL"
+        val language = Language().apply {
+            this.lang = lang
+        }
+        val list = listOf(language)
+        // mock
+        `when`(languageRepository.findAll()).thenReturn(list)
+        // sut
+        val result = languageService.getAll()
+        // verify
+        verify(languageRepository, times(1)).findAll()
+        Assert.assertEquals(list.size, result.size)
+        Assert.assertTrue(result.containsAll(list))
+    }
+
     @Test(expected = LanguageNotFoundByIdException::class)
     fun getByIdWhenLanguageNotFoundTest() {
         // test data
