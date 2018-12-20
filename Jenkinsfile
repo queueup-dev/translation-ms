@@ -5,7 +5,7 @@ node {
     def defaultProjectDockerRegistry = "registry.sflpro.com"
     def defaultProjectDockerRegistryUsername = "jenkins"
     def defaultProjectDockerRegistryPassword = "J3nk1ns"
-    def gradleHome = tool 'GRADLE_4.5.1'
+    def gradleHome = tool 'GRADLE_5.0'
     def scannerHome = tool 'SONAR_SCANNER_3.0.3.778'
     env.JAVA_HOME = tool 'JDK_u162'
     env.PATH = "${gradleHome}/bin:${scannerHome}/bin:${env.PATH}"
@@ -17,11 +17,11 @@ node {
     stage('Build and Test') {
         sh "gradle build"
     }
-    
+
     def loginToRegistry = { String url = defaultProjectDockerRegistry,
-                           String user = defaultProjectDockerRegistryUsername,
-                           String pass = defaultProjectDockerRegistryPassword ->
-       sh "docker login ${url} -u ${user} -p ${pass}"
+                            String user = defaultProjectDockerRegistryUsername,
+                            String pass = defaultProjectDockerRegistryPassword ->
+        sh "docker login ${url} -u ${user} -p ${pass}"
     }
 
     def buildDockerImage = { String environment, String registry ->
@@ -30,8 +30,8 @@ node {
             sh "gradle -x test buildDockerWithReleaseTag -Penvironment=$environment -PdockerRegistryUrl=${registry} -PreleaseVersion=${env.BUILD_NUMBER}"
             sh 'echo "*************** cleanup docker images ***************"'
             // qup website gateway
-            sh "docker rmi ${registry}/qup-website-gateway-$environment:latest"
-            sh "docker rmi ${registry}/qup-website-gateway-$environment:${env.BUILD_NUMBER}"
+            sh "docker rmi ${registry}/qup-translation-ms-$environment:latest"
+            sh "docker rmi ${registry}/qup-translation-ms-$environment:${env.BUILD_NUMBER}"
         }
     }
 
@@ -70,7 +70,7 @@ node {
             def projectEnv = "test"
 //            executeSonarAnalysis()
             buildDockerImage(projectEnv, defaultProjectDockerRegistry)
-            callDeploymentJob("qup-website-gateway", projectEnv)
+            callDeploymentJob("qup-translation-ms", projectEnv)
             break
         case "acceptance":
             def projectEnv = "acceptance"
@@ -83,10 +83,10 @@ node {
             def projectEnv = "production"
 //            executeSonarAnalysis()
             buildDockerImage(projectEnv)
-            callDeploymentJob("qup-website-gateway", projectEnv)
+//            callDeploymentJob("qup-translation-ms", projectEnv)
             break
     }
     stage('Slack Notification') {
-        notifySlack("Finalized build qup-website-gateway ${env.BUILD_NUMBER} for project Qup Website Gateway.", "#v4-builds")
+        notifySlack("Finalized build qup-translation-ms${env.BUILD_NUMBER} for project Qup Translation MS.", "#v4-builds")
     }
 }
