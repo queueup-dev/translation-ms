@@ -4,10 +4,10 @@ import com.sfl.qup.tms.domain.language.Language
 import com.sfl.qup.tms.domain.translatablestastic.TranslatableStatic
 import com.sfl.qup.tms.persistence.translatablestastics.TranslatableStaticRepository
 import com.sfl.qup.tms.service.language.LanguageService
-import com.sfl.qup.tms.service.language.exception.LanguageNotFoundByIdException
+import com.sfl.qup.tms.service.language.exception.LanguageNotFoundByLangException
 import com.sfl.qup.tms.service.translatablestatic.dto.TranslatableStaticDto
 import com.sfl.qup.tms.service.translatablestatic.exception.TranslatableStaticExistException
-import com.sfl.qup.tms.service.translatablestatic.exception.TranslatableStaticNotFoundByKeyAndLanguageIdException
+import com.sfl.qup.tms.service.translatablestatic.exception.TranslatableStaticNotFoundByKeyAndLanguageLangException
 import com.sfl.qup.tms.service.translatablestatic.exception.TranslatableStaticNotFoundByKeyException
 import com.sfl.qup.tms.service.translatablestatic.impl.TranslatableStaticServiceImpl
 import org.junit.Assert.assertEquals
@@ -46,40 +46,40 @@ class TranslatableStaticServiceImplTest {
     fun findByKeyAndLanguageIdTest() {
         // test data
         val key = "key"
-        val languageId = 1L
+        val lang = "en"
         // mock
-        `when`(translatableStaticRepository.findByKeyAndLanguage_Id(key, languageId)).thenReturn(TranslatableStatic())
+        `when`(translatableStaticRepository.findByKeyAndLanguage_Lang(key, lang)).thenReturn(TranslatableStatic())
         // sut
-        translatableStaticService.findByKeyAndLanguageId(key, languageId)
+        translatableStaticService.findByKeyAndLanguageLang(key, lang)
         // verify
-        verify(translatableStaticRepository, times(1)).findByKeyAndLanguage_Id(key, languageId)
+        verify(translatableStaticRepository, times(1)).findByKeyAndLanguage_Lang(key, lang)
     }
 
-    @Test(expected = TranslatableStaticNotFoundByKeyAndLanguageIdException::class)
+    @Test(expected = TranslatableStaticNotFoundByKeyAndLanguageLangException::class)
     fun getByKeyAndLanguageIdWhenNotFoundTest() {
         // test data
         val key = "key"
-        val languageId = 1L
+        val lang = "lang"
         // mock
-        `when`(translatableStaticRepository.findByKeyAndLanguage_Id(key, languageId)).thenReturn(null)
+        `when`(translatableStaticRepository.findByKeyAndLanguage_Lang(key, lang)).thenReturn(null)
         // sut
-        translatableStaticService.getByKeyAndLanguageId(key, languageId)
+        translatableStaticService.getByKeyAndLanguageLang(key, lang)
         // verify
-        verify(translatableStaticRepository, times(1)).findByKeyAndLanguage_Id(key, languageId)
+        verify(translatableStaticRepository, times(1)).findByKeyAndLanguage_Lang(key, lang)
     }
 
     @Test
     fun getByKeyAndLanguageIdWhenFoundTest() {
         // test data
         val key = "key"
-        val language = Language().apply { id = 1L }
+        val language = Language().apply { id = 1L }.apply { lang = "en" }
         val translatableStatic = TranslatableStatic().apply { this.key = key }.apply { this.language = language }
         // mock
-        `when`(translatableStaticRepository.findByKeyAndLanguage_Id(key, language.id)).thenReturn(translatableStatic)
+        `when`(translatableStaticRepository.findByKeyAndLanguage_Lang(key, language.lang)).thenReturn(translatableStatic)
         // sut
-        val result = translatableStaticService.getByKeyAndLanguageId(key, language.id)
+        val result = translatableStaticService.getByKeyAndLanguageLang(key, language.lang)
         // verify
-        verify(translatableStaticRepository, times(1)).findByKeyAndLanguage_Id(key, language.id)
+        verify(translatableStaticRepository, times(1)).findByKeyAndLanguage_Lang(key, language.lang)
 
         assertEquals(key, result.key)
         assertEquals(language.id, result.language.id)
@@ -115,19 +115,19 @@ class TranslatableStaticServiceImplTest {
         }
     }
 
-    @Test(expected = LanguageNotFoundByIdException::class)
+    @Test(expected = LanguageNotFoundByLangException::class)
     fun createWhenLanguageNotFoundTest() {
         // test data
         val key = "key"
         val value = "value"
-        val languageId = 1L
-        val dto = TranslatableStaticDto(key, value, languageId)
+        val lang = "en"
+        val dto = TranslatableStaticDto(key, value, lang)
         // mock
-        `when`(languageService.get(ArgumentMatchers.eq(languageId))).thenThrow(LanguageNotFoundByIdException::class.java)
+        `when`(languageService.getByLang(lang)).thenThrow(LanguageNotFoundByLangException::class.java)
         // sut
         translatableStaticService.create(dto)
         // verify
-        verify(languageService, times(1)).get(languageId)
+        verify(languageService, times(1)).getByLang(lang)
     }
 
     @Test(expected = TranslatableStaticExistException::class)
@@ -135,16 +135,17 @@ class TranslatableStaticServiceImplTest {
         // test data
         val key = "key"
         val value = "value"
+        val lang = "en"
         val languageId = 1L
-        val language = Language().apply { id = languageId }
-        val dto = TranslatableStaticDto(key, value, languageId)
+        val language = Language().apply { id = languageId }.apply { this.lang = lang }
+        val dto = TranslatableStaticDto(key, value, lang)
         // mock
-        `when`(languageService.get(languageId)).thenReturn(language)
+        `when`(languageService.getByLang(lang)).thenReturn(language)
         `when`(translatableStaticRepository.findByKeyAndLanguage_Id(key, languageId)).thenReturn(TranslatableStatic())
         // sut
         translatableStaticService.create(dto)
         // verify
-        verify(languageService, times(1)).get(languageId)
+        verify(languageService, times(1)).getByLang(lang)
         verify(translatableStaticRepository, times(1)).findByKeyAndLanguage_Id(key, languageId)
     }
 
@@ -153,18 +154,19 @@ class TranslatableStaticServiceImplTest {
         // test data
         val key = "key"
         val value = "value"
+        val lang = "en"
         val languageId = 1L
-        val language = Language().apply { id = languageId }
-        val dto = TranslatableStaticDto(key, value, languageId)
+        val language = Language().apply { id = languageId }.apply { this.lang = lang }
+        val dto = TranslatableStaticDto(key, value, lang)
         val translatableStatic = TranslatableStatic().apply { this.key = key }.apply { this.value = value }.apply { this.language = language }
         // mock
-        `when`(languageService.get(languageId)).thenReturn(language)
+        `when`(languageService.getByLang(lang)).thenReturn(language)
         `when`(translatableStaticRepository.findByKeyAndLanguage_Id(key, languageId)).thenReturn(null)
         `when`(translatableStaticRepository.save(ArgumentMatchers.any(TranslatableStatic::class.java))).thenReturn(translatableStatic)
         // sut
         val result = translatableStaticService.create(dto)
         // verify
-        verify(languageService, times(1)).get(languageId)
+        verify(languageService, times(1)).getByLang(lang)
         verify(translatableStaticRepository, times(1)).findByKeyAndLanguage_Id(key, languageId)
         verify(translatableStaticRepository, times(1)).save(ArgumentMatchers.any(TranslatableStatic::class.java))
 
@@ -173,19 +175,19 @@ class TranslatableStaticServiceImplTest {
         assertEquals(languageId, result.language.id)
     }
 
-    @Test(expected = TranslatableStaticNotFoundByKeyAndLanguageIdException::class)
+    @Test(expected = TranslatableStaticNotFoundByKeyAndLanguageLangException::class)
     fun updateWhenTranslatableStaticAlreadyExistTest() {
         // test data
         val key = "key"
         val value = "value"
-        val languageId = 1L
-        val dto = TranslatableStaticDto(key, value, languageId)
+        val lang = "en"
+        val dto = TranslatableStaticDto(key, value, lang)
         // mock
-        `when`(translatableStaticRepository.findByKeyAndLanguage_Id(key, languageId)).thenReturn(null)
+        `when`(translatableStaticRepository.findByKeyAndLanguage_Lang(key, lang)).thenReturn(null)
         // sut
         translatableStaticService.update(dto)
         // verify
-        verify(translatableStaticRepository, times(1)).findByKeyAndLanguage_Id(key, languageId)
+        verify(translatableStaticRepository, times(1)).findByKeyAndLanguage_Lang(key, lang)
     }
 
     @Test
@@ -194,16 +196,16 @@ class TranslatableStaticServiceImplTest {
         val key = "key"
         val value = "value"
         val oldValue = "old value"
-        val languageId = 1L
-        val dto = TranslatableStaticDto(key, value, languageId)
+        val lang = "en"
+        val dto = TranslatableStaticDto(key, value, lang)
         val translatableStatic = TranslatableStatic().apply { this.key = key }.apply { this.value = oldValue }
         // mock
-        `when`(translatableStaticRepository.findByKeyAndLanguage_Id(key, languageId)).thenReturn(translatableStatic)
+        `when`(translatableStaticRepository.findByKeyAndLanguage_Lang(key, lang)).thenReturn(translatableStatic)
         `when`(translatableStaticRepository.save(translatableStatic)).thenReturn(translatableStatic)
         // sut
         val result = translatableStaticService.update(dto)
         // verify
-        verify(translatableStaticRepository, times(1)).findByKeyAndLanguage_Id(key, languageId)
+        verify(translatableStaticRepository, times(1)).findByKeyAndLanguage_Lang(key, lang)
         verify(translatableStaticRepository, times(1)).save(translatableStatic)
 
         assertEquals(dto.key, result.key)

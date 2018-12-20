@@ -4,7 +4,6 @@ import com.sfl.qup.tms.domain.language.Language
 import com.sfl.qup.tms.persistence.language.LanguageRepository
 import com.sfl.qup.tms.service.language.LanguageService
 import com.sfl.qup.tms.service.language.exception.LanguageExistByLangException
-import com.sfl.qup.tms.service.language.exception.LanguageNotFoundByIdException
 import com.sfl.qup.tms.service.language.exception.LanguageNotFoundByLangException
 import org.junit.Assert
 import org.junit.Test
@@ -14,7 +13,6 @@ import org.mockito.InjectMocks
 import org.mockito.Mock
 import org.mockito.Mockito.*
 import org.mockito.junit.MockitoJUnitRunner
-import java.util.*
 
 /**
  * User: Vazgen Danielyan
@@ -95,30 +93,6 @@ class LanguageServiceImplTest {
         verify(languageRepository, times(1)).findAll()
         Assert.assertEquals(list.size, result.size)
         Assert.assertTrue(result.containsAll(list))
-    }
-
-    @Test(expected = LanguageNotFoundByIdException::class)
-    fun getByIdWhenLanguageNotFoundTest() {
-        // test data
-        val id = 1L
-        // mock
-        `when`(languageRepository.findById(id)).thenReturn(Optional.ofNullable<Language>(null))
-        // sut
-        languageService.get(id)
-        // verify
-        verify(languageRepository, times(1)).findById(ArgumentMatchers.eq(id))
-    }
-
-    @Test
-    fun getByIdWhenLanguageFoundTest() {
-        // test data
-        val id = 1L
-        // mock
-        `when`(languageRepository.findById(id)).thenReturn(Optional.of<Language>(Language()))
-        // sut
-        languageService.get(id)
-        // verify
-        verify(languageRepository, times(1)).findById(ArgumentMatchers.eq(id))
     }
 
     @Test(expected = LanguageExistByLangException::class)

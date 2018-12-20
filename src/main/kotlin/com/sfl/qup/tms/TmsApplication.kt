@@ -24,23 +24,20 @@ class TmsApplication {
 
     // @Bean
     fun init(): CommandLineRunner = CommandLineRunner {
-        val fromJson = Gson().fromJson(TmsApplication::class.java.getResource("/static/locales-en_json.js").readText(), Map::class.java)
+        insertData("en")
+        insertData("nl")
+    }
 
-        val lang = "en"
-
-        var findByLang = languageService.findByLang(lang)
-
-        if (findByLang == null) {
-            findByLang = languageService.create(lang)
-        }
+    private fun insertData(lang: String) {
+        val fromJson = Gson().fromJson(TmsApplication::class.java.getResource("/static/locales-$lang.json").readText(), Map::class.java)
 
         fromJson.forEach { k, v ->
             if (v is Map<*, *>) {
                 v.forEach { k2, v2 ->
-                    translatableStaticService.create(TranslatableStaticDto(k as String + "_" + k2 as String, v2 as String, findByLang.id))
+                    translatableStaticService.create(TranslatableStaticDto(k as String + "_" + k2 as String, v2 as String, lang))
                 }
             } else {
-                translatableStaticService.create(TranslatableStaticDto(k as String, v as String, findByLang.id))
+                translatableStaticService.create(TranslatableStaticDto(k as String, v as String, lang))
             }
         }
     }

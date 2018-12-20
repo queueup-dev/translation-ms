@@ -19,6 +19,8 @@ interface TranslatableStaticRepository : JpaRepository<TranslatableStatic, Long>
 
     fun findByKeyAndLanguage_Id(key: String, languageId: Long): TranslatableStatic?
 
+    fun findByKeyAndLanguage_Lang(key: String, lang: String): TranslatableStatic?
+
     fun findByOrderByKeyAsc(pageable: Pageable): List<TranslatableStatic>
 
     @Query("from TranslatableStatic ts where lower(ts.key) like lower(:term) order by ts.key asc")

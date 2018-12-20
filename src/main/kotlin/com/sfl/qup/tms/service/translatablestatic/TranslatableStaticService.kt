@@ -10,9 +10,9 @@ import com.sfl.qup.tms.service.translatablestatic.dto.TranslatableStaticDto
  */
 interface TranslatableStaticService {
 
-    fun findByKeyAndLanguageId(key: String, languageId: Long): TranslatableStatic?
+    fun findByKeyAndLanguageLang(key: String, lang: String): TranslatableStatic?
 
-    fun getByKeyAndLanguageId(key: String, languageId: Long): TranslatableStatic
+    fun getByKeyAndLanguageLang(key: String, lang: String): TranslatableStatic
 
     fun getByKey(key: String): List<TranslatableStatic>
 

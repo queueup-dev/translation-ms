@@ -4,7 +4,6 @@ import com.sfl.qup.tms.domain.language.Language
 import com.sfl.qup.tms.persistence.language.LanguageRepository
 import com.sfl.qup.tms.service.language.LanguageService
 import com.sfl.qup.tms.service.language.exception.LanguageExistByLangException
-import com.sfl.qup.tms.service.language.exception.LanguageNotFoundByIdException
 import com.sfl.qup.tms.service.language.exception.LanguageNotFoundByLangException
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
@@ -52,13 +51,6 @@ class LanguageServiceImpl : LanguageService {
         logger.trace("Retrieving all languages")
         return languageRepository.findAll().also { logger.debug("Retrieved all languages") }
     }
-
-    @Throws(LanguageNotFoundByIdException::class)
-    @Transactional(readOnly = true)
-    override fun get(id: Long): Language = id
-            .also { logger.trace("Retrieving language for provided language id - {} ", it) }
-            .let { languageRepository.findById(it).orElseThrow { throw LanguageNotFoundByIdException(id) } }
-            .also { logger.debug("Retrieved language for provided lang - {} ", id) }
 
     @Throws(LanguageExistByLangException::class)
     @Transactional

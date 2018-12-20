@@ -15,7 +15,5 @@ interface LanguageService {
 
     fun getAll(): List<Language>
 
-    fun get(id: Long): Language
-
     fun create(lang: String): Language
 }
