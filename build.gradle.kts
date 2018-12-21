@@ -1,7 +1,11 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.springframework.boot.gradle.tasks.bundling.BootJar
+import se.transmode.gradle.plugins.docker.DockerTask
 
 group = "com.sfl.qup.tms"
 version = "0.0.1-SNAPSHOT"
+
+//region Plugins
 
 plugins {
     val kotlinVersion = "1.3.11"
@@ -13,8 +17,20 @@ plugins {
     kotlin("plugin.spring") version kotlinVersion
 
     id("org.springframework.boot") version springBootVersion
-    id("io.spring.dependency-management") version "1.0.6.RELEASE"
+
+    id("org.sonarqube") version "2.6.2"
+
+    jacoco
 }
+
+apply {
+    plugin("docker")
+    plugin("io.spring.dependency-management")
+}
+
+//endregion
+
+//region Buildscript
 
 buildscript {
     repositories {
@@ -26,8 +42,13 @@ buildscript {
     }
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:2.1.1.RELEASE")
+        classpath("se.transmode.gradle:gradle-docker:1.2")
     }
 }
+
+//endregion
+
+//region Dependencies
 
 dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
@@ -52,13 +73,30 @@ dependencies {
     implementation("io.springfox:springfox-swagger-ui:2.9.2")
 }
 
+//endregion
+
+//region SpringBoot
+
+springBoot {
+    mainClassName = "com.sfl.qup.tms.TmsApplication"
+
+    buildInfo {
+        properties {
+            name = project.name
+            group = project.group.toString()
+            version = project.version.toString()
+            artifact = "qup-translation-ms"
+        }
+    }
+}
+
+//endregion
+
+//region Tasks
+
 configure<JavaPluginConvention> {
     setSourceCompatibility(1.8)
     setTargetCompatibility(1.8)
-}
-
-springBoot {
-    mainClassName = "com.sfl.qup.tms.tms.TmsApplication"
 }
 
 tasks.withType<JavaCompile> {
@@ -72,6 +110,62 @@ tasks.withType<KotlinCompile> {
     }
 }
 
+tasks.getByName<BootJar>("bootJar") {
+    mainClassName = "com.sfl.qup.tms.TmsApplication"
+    launchScript()
+}
+
+tasks.register<DockerTask>("buildDockerWithLatestTag") {
+    val registryUrl = if (project.hasProperty("dockerRegistryUrl")) project.properties["dockerRegistryUrl"] else ""
+    val projectEnvironment = if (project.hasProperty("environment")) project.properties["environment"] else ""
+
+    tagVersion = "latest"
+    push = true
+    applicationName = "qup-translation-ms-$projectEnvironment"
+    registry = registryUrl as String?
+
+    addFile("qup-translation-ms-$version.jar", "/opt/jar/qup-translation-ms.jar")
+
+    runCommand("sh -c 'wget https://download.newrelic.com/newrelic/java-agent/newrelic-agent/current/newrelic-java.zip -P /tmp'")
+    runCommand("sh -c 'unzip /tmp/newrelic-java.zip -d /opt/newrelic'")
+
+    addFile("${System.getProperty("user.dir")}/config/newrelic/newrelic.yml", "/opt/newrelic/newrelic.yml")
+
+    runCommand("sh -c 'touch /opt/jar/qup-translation-ms.jar'")
+
+    exposePort(8080)
+
+    entryPoint(arrayOf("sh", "-c", "java -javaagent:/opt/newrelic/newrelic.jar -Dnewrelic.environment=test \$JAVA_OPTS -jar /opt/jar/qup-translation-ms.jar").toMutableList())
+
+    dockerfile = file("Dockerfile")
+}
+
+//endregion
+
+//region Sonar
+
+jacoco {
+    toolVersion = "0.8.0"
+    reportsDir = file("$project.rootDir/build/reports")
+}
+
+sonarqube {
+    properties {
+        property("sonar.projectName", "Qup Translations Microservice")
+        property("sonar.projectKey", "com.sfl.qup.tms")
+        property("sonar.exclusions", "**/exception/**")
+        property("sonar.exclusions", "**/dto/**")
+        property("sonar.exclusions", "**/configuration/**")
+        property("sonar.exclusions", "**/boot/**")
+        property("sonar.exclusions", "**/aspect/**")
+        property("sonar.jacoco.reportPaths", "$buildDir/jacoco/test.exec")
+    }
+}
+
+//endregion
+
+//region Repositories
+
 repositories {
     maven("https://plugins.gradle.org/m2/")
     maven("https://oss.sonatype.org/content/repositories/snapshots")
@@ -79,3 +173,5 @@ repositories {
     mavenCentral()
     jcenter()
 }
+
+//endregion
