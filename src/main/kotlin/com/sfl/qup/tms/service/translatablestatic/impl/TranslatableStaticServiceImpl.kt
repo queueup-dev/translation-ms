@@ -92,7 +92,7 @@ class TranslatableStaticServiceImpl : TranslatableStaticService {
     }
 
     @Transactional
-    override fun update(dto: TranslatableStaticDto): TranslatableStatic = dto
+    override fun updateValue(dto: TranslatableStaticDto): TranslatableStatic = dto
             .also { logger.trace("Updating TranslatableStatic for provided dto - {} ", it) }
             .let { getByKeyAndLanguageLang(dto.key, dto.lang) }
             .apply { value = dto.value }

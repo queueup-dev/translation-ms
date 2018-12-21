@@ -185,7 +185,7 @@ class TranslatableStaticServiceImplTest {
         // mock
         `when`(translatableStaticRepository.findByKeyAndLanguage_Lang(key, lang)).thenReturn(null)
         // sut
-        translatableStaticService.update(dto)
+        translatableStaticService.updateValue(dto)
         // verify
         verify(translatableStaticRepository, times(1)).findByKeyAndLanguage_Lang(key, lang)
     }
@@ -203,7 +203,7 @@ class TranslatableStaticServiceImplTest {
         `when`(translatableStaticRepository.findByKeyAndLanguage_Lang(key, lang)).thenReturn(translatableStatic)
         `when`(translatableStaticRepository.save(translatableStatic)).thenReturn(translatableStatic)
         // sut
-        val result = translatableStaticService.update(dto)
+        val result = translatableStaticService.updateValue(dto)
         // verify
         verify(translatableStaticRepository, times(1)).findByKeyAndLanguage_Lang(key, lang)
         verify(translatableStaticRepository, times(1)).save(translatableStatic)

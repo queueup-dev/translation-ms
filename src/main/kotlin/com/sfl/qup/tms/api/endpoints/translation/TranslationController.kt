@@ -107,7 +107,7 @@ class TranslationController {
     fun updateTranslatableStatic(@PathVariable("key") key: String, @RequestBody request: TranslatableStaticUpdateRequestModel): ResponseEntity<ResultModel<out AbstractApiModel>> = try {
         request
                 .also { logger.trace("Updating TranslatableStatic for provided request - {} ", it) }
-                .let { translatableStaticService.update(TranslatableStaticDto(key, it.value, it.lang)) }
+                .let { translatableStaticService.updateValue(TranslatableStaticDto(key, it.value, it.lang)) }
                 .let { ok(TranslatableStaticResponseModel(it.key, it.value, it.language.lang)) }
                 .also { logger.debug("Successfully updated TranslatableStatic for provided request - {} ", request) }
     } catch (e: LanguageNotFoundByLangException) {

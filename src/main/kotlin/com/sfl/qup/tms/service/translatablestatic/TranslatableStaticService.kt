@@ -18,7 +18,7 @@ interface TranslatableStaticService {
 
     fun create(dto: TranslatableStaticDto): TranslatableStatic
 
-    fun update(dto: TranslatableStaticDto): TranslatableStatic
+    fun updateValue(dto: TranslatableStaticDto): TranslatableStatic
 
     fun search(term: String?, page: Int?): List<TranslatableStatic>
 
