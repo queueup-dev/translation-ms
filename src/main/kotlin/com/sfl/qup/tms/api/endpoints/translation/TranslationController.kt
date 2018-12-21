@@ -118,7 +118,7 @@ class TranslationController {
 
     @ValidateActionRequest
     @RequestMapping(value = ["/static"], method = [RequestMethod.GET])
-    fun getStaticTranslation(@RequestParam("key") key: String, @RequestParam("lang", required = false) lang: String?) = try {
+    fun getStaticTranslation(@RequestParam("uuid", required = false) uuid: String?, @RequestParam("key") key: String, @RequestParam("lang", required = false) lang: String?) = try {
         key
                 .also { logger.trace("Retrieving TranslatableStatic for provided key - {}, lang - {} ", it, lang) }
                 .let {
