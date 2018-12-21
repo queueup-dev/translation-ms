@@ -43,6 +43,11 @@ public abstract class AbstractEntity implements Serializable {
         setUpdated(getCreated());
     }
 
+    @PreUpdate
+    protected void onUpdate() {
+        updated = LocalDateTime.now();
+    }
+
     //endregion
 
     //region Getters and setters
