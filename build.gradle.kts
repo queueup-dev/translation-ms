@@ -126,16 +126,16 @@ tasks.register<DockerTask>("buildDockerWithLatestTag") {
 
     addFile("${System.getProperty("user.dir")}/build/libs/translation-ms-$version.jar", "/opt/jar/translation-ms.jar")
 
-    runCommand("sh -c 'wget https://download.newrelic.com/newrelic/java-agent/newrelic-agent/current/newrelic-java.zip -P /tmp'")
-    runCommand("sh -c 'unzip /tmp/newrelic-java.zip -d /opt/newrelic'")
+    runCommand("wget https://download.newrelic.com/newrelic/java-agent/newrelic-agent/current/newrelic-java.zip -P /tmp")
+    runCommand("unzip /tmp/newrelic-java.zip -d /opt/newrelic")
 
     addFile("${System.getProperty("user.dir")}/config/newrelic/newrelic.yml", "/opt/newrelic/newrelic.yml")
 
-    runCommand("sh -c 'touch /opt/jar/translation-ms.jar'")
+    runCommand("touch /opt/jar/translation-ms.jar")
 
     exposePort(8080)
 
-    entryPoint(arrayOf("sh", "-c", "java -javaagent:/opt/newrelic/newrelic.jar -Dnewrelic.environment=test \$JAVA_OPTS -jar /opt/jar/translation-ms.jar").toMutableList())
+    entryPoint(arrayOf("java", " -javaagent:/opt/newrelic/newrelic.jar -Dnewrelic.environment=test \$JAVA_OPTS -jar /opt/jar/translation-ms.jar").toMutableList())
 
     dockerfile = file("Dockerfile")
 }
