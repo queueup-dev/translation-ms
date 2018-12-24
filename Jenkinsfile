@@ -54,7 +54,7 @@ node {
                 string(name: 'ENVIRONMENT', value: projectEnv),
                 string(name: 'DOCKER_REGISTRY', value: projectDockerRegistry),
                 string(name: 'RELEASE_VERSION', value: env.BUILD_NUMBER)
-        ] executeSonarAnalysis
+        ]
     }
 
     // Add whichever params you think you'd most want to have
@@ -75,7 +75,7 @@ node {
             //executeSonarAnalysis()
             loginToRegistry(defaultProjectDockerRegistry, defaultProjectDockerRegistryUsername, defaultProjectDockerRegistryPassword)
             buildDockerImage(projectEnv, defaultProjectDockerRegistry)
-            //callDeploymentJob("translation-ms", projectEnv)
+            callDeploymentJob("translation-ms", projectEnv)
             break
         case "master":
             def projectEnv = "production"
