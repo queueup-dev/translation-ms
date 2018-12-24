@@ -30,7 +30,7 @@ apply {
 
 //endregion
 
-//region Buildscript
+//region Build script
 
 buildscript {
     repositories {

@@ -26,6 +26,7 @@ node {
 
     def buildDockerImage = { String environment, String registry ->
         stage('Build docker image') {
+            sh 'echo "*************** building docker images ***************" '
             sh "gradle -x test buildDockerWithLatestTag -Penvironment=$environment -PdockerRegistryUrl=${registry}"
             //sh "gradle -x test buildDockerWithReleaseTag -Penvironment=$environment -PdockerRegistryUrl=${registry} -PreleaseVersion=${env.BUILD_NUMBER}"
             sh 'echo "*************** cleanup docker images ***************"'
@@ -67,13 +68,6 @@ node {
     switch (BRANCH_NAME) {
         case "develop":
             def projectEnv = "test"
-            executeSonarAnalysis()
-            loginToRegistry(defaultProjectDockerRegistry, defaultProjectDockerRegistryUsername, defaultProjectDockerRegistryPassword)
-            buildDockerImage(projectEnv, defaultProjectDockerRegistry)
-            callDeploymentJob("translation-ms", projectEnv)
-            break
-        case "acceptance":
-            def projectEnv = "acceptance"
             //executeSonarAnalysis()
             loginToRegistry(defaultProjectDockerRegistry, defaultProjectDockerRegistryUsername, defaultProjectDockerRegistryPassword)
             buildDockerImage(projectEnv, defaultProjectDockerRegistry)
