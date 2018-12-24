@@ -25,9 +25,7 @@ node {
     def loginToRegistry = { String url = defaultProjectDockerRegistry,
                             String user = defaultProjectDockerRegistryUsername,
                             String pass = defaultProjectDockerRegistryPassword ->
-        sh 'echo "*************** login into  docker ***************"'
         sh "docker login ${url} -u ${user} -p ${pass}"
-        sh 'echo "*************** successfully logged in docker ***************"'
     }
 
     def buildDockerImage = { String environment, String registry ->
@@ -35,12 +33,10 @@ node {
             sh 'echo "*************** building docker images ***************" '
             sh "gradle -x test buildDockerWithLatestTag -Penvironment=$environment -PdockerRegistryUrl=${registry}"
             //sh "gradle -x test buildDockerWithReleaseTag -Penvironment=$environment -PdockerRegistryUrl=${registry} -PreleaseVersion=${env.BUILD_NUMBER}"
-            sh 'echo "*************** successfully build docker images ***************" '
             sh 'echo "*************** cleanup docker images ***************"'
             // translation ms
             sh "docker rmi ${registry}/translation-ms-$environment:latest"
             //sh "docker rmi ${registry}/translation-ms-$environment:${env.BUILD_NUMBER}"
-            sh 'echo "*************** successfully cleaned up docker images ***************"'
         }
     }
 

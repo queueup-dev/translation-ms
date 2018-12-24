@@ -14,9 +14,13 @@ node {
         checkout scm
     }
 
-    stage('Build and Test') {
-        sh "gradle build"
+    stage('Build ') {
+        sh "gradle -x test build"
     }
+
+    /*stage('Build and Test') {
+        sh "gradle build"
+    }*/
 
     def loginToRegistry = { String url = defaultProjectDockerRegistry,
                             String user = defaultProjectDockerRegistryUsername,
