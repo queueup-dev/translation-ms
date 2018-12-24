@@ -124,7 +124,7 @@ tasks.register<DockerTask>("buildDockerWithLatestTag") {
     applicationName = "translation-ms-$projectEnvironment"
     registry = registryUrl as String?
 
-    addFile("libs/translation-ms-$version.jar", "/opt/jar/translation-ms.jar")
+    addFile("${System.getProperty("user.dir")}/libs/translation-ms-$version.jar", "/opt/jar/translation-ms.jar")
 
     runCommand("sh -c 'wget https://download.newrelic.com/newrelic/java-agent/newrelic-agent/current/newrelic-java.zip -P /tmp'")
     runCommand("sh -c 'unzip /tmp/newrelic-java.zip -d /opt/newrelic'")
