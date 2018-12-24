@@ -1,9 +1,9 @@
 spring:
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://127.0.0.1/qup-translations
-    username: qup-translations
-    password: qup-translations
+    url: jdbc:postgresql://127.0.0.1/translations
+    username: translations
+    password: translations
   jpa:
     hibernate:
       ddl-auto: update

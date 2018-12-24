@@ -2,7 +2,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.springframework.boot.gradle.tasks.bundling.BootJar
 import se.transmode.gradle.plugins.docker.DockerTask
 
-group = "com.sfl.qup.tms"
+group = "com.sfl.tms"
 version = "0.0.1-SNAPSHOT"
 
 //region Plugins
@@ -78,14 +78,14 @@ dependencies {
 //region SpringBoot
 
 springBoot {
-    mainClassName = "com.sfl.qup.tms.TmsApplication"
+    mainClassName = "com.sfl.tms.TmsApplication"
 
     buildInfo {
         properties {
             name = project.name
             group = project.group.toString()
             version = project.version.toString()
-            artifact = "qup-translation-ms"
+            artifact = "translation-ms"
         }
     }
 }
@@ -111,7 +111,7 @@ tasks.withType<KotlinCompile> {
 }
 
 tasks.getByName<BootJar>("bootJar") {
-    mainClassName = "com.sfl.qup.tms.TmsApplication"
+    mainClassName = "com.sfl.tms.TmsApplication"
     launchScript()
 }
 
@@ -121,21 +121,21 @@ tasks.register<DockerTask>("buildDockerWithLatestTag") {
 
     tagVersion = "latest"
     push = true
-    applicationName = "qup-translation-ms-$projectEnvironment"
+    applicationName = "translation-ms-$projectEnvironment"
     registry = registryUrl as String?
 
-    addFile("qup-translation-ms-$version.jar", "/opt/jar/qup-translation-ms.jar")
+    addFile("translation-ms-$version.jar", "/opt/jar/translation-ms.jar")
 
     runCommand("sh -c 'wget https://download.newrelic.com/newrelic/java-agent/newrelic-agent/current/newrelic-java.zip -P /tmp'")
     runCommand("sh -c 'unzip /tmp/newrelic-java.zip -d /opt/newrelic'")
 
     addFile("${System.getProperty("user.dir")}/config/newrelic/newrelic.yml", "/opt/newrelic/newrelic.yml")
 
-    runCommand("sh -c 'touch /opt/jar/qup-translation-ms.jar'")
+    runCommand("sh -c 'touch /opt/jar/translation-ms.jar'")
 
     exposePort(8080)
 
-    entryPoint(arrayOf("sh", "-c", "java -javaagent:/opt/newrelic/newrelic.jar -Dnewrelic.environment=test \$JAVA_OPTS -jar /opt/jar/qup-translation-ms.jar").toMutableList())
+    entryPoint(arrayOf("sh", "-c", "java -javaagent:/opt/newrelic/newrelic.jar -Dnewrelic.environment=test \$JAVA_OPTS -jar /opt/jar/translation-ms.jar").toMutableList())
 
     dockerfile = file("Dockerfile")
 }
@@ -151,8 +151,8 @@ jacoco {
 
 sonarqube {
     properties {
-        property("sonar.projectName", "Qup Translations Microservice")
-        property("sonar.projectKey", "com.sfl.qup.tms")
+        property("sonar.projectName", "Translations Microservice")
+        property("sonar.projectKey", "com.sfl.tms")
         property("sonar.exclusions", "**/exception/**")
         property("sonar.exclusions", "**/dto/**")
         property("sonar.exclusions", "**/configuration/**")

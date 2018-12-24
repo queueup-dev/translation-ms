@@ -287,11 +287,11 @@ common: &default_settings
 test:
   <<: *default_settings
   license_key: '679ca99746b68b6e8ce0e3e18c9ddfadf6ba7a0a'
-  app_name: Qup Translation MS Test
+  app_name: Translation MS Test
   agent_enabled: true
 
 acceptance:
   <<: *default_settings
   license_key: '679ca99746b68b6e8ce0e3e18c9ddfadf6ba7a0a'
-  app_name: Qup Translation MS Acceptance
+  app_name: Translation MS Acceptance
   agent_enabled: true

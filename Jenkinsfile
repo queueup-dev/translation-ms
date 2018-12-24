@@ -29,9 +29,9 @@ node {
             sh "gradle -x test buildDockerWithLatestTag -Penvironment=$environment -PdockerRegistryUrl=${registry}"
             //sh "gradle -x test buildDockerWithReleaseTag -Penvironment=$environment -PdockerRegistryUrl=${registry} -PreleaseVersion=${env.BUILD_NUMBER}"
             sh 'echo "*************** cleanup docker images ***************"'
-            // qup translation ms
-            sh "docker rmi ${registry}/qup-translation-ms-$environment:latest"
-            //sh "docker rmi ${registry}/qup-translation-ms-$environment:${env.BUILD_NUMBER}"
+            // translation ms
+            sh "docker rmi ${registry}/translation-ms-$environment:latest"
+            //sh "docker rmi ${registry}/translation-ms-$environment:${env.BUILD_NUMBER}"
         }
     }
 
@@ -43,12 +43,12 @@ node {
 
     def callDeploymentJob = { String projectName, String projectEnv ->
         def projectDockerRegistry = "registry.sflpro.com"
-        def projectJobName = "qup-deployment-local"
+        def projectJobName = "deployment-local"
         build job: projectJobName, wait: false, parameters: [
-                string(name: 'QUP_APP_NAME', value: projectName),
-                string(name: 'QUP_ENVIRONMENT', value: projectEnv),
-                string(name: 'QUP_DOCKER_REGISTRY', value: projectDockerRegistry),
-                string(name: 'QUP_RELEASE_VERSION', value: env.BUILD_NUMBER)
+                string(name: 'APP_NAME', value: projectName),
+                string(name: 'ENVIRONMENT', value: projectEnv),
+                string(name: 'DOCKER_REGISTRY', value: projectDockerRegistry),
+                string(name: 'RELEASE_VERSION', value: env.BUILD_NUMBER)
         ] executeSonarAnalysis
     }
 
@@ -70,24 +70,24 @@ node {
             executeSonarAnalysis()
             loginToRegistry(defaultProjectDockerRegistry, defaultProjectDockerRegistryUsername, defaultProjectDockerRegistryPassword)
             buildDockerImage(projectEnv, defaultProjectDockerRegistry)
-            callDeploymentJob("qup-translation-ms", projectEnv)
+            callDeploymentJob("translation-ms", projectEnv)
             break
         case "acceptance":
             def projectEnv = "acceptance"
             //executeSonarAnalysis()
             loginToRegistry(defaultProjectDockerRegistry, defaultProjectDockerRegistryUsername, defaultProjectDockerRegistryPassword)
             buildDockerImage(projectEnv, defaultProjectDockerRegistry)
-            //callDeploymentJob("qup-website-gateway", projectEnv)
+            //callDeploymentJob("translation-ms", projectEnv)
             break
         case "master":
             def projectEnv = "production"
             //executeSonarAnalysis()
             loginToRegistry(defaultProjectDockerRegistry, defaultProjectDockerRegistryUsername, defaultProjectDockerRegistryPassword)
             buildDockerImage(projectEnv, defaultProjectDockerRegistry)
-            //callDeploymentJob("qup-translation-ms", projectEnv)
+            //callDeploymentJob("translation-ms", projectEnv)
             break
     }
     stage('Slack Notification') {
-        notifySlack("Finalized build qup-translation-ms${env.BUILD_NUMBER} for project Qup Translation MS.", "#v4-builds")
+        notifySlack("Finalized build translation-ms${env.BUILD_NUMBER} for project Translation MS.", "#v4-builds")
     }
 }

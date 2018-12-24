@@ -1,1 +1,1 @@
-# qup-translations-ms
+# translations-ms
