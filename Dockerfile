@@ -1,3 +1,3 @@
 FROM openjdk:8-jre-alpine
 
-RUN "apt -y install wget unzip"
+RUN apk add --update curl wget && rm -rf /var/cache/apk/*
