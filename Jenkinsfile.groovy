@@ -87,7 +87,7 @@ node {
             //callDeploymentJob("translation-ms", projectEnv)
             break
     }
-    stage('Slack Notification') {
-        notifySlack("Finalized build translation-ms${env.BUILD_NUMBER} for project Translation MS.", "#v4-builds")
-    }
+//    stage('Slack Notification') {
+//        notifySlack("Finalized build translation-ms${env.BUILD_NUMBER} for project Translation MS.", "#v4-builds")
+//    }
 }
