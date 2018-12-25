@@ -14,13 +14,9 @@ node {
         checkout scm
     }
 
-    stage('Build ') {
+    stage('Build') {
         sh "gradle -x test build"
     }
-
-    /*stage('Build and Test') {
-        sh "gradle build"
-    }*/
 
     def loginToRegistry = { String url = defaultProjectDockerRegistry,
                             String user = defaultProjectDockerRegistryUsername,
@@ -30,13 +26,8 @@ node {
 
     def buildDockerImage = { String environment, String registry ->
         stage('Build docker image') {
-            sh 'echo "*************** building docker images ***************" '
             sh "gradle -x test buildDockerWithLatestTag -Penvironment=$environment -PdockerRegistryUrl=${registry}"
-            //sh "gradle -x test buildDockerWithReleaseTag -Penvironment=$environment -PdockerRegistryUrl=${registry} -PreleaseVersion=${env.BUILD_NUMBER}"
-            sh 'echo "*************** cleanup docker images ***************"'
-            // translation ms
             sh "docker rmi ${registry}/translation-ms-$environment:latest"
-            //sh "docker rmi ${registry}/translation-ms-$environment:${env.BUILD_NUMBER}"
         }
     }
 
@@ -47,7 +38,7 @@ node {
     }
 
     def callDeploymentJob = { String projectJobName, String projectName ->
-        stage ( 'Call to Deployer ') {
+        stage('Call to Deployer') {
             build job: projectJobName, wait: false, parameters: [
                     string(name: 'QUP_APP_NAME', value: projectName)
             ]
