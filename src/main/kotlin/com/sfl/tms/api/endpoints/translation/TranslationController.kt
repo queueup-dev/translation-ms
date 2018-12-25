@@ -156,9 +156,9 @@ class TranslationController {
 
     @ValidateActionRequest
     @RequestMapping(value = ["/static/search"], method = [RequestMethod.GET])
-    fun searchStaticTranslations(@RequestParam("term", required = false) term: String?, @RequestParam("page", required = false) page: Int?) = term
+    fun searchStaticTranslations(@RequestParam("term", required = false) term: String?, @RequestParam("lang", required = false) lang: String?, @RequestParam("page", required = false) page: Int?) = term
             .also { logger.trace("Retrieving TranslatableStatic list for provided term - {}, page - {} ", it, page) }
-            .let { translatableStaticService.search(it, page) }
+            .let { translatableStaticService.search(it, lang, page) }
             .map { TranslatableStaticResponseModel(it.key, it.value, it.language.lang) }
             .groupBy { it.lang }
             .let { ok(TranslatableStaticsPageResponseModel(it)) }

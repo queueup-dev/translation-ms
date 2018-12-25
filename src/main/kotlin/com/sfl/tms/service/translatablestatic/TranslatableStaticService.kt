@@ -20,6 +20,6 @@ interface TranslatableStaticService {
 
     fun updateValue(dto: TranslatableStaticDto): TranslatableStatic
 
-    fun search(term: String?, page: Int?): List<TranslatableStatic>
+    fun search(term: String?, lang: String?, page: Int?): List<TranslatableStatic>
 
 }

@@ -100,13 +100,13 @@ class TranslatableStaticServiceImpl : TranslatableStaticService {
             .also { logger.debug("Successfully updated TranslatableStatic for provided dto - {}", dto) }
 
     @Transactional(readOnly = true)
-    override fun search(term: String?, page: Int?): List<TranslatableStatic> = PageRequest.of(page ?: 0, 15)
+    override fun search(term: String?, lang: String?, page: Int?): List<TranslatableStatic> = PageRequest.of(page ?: 0, 15)
             .also { logger.trace("Retrieving TranslatableStatic for provided search term - {}, page id - {}", term, page) }
             .let {
                 if (term == null) {
-                    translatableStaticRepository.findByOrderByKeyAsc(it)
+                    translatableStaticRepository.findByLangOrderByKeyAsc(lang ?: "", it)
                 } else {
-                    translatableStaticRepository.findByKeyLikeOrderByKeyAsc("$term%", it)
+                    translatableStaticRepository.findByLangAndKeyLikeOrderByKeyAsc(lang ?: "", "$term%", it)
                 }
             }
             .also { logger.debug("Retrieved TranslatableStatic for provided term - {}, page - {}", term, page) }
