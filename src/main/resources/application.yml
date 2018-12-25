@@ -23,3 +23,10 @@ logging:
   level:
     ROOT: info
   register-shutdown-hook: true
+server:
+  port: 8080
+management:
+  endpoint:
+    health:
+      enabled: true
+      show-details: never
