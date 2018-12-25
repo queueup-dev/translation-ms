@@ -127,10 +127,11 @@ tasks.register<DockerTask>("buildDockerWithLatestTag") {
     applicationName = "translation-ms-$projectEnvironment"
     registry = registryUrl as String?
 
+    addFile("${System.getProperty("user.dir")}/config/newrelic/newrelic.yml", "/opt/newrelic/newrelic.yml")
+
     runCommand("wget https://download.newrelic.com/newrelic/java-agent/newrelic-agent/current/newrelic-java.zip -P /tmp")
     runCommand("unzip /tmp/newrelic-java.zip -d /opt/newrelic")
 
-    addFile("${System.getProperty("user.dir")}/config/newrelic/newrelic.yml", "/opt/newrelic/newrelic.yml")
     addFile("${System.getProperty("user.dir")}/build/libs/translation-ms-$version.jar", "/opt/jar/translation-ms.jar")
 
     runCommand("touch /opt/jar/translation-ms.jar")
