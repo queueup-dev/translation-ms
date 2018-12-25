@@ -11,16 +11,16 @@ plugins {
     val kotlinVersion = "1.3.11"
     val springBootVersion = "2.1.1.RELEASE"
 
-    kotlin("jvm") version kotlinVersion
-    kotlin("plugin.jpa") version kotlinVersion
-    kotlin("plugin.allopen") version kotlinVersion
-    kotlin("plugin.spring") version kotlinVersion
+    kotlin("jvm") version kotlinVersion apply true
+    kotlin("plugin.jpa") version kotlinVersion apply true
+    kotlin("plugin.allopen") version kotlinVersion apply true
+    kotlin("plugin.spring") version kotlinVersion apply true
 
-    id("org.springframework.boot") version springBootVersion
+    id("org.springframework.boot") version springBootVersion apply true
 
-    id("org.sonarqube") version "2.6.2"
+    id("org.sonarqube") version "2.6.2" apply true
 
-    jacoco
+    jacoco apply true
 }
 
 apply {
@@ -124,18 +124,17 @@ tasks.register<DockerTask>("buildDockerWithLatestTag") {
     applicationName = "translation-ms-$projectEnvironment"
     registry = registryUrl as String?
 
-    addFile("${System.getProperty("user.dir")}/build/libs/translation-ms-$version.jar", "/opt/jar/translation-ms.jar")
-
     runCommand("wget https://download.newrelic.com/newrelic/java-agent/newrelic-agent/current/newrelic-java.zip -P /tmp")
     runCommand("unzip /tmp/newrelic-java.zip -d /opt/newrelic")
 
     addFile("${System.getProperty("user.dir")}/config/newrelic/newrelic.yml", "/opt/newrelic/newrelic.yml")
+    addFile("${System.getProperty("user.dir")}/build/libs/translation-ms-$version.jar", "/opt/jar/translation-ms.jar")
 
     runCommand("touch /opt/jar/translation-ms.jar")
 
     exposePort(8080)
 
-    entryPoint(arrayOf("java", " -javaagent:/opt/newrelic/newrelic.jar -Dnewrelic.environment=test \$JAVA_OPTS -jar /opt/jar/translation-ms.jar").toMutableList())
+    entryPoint(arrayOf("java", " -javaagent:/opt/newrelic/newrelic.jar -Dnewrelic.environment=$projectEnvironment \$JAVA_OPTS -jar /opt/jar/translation-ms.jar").toMutableList())
 
     dockerfile = file("Dockerfile")
 }

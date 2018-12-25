@@ -1,6 +1,7 @@
 package com.sfl.tms
 
 import com.google.gson.Gson
+import com.sfl.tms.service.language.LanguageService
 import com.sfl.tms.service.translatablestatic.TranslatableStaticService
 import com.sfl.tms.service.translatablestatic.dto.TranslatableStaticDto
 import org.springframework.beans.factory.annotation.Autowired
@@ -17,12 +18,25 @@ class TmsApplication {
     @Autowired
     private lateinit var translatableStaticService: TranslatableStaticService
 
+    @Autowired
+    private lateinit var languageService: LanguageService
+
     //endregion
 
     @Bean
     fun init(): CommandLineRunner = CommandLineRunner {
+
+        createLanguageIfNotExist("en")
+        createLanguageIfNotExist("nl")
+
         insertData("en")
         insertData("nl")
+    }
+
+    private fun createLanguageIfNotExist(lang: String) {
+        if (languageService.findByLang(lang) == null) {
+            languageService.create(lang)
+        }
     }
 
     private fun insertData(lang: String) {

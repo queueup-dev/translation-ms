@@ -22,7 +22,7 @@ import java.util.*
 @Component
 class ActionRequestValidationAspect {
 
-    @Around("@annotation(com.sfl.tms.ValidateActionRequest)")
+    @Around("@annotation(com.sfl.tms.api.common.annotations.ValidateActionRequest)")
     @Throws(Throwable::class)
     fun validateActionRequest(joinPoint: ProceedingJoinPoint): Any {
         val joinPointResult: Any

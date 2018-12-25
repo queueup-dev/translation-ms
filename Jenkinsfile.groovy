@@ -48,7 +48,7 @@ node {
 
     def callDeploymentJob = { String projectName, String projectEnv ->
         def projectDockerRegistry = "registry.sflpro.com"
-        def projectJobName = "deployment-local"
+        def projectJobName = "qup-deployment-local"
         build job: projectJobName, wait: false, parameters: [
                 string(name: 'APP_NAME', value: projectName),
                 string(name: 'ENVIRONMENT', value: projectEnv),
