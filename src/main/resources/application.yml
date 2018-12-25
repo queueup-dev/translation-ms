@@ -4,9 +4,6 @@ spring:
     url: jdbc:postgresql://127.0.0.1/translation
     username: translation
     password: translation
-#    url: jdbc:postgresql://10.20.4.67/translation
-#    username: translation
-#    password: translation
   jpa:
     hibernate:
       ddl-auto: update
