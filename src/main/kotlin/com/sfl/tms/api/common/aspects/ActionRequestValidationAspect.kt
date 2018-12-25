@@ -1,7 +1,7 @@
 package com.sfl.tms.api.common.aspects
 
 import com.sfl.tms.api.common.model.ResultModel
-import com.sfl.tms.api.common.model.error.ErrorModel
+import com.sfl.tms.api.common.model.error.ErrorType
 import com.sfl.tms.api.common.model.request.AbstractApiRequestModel
 import org.aspectj.lang.ProceedingJoinPoint
 import org.aspectj.lang.annotation.Around
@@ -31,7 +31,7 @@ class ActionRequestValidationAspect {
                 if (it != null) {
                     ArrayList(it.validateRequiredFields()).let {
                         if (!it.isEmpty()) {
-                            return ResponseEntity(ResultModel<ErrorModel>(it), HttpStatus.BAD_REQUEST)
+                            return ResponseEntity(ResultModel<ErrorType>(it), HttpStatus.BAD_REQUEST)
                         }
                     }
                 }

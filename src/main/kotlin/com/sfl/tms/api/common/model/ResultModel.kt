@@ -1,8 +1,7 @@
 package com.sfl.tms.api.common.model
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.sfl.tms.api.common.model.error.ErrorModel
-import com.sfl.tms.api.common.model.error.type.ErrorType
+import com.sfl.tms.api.common.model.error.ErrorType
 import java.util.*
 
 /**
@@ -18,7 +17,7 @@ class ResultModel<T : AbstractApiModel> : AbstractApiModel {
     var result: T? = null
 
     @JsonProperty(value = "errors")
-    var errors: List<ErrorModel>? = null
+    var errors: List<ErrorType>? = null
 
     @JsonProperty(value = "success")
     val success: Boolean = !hasErrors()
@@ -35,7 +34,7 @@ class ResultModel<T : AbstractApiModel> : AbstractApiModel {
         this.result = result
     }
 
-    constructor(errors: List<ErrorModel>) {
+    constructor(errors: List<ErrorType>) {
         this.errors = errors
     }
 
@@ -43,7 +42,7 @@ class ResultModel<T : AbstractApiModel> : AbstractApiModel {
 
     //region Public methods
 
-    fun checkIfErrorExists(errorType: ErrorType): Boolean = hasErrors() && errors!!.stream().anyMatch { error -> errorType == error.errorType }
+    fun checkIfErrorExists(errorType: ErrorType): Boolean = hasErrors() && errors!!.stream().anyMatch { error -> errorType == error }
 
     private fun hasErrors(): Boolean = errors != null && !errors!!.isEmpty()
 

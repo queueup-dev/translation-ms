@@ -2,12 +2,12 @@ package com.sfl.tms.api.endpoints.language
 
 import com.sfl.tms.api.common.model.AbstractApiModel
 import com.sfl.tms.api.common.model.ResultModel
-import com.sfl.tms.api.common.model.error.type.EntityNotFoundErrorModel
 import com.sfl.tms.api.endpoints.AbstractBaseController.Companion.created
 import com.sfl.tms.api.endpoints.AbstractBaseController.Companion.notFound
 import com.sfl.tms.api.endpoints.AbstractBaseController.Companion.ok
 import com.sfl.tms.api.endpoints.language.model.response.LanguageResponseModel
 import com.sfl.tms.api.endpoints.language.model.response.LanguagesResponseModel
+import com.sfl.tms.api.endpoints.translation.error.TranslationControllerErrorType
 import com.sfl.tms.service.language.LanguageService
 import com.sfl.tms.service.language.exception.LanguageNotFoundByLangException
 import org.slf4j.LoggerFactory
@@ -44,7 +44,7 @@ class LanguageController {
         }
                 .also { logger.debug("Retrieved language for provided lang - {} ", lang) }
     } catch (e: LanguageNotFoundByLangException) {
-        notFound(EntityNotFoundErrorModel(e.localizedMessage))
+        notFound(TranslationControllerErrorType.LANGUAGE_NOT_FOUND_BY_LANG_EXCEPTION)
     }
 
     @RequestMapping(value = ["/"], method = [RequestMethod.POST])

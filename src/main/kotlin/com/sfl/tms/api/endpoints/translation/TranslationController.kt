@@ -3,10 +3,10 @@ package com.sfl.tms.api.endpoints.translation
 import com.sfl.tms.api.common.annotations.ValidateActionRequest
 import com.sfl.tms.api.common.model.AbstractApiModel
 import com.sfl.tms.api.common.model.ResultModel
-import com.sfl.tms.api.common.model.error.type.EntityExistsErrorModel
 import com.sfl.tms.api.endpoints.AbstractBaseController.Companion.created
 import com.sfl.tms.api.endpoints.AbstractBaseController.Companion.internal
 import com.sfl.tms.api.endpoints.AbstractBaseController.Companion.ok
+import com.sfl.tms.api.endpoints.translation.error.TranslationControllerErrorType
 import com.sfl.tms.api.endpoints.translation.request.entity.TranslatableEntityCreateRequestModel
 import com.sfl.tms.api.endpoints.translation.request.field.TranslatableEntityFieldCreateRequestModel
 import com.sfl.tms.api.endpoints.translation.request.statics.TranslatableStaticCreateRequestModel
@@ -65,7 +65,7 @@ class TranslationController {
                 .let { created(TranslatableEntityCreateResponseModel(it.uuid, it.name)) }
                 .also { logger.debug("Successfully created TranslatableEntity for provided request - {} ", request) }
     } catch (e: TranslatableEntityExistsByUuidException) {
-        internal(EntityExistsErrorModel(e.localizedMessage))
+        internal(TranslationControllerErrorType.TRANSLATABLE_ENTITY_EXISTS_BY_UUID_EXCEPTION)
     }
 
     //endregion
@@ -81,7 +81,7 @@ class TranslationController {
                 .let { created(TranslatableEntityFieldCreateResponseModel(it.entity.uuid, it.name)) }
                 .also { logger.debug("Successfully created translatable entity field for provided request - {} ", request) }
     } catch (e: TranslatableEntityFieldExistsForTranslatableEntityException) {
-        internal(EntityExistsErrorModel(e.localizedMessage))
+        internal(TranslationControllerErrorType.TRANSLATABLE_ENTITY_FIELD_EXISTS_BY_UUID_EXCEPTION)
     }
 
     //endregion
@@ -97,9 +97,9 @@ class TranslationController {
                 .let { created(TranslatableStaticResponseModel(it.key, it.value, it.language.lang)) }
                 .also { logger.debug("Successfully created TranslatableStatic for provided request - {} ", request) }
     } catch (e: LanguageNotFoundByLangException) {
-        internal(EntityExistsErrorModel(e.localizedMessage))
+        internal(TranslationControllerErrorType.LANGUAGE_NOT_FOUND_BY_LANG_EXCEPTION)
     } catch (e: TranslatableStaticExistException) {
-        internal(EntityExistsErrorModel(e.localizedMessage))
+        internal(TranslationControllerErrorType.TRANSLATABLE_STATIC_EXIST_EXCEPTION)
     }
 
     @ValidateActionRequest
@@ -111,9 +111,9 @@ class TranslationController {
                 .let { ok(TranslatableStaticResponseModel(it.key, it.value, it.language.lang)) }
                 .also { logger.debug("Successfully updated TranslatableStatic for provided request - {} ", request) }
     } catch (e: LanguageNotFoundByLangException) {
-        internal(EntityExistsErrorModel(e.localizedMessage))
+        internal(TranslationControllerErrorType.LANGUAGE_NOT_FOUND_BY_LANG_EXCEPTION)
     } catch (e: TranslatableStaticNotFoundByKeyAndLanguageLangException) {
-        internal(EntityExistsErrorModel(e.localizedMessage))
+        internal(TranslationControllerErrorType.TRANSLATABLE_STATIC_NOT_FOUND_BY_KEY_AND_LANGUAGE_LANG_EXCEPTION)
     }
 
     @ValidateActionRequest
@@ -136,11 +136,11 @@ class TranslationController {
                     }
                 }
     } catch (e: TranslatableStaticNotFoundByKeyException) {
-        internal(EntityExistsErrorModel(e.localizedMessage))
+        internal(TranslationControllerErrorType.TRANSLATABLE_STATIC_NOT_FOUND_BY_KEY_EXCEPTION)
     } catch (e: LanguageNotFoundByLangException) {
-        internal(EntityExistsErrorModel(e.localizedMessage))
+        internal(TranslationControllerErrorType.LANGUAGE_NOT_FOUND_BY_LANG_EXCEPTION)
     } catch (e: TranslatableStaticNotFoundByKeyAndLanguageLangException) {
-        internal(EntityExistsErrorModel(e.localizedMessage))
+        internal(TranslationControllerErrorType.TRANSLATABLE_STATIC_NOT_FOUND_BY_KEY_AND_LANGUAGE_LANG_EXCEPTION)
     }
 
     @ValidateActionRequest

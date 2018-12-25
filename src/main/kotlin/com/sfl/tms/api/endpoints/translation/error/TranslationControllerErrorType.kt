@@ -1,6 +1,6 @@
 package com.sfl.tms.api.endpoints.translation.error
 
-import com.sfl.tms.api.common.model.error.type.ErrorType
+import com.sfl.tms.api.common.model.error.ErrorType
 
 /**
  * User: Vazgen Danielyan
@@ -8,6 +8,8 @@ import com.sfl.tms.api.common.model.error.type.ErrorType
  * Time: 4:26 PM
  */
 enum class TranslationControllerErrorType : ErrorType {
+    LANGUAGE_NOT_FOUND_BY_LANG_EXCEPTION,
+
     TRANSLATABLE_ENTITY_UUID_MISSING,
     TRANSLATABLE_ENTITY_NAME_MISSING,
     TRANSLATABLE_ENTITY_FIELD_NAME_MISSING,
@@ -19,4 +21,11 @@ enum class TranslationControllerErrorType : ErrorType {
     TRANSLATABLE_STATIC_KEY_MISSING,
     TRANSLATABLE_STATIC_VALUE_MISSING,
     TRANSLATABLE_STATIC_LANGUAGE_MISSING,
+
+    TRANSLATABLE_ENTITY_EXISTS_BY_UUID_EXCEPTION,
+    TRANSLATABLE_ENTITY_FIELD_EXISTS_BY_UUID_EXCEPTION,
+
+    TRANSLATABLE_STATIC_EXIST_EXCEPTION,
+    TRANSLATABLE_STATIC_NOT_FOUND_BY_KEY_EXCEPTION,
+    TRANSLATABLE_STATIC_NOT_FOUND_BY_KEY_AND_LANGUAGE_LANG_EXCEPTION
 }

@@ -1,6 +1,6 @@
 package com.sfl.tms.api.endpoints.translation.request.statics
 
-import com.sfl.tms.api.common.model.error.ErrorModel
+import com.sfl.tms.api.common.model.error.ErrorType
 import com.sfl.tms.api.common.model.request.AbstractApiRequestModel
 import com.sfl.tms.api.endpoints.translation.error.TranslationControllerErrorType
 import org.apache.commons.lang3.StringUtils
@@ -11,18 +11,18 @@ import org.apache.commons.lang3.StringUtils
  * Time: 4:22 PM
  */
 data class TranslatableStaticCreateRequestModel(val key: String, val value: String, val lang: String) : AbstractApiRequestModel() {
-    override fun validateRequiredFields(): List<ErrorModel> = ArrayList<ErrorModel>()
+    override fun validateRequiredFields(): List<ErrorType> = ArrayList<ErrorType>()
             .apply {
                 if (StringUtils.isEmpty(key)) {
-                    add(ErrorModel(TranslationControllerErrorType.TRANSLATABLE_STATIC_KEY_MISSING))
+                    add(TranslationControllerErrorType.TRANSLATABLE_STATIC_KEY_MISSING)
                 }
             }.apply {
                 if (StringUtils.isEmpty(value)) {
-                    add(ErrorModel(TranslationControllerErrorType.TRANSLATABLE_STATIC_VALUE_MISSING))
+                    add(TranslationControllerErrorType.TRANSLATABLE_STATIC_VALUE_MISSING)
                 }
             }.apply {
                 if (StringUtils.isEmpty(lang)) {
-                    add(ErrorModel(TranslationControllerErrorType.TRANSLATABLE_STATIC_LANGUAGE_MISSING))
+                    add(TranslationControllerErrorType.TRANSLATABLE_STATIC_LANGUAGE_MISSING)
                 }
             }
 }
