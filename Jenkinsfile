@@ -46,15 +46,12 @@ node {
         }
     }
 
-    def callDeploymentJob = { String projectName, String projectEnv ->
-        def projectDockerRegistry = "registry.sflpro.com"
-        def projectJobName = "qup-deployment-local"
-        build job: projectJobName, wait: false, parameters: [
-                string(name: 'APP_NAME', value: projectName),
-                string(name: 'ENVIRONMENT', value: projectEnv),
-                string(name: 'DOCKER_REGISTRY', value: projectDockerRegistry),
-                string(name: 'RELEASE_VERSION', value: env.BUILD_NUMBER)
-        ]
+    def callDeploymentJob = { String projectJobName, String projectName ->
+        stage ( 'Call to Deployer ') {
+            build job: projectJobName, wait: false, parameters: [
+                    string(name: 'QUP_APP_NAME', value: projectName)
+            ]
+        }
     }
 
     // Add whichever params you think you'd most want to have
@@ -75,7 +72,7 @@ node {
             //executeSonarAnalysis()
             loginToRegistry(defaultProjectDockerRegistry, defaultProjectDockerRegistryUsername, defaultProjectDockerRegistryPassword)
             buildDockerImage(projectEnv, defaultProjectDockerRegistry)
-            callDeploymentJob("translation-ms", projectEnv)
+            callDeploymentJob("development-deployer", "translation-ms")
             break
         case "master":
             def projectEnv = "production"
