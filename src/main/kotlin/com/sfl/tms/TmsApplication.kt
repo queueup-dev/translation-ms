@@ -23,7 +23,7 @@ class TmsApplication {
 
     //endregion
 
-    @Bean
+    //@Bean
     fun init(): CommandLineRunner = CommandLineRunner {
 
         createLanguageIfNotExist("en")

@@ -3,6 +3,8 @@ package com.sfl.tms.api.endpoints.translation
 import com.sfl.tms.api.common.annotations.ValidateActionRequest
 import com.sfl.tms.api.common.model.AbstractApiModel
 import com.sfl.tms.api.common.model.ResultModel
+import com.sfl.tms.api.common.model.error.ErrorType
+import com.sfl.tms.api.common.model.response.AbstractApiResponseModel
 import com.sfl.tms.api.endpoints.AbstractBaseController.Companion.created
 import com.sfl.tms.api.endpoints.AbstractBaseController.Companion.internal
 import com.sfl.tms.api.endpoints.AbstractBaseController.Companion.ok
@@ -29,6 +31,7 @@ import com.sfl.tms.service.translatablestatic.exception.TranslatableStaticNotFou
 import com.sfl.tms.service.translatablestatic.exception.TranslatableStaticNotFoundByKeyException
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
@@ -104,11 +107,19 @@ class TranslationController {
 
     @ValidateActionRequest
     @RequestMapping(value = ["/static/{key}"], method = [RequestMethod.PATCH])
-    fun updateTranslatableStatic(@PathVariable("key") key: String, @RequestBody request: TranslatableStaticUpdateRequestModel): ResponseEntity<ResultModel<out AbstractApiModel>> = try {
+    fun updateTranslatableStatic(@PathVariable("key") key: String, @RequestBody request: List<TranslatableStaticUpdateRequestModel>): ResponseEntity<ResultModel<out AbstractApiModel>> = try {
         request
                 .also { logger.trace("Updating TranslatableStatic for provided request - {} ", it) }
-                .let { translatableStaticService.updateValue(TranslatableStaticDto(key, it.value, it.lang)) }
-                .let { ok(TranslatableStaticResponseModel(it.key, it.value, it.language.lang)) }
+                .also {
+                    it.map { it.validateRequiredFields() }.flatten().distinct().let {
+                        if (it.isNotEmpty()) {
+                            return ResponseEntity(ResultModel<ErrorType>(it), HttpStatus.BAD_REQUEST)
+                        }
+                    }
+                }
+                .map { translatableStaticService.updateValue(TranslatableStaticDto(key, it.value, it.lang)) }
+                .map { TranslatableStaticResponseModel(it.key, it.value, it.language.lang) }
+                .let { ok(object : AbstractApiResponseModel, ArrayList<TranslatableStaticResponseModel>(it) {}) }
                 .also { logger.debug("Successfully updated TranslatableStatic for provided request - {} ", request) }
     } catch (e: LanguageNotFoundByLangException) {
         internal(TranslationControllerErrorType.LANGUAGE_NOT_FOUND_BY_LANG_EXCEPTION)
