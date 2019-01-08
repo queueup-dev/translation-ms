@@ -29,6 +29,7 @@ import com.sfl.tms.service.translatablestatic.dto.TranslatableStaticDto
 import com.sfl.tms.service.translatablestatic.exception.TranslatableStaticExistException
 import com.sfl.tms.service.translatablestatic.exception.TranslatableStaticNotFoundByKeyAndEntityUuidException
 import com.sfl.tms.service.translatablestatic.exception.TranslatableStaticNotFoundByKeyAndLanguageLangException
+import io.swagger.annotations.ApiOperation
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
@@ -59,6 +60,7 @@ class TranslationController {
 
     //region Entity with translations
 
+    @ApiOperation(value = "Create translatable entity", response = TranslatableEntityCreateResponseModel::class)
     @ValidateActionRequest
     @RequestMapping(value = ["/entity"], method = [RequestMethod.POST])
     fun createTranslatableEntity(@RequestBody request: TranslatableEntityCreateRequestModel): ResponseEntity<ResultModel<out AbstractApiModel>> = try {
@@ -75,6 +77,7 @@ class TranslationController {
 
     //region Field with translations
 
+    @ApiOperation(value = "Create translatable entity field", response = TranslatableEntityFieldCreateResponseModel::class)
     @ValidateActionRequest
     @RequestMapping(value = ["/entity/field"], method = [RequestMethod.POST])
     fun createTranslatableEntityField(@RequestBody request: TranslatableEntityFieldCreateRequestModel): ResponseEntity<ResultModel<out AbstractApiModel>> = try {
@@ -91,6 +94,7 @@ class TranslationController {
 
     //region Static translations
 
+    @ApiOperation(value = "Create translatable static for entity", response = TranslatableStaticResponseModel::class)
     @ValidateActionRequest
     @RequestMapping(value = ["/static"], method = [RequestMethod.POST])
     fun createTranslatableStatic(@RequestBody request: TranslatableStaticCreateRequestModel): ResponseEntity<ResultModel<out AbstractApiModel>> = try {
@@ -105,6 +109,7 @@ class TranslationController {
         internal(TranslationControllerErrorType.TRANSLATABLE_STATIC_EXIST_EXCEPTION)
     }
 
+    @ApiOperation(value = "Update translatable static for entity", response = List::class)
     @ValidateActionRequest
     @RequestMapping(value = ["/static/{key}"], method = [RequestMethod.PATCH])
     fun updateTranslatableStatic(@PathVariable("key") key: String, @RequestBody request: List<TranslatableStaticUpdateRequestModel>): ResponseEntity<ResultModel<out AbstractApiModel>> = try {
@@ -127,6 +132,7 @@ class TranslationController {
         internal(TranslationControllerErrorType.TRANSLATABLE_STATIC_NOT_FOUND_BY_KEY_AND_LANGUAGE_LANG_EXCEPTION)
     }
 
+    @ApiOperation(value = "Get translatable static for key, entity and language", response = TranslatableStaticResponseModel::class)
     @ValidateActionRequest
     @RequestMapping(value = ["/static"], method = [RequestMethod.GET])
     fun getStaticTranslation(@RequestParam("key") key: String, @RequestParam("uuid", required = true) uuid: String, @RequestParam("lang", required = false) lang: String?) = try {
@@ -154,6 +160,7 @@ class TranslationController {
         internal(TranslationControllerErrorType.TRANSLATABLE_STATIC_NOT_FOUND_BY_KEY_AND_LANGUAGE_LANG_EXCEPTION)
     }
 
+    @ApiOperation(value = "Search translatable static by key and language", response = TranslatableStaticResponseModel::class)
     @ValidateActionRequest
     @RequestMapping(value = ["/static/search"], method = [RequestMethod.GET])
     fun searchStaticTranslations(@RequestParam("term", required = false) term: String?, @RequestParam("lang", required = false) lang: String?, @RequestParam("page", required = false) page: Int?) = term
