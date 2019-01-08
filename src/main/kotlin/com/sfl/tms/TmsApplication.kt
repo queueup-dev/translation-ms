@@ -2,6 +2,8 @@ package com.sfl.tms
 
 import com.google.gson.Gson
 import com.sfl.tms.service.language.LanguageService
+import com.sfl.tms.service.translatable.entity.TranslatableEntityService
+import com.sfl.tms.service.translatable.entity.dto.TranslatableEntityDto
 import com.sfl.tms.service.translatablestatic.TranslatableStaticService
 import com.sfl.tms.service.translatablestatic.dto.TranslatableStaticDto
 import org.springframework.beans.factory.annotation.Autowired
@@ -9,11 +11,15 @@ import org.springframework.boot.CommandLineRunner
 import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.context.annotation.Bean
+import java.util.*
 
 @SpringBootApplication
 class TmsApplication {
 
     //region Injection
+
+    @Autowired
+    private lateinit var translatableEntityService: TranslatableEntityService
 
     @Autowired
     private lateinit var translatableStaticService: TranslatableStaticService
@@ -23,14 +29,22 @@ class TmsApplication {
 
     //endregion
 
-    //@Bean
+    @Bean
     fun init(): CommandLineRunner = CommandLineRunner {
 
         createLanguageIfNotExist("en")
         createLanguageIfNotExist("nl")
 
-        insertData("en")
-        insertData("nl")
+        val uuid = "00000000-0000-0000-0000-000000000000"
+
+        var entity = translatableEntityService.findByUuid(uuid)
+
+        if (entity == null) {
+            entity = translatableEntityService.create(TranslatableEntityDto(UUID.fromString(uuid).toString(), "Translatable entity template"))
+        }
+
+        insertData("en", entity.uuid)
+        insertData("nl", entity.uuid)
     }
 
     private fun createLanguageIfNotExist(lang: String) {
@@ -39,35 +53,29 @@ class TmsApplication {
         }
     }
 
-    private fun insertData(lang: String) {
+    private fun insertData(lang: String, uuid: String) {
         val fromJson = Gson().fromJson(TmsApplication::class.java.getResource("/static/locales-$lang.json").readText(), Map::class.java)
 
         fromJson.forEach { k, v ->
+            val key = k as String
+
             if (v is Map<*, *>) {
-                v.forEach { k2, v2 ->
-
-                    val key = k as String + "_" + k2 as String
-                    val value = v2 as String
-
-                    createOrUpdateIfExist(key, lang, value)
+                v.forEach { k2, value ->
+                    createOrUpdateIfExist(key + "_" + k2 as String, uuid, lang, value as String)
                 }
             } else {
-                val key = k as String
-                val value = v as String
-
-                createOrUpdateIfExist(key, lang, value)
+                createOrUpdateIfExist(key, uuid, lang, v as String)
             }
         }
     }
 
-    private fun createOrUpdateIfExist(key: String, lang: String, value: String) = TranslatableStaticDto(key, value, lang).let {
-        if (translatableStaticService.findByKeyAndLanguageLang(it.key, it.lang) == null) {
+    private fun createOrUpdateIfExist(key: String, uuid: String, lang: String, value: String) = TranslatableStaticDto(key, uuid, value, lang).let {
+        if (translatableStaticService.findByKeyAndEntityUuidAndLanguageLang(it.key, uuid, it.lang) == null) {
             translatableStaticService.create(it)
         } else {
             translatableStaticService.updateValue(it)
         }
     }
-
 
     companion object {
         @JvmStatic

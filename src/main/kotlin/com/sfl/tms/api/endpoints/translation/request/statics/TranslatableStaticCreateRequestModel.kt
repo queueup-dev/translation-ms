@@ -10,11 +10,15 @@ import org.apache.commons.lang3.StringUtils
  * Date: 12/5/18
  * Time: 4:22 PM
  */
-data class TranslatableStaticCreateRequestModel(val key: String, val value: String, val lang: String) : AbstractApiRequestModel() {
+data class TranslatableStaticCreateRequestModel(val key: String, val entityUuid: String, val value: String, val lang: String) : AbstractApiRequestModel() {
     override fun validateRequiredFields(): List<ErrorType> = ArrayList<ErrorType>()
             .apply {
                 if (StringUtils.isEmpty(key)) {
                     add(TranslationControllerErrorType.TRANSLATABLE_STATIC_KEY_MISSING)
+                }
+            }.apply {
+                if (StringUtils.isEmpty(entityUuid)) {
+                    add(TranslationControllerErrorType.TRANSLATABLE_STATIC_ENTITY_UUID_MISSING)
                 }
             }.apply {
                 if (StringUtils.isEmpty(value)) {

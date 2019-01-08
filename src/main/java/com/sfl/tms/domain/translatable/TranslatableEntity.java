@@ -1,6 +1,7 @@
 package com.sfl.tms.domain.translatable;
 
 import com.sfl.tms.domain.AbstractEntity;
+import com.sfl.tms.domain.translatablestastic.TranslatableStatic;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -39,6 +40,9 @@ public class TranslatableEntity extends AbstractEntity {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "entity")
     private Set<TranslatableEntityField> fields;
 
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "entity")
+    private Set<TranslatableStatic> statics;
+
     //endregion
 
     //region Getters and setters
@@ -65,6 +69,14 @@ public class TranslatableEntity extends AbstractEntity {
 
     public void setFields(final Set<TranslatableEntityField> fields) {
         this.fields = fields;
+    }
+
+    public Set<TranslatableStatic> getStatics() {
+        return statics;
+    }
+
+    public void setStatics(final Set<TranslatableStatic> statics) {
+        this.statics = statics;
     }
 
     //endregion

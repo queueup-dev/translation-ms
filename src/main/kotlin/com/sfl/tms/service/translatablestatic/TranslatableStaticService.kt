@@ -10,11 +10,11 @@ import com.sfl.tms.service.translatablestatic.dto.TranslatableStaticDto
  */
 interface TranslatableStaticService {
 
-    fun findByKeyAndLanguageLang(key: String, lang: String): TranslatableStatic?
+    fun findByKeyAndEntityUuidAndLanguageLang(key: String, entityUuid: String, lang: String): TranslatableStatic?
 
-    fun getByKeyAndLanguageLang(key: String, lang: String): TranslatableStatic
+    fun getByKeyAndEntityUuid(key: String, uuid: String): List<TranslatableStatic>
 
-    fun getByKey(key: String): List<TranslatableStatic>
+    fun getByKeyAndEntityUuidAndLanguageLang(key: String, uuid: String, lang: String): TranslatableStatic
 
     fun create(dto: TranslatableStaticDto): TranslatableStatic
 

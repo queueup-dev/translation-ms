@@ -27,8 +27,8 @@ import com.sfl.tms.service.translatable.field.exception.TranslatableEntityFieldE
 import com.sfl.tms.service.translatablestatic.TranslatableStaticService
 import com.sfl.tms.service.translatablestatic.dto.TranslatableStaticDto
 import com.sfl.tms.service.translatablestatic.exception.TranslatableStaticExistException
+import com.sfl.tms.service.translatablestatic.exception.TranslatableStaticNotFoundByKeyAndEntityUuidException
 import com.sfl.tms.service.translatablestatic.exception.TranslatableStaticNotFoundByKeyAndLanguageLangException
-import com.sfl.tms.service.translatablestatic.exception.TranslatableStaticNotFoundByKeyException
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
@@ -96,8 +96,8 @@ class TranslationController {
     fun createTranslatableStatic(@RequestBody request: TranslatableStaticCreateRequestModel): ResponseEntity<ResultModel<out AbstractApiModel>> = try {
         request
                 .also { logger.trace("Creating new TranslatableStatic for provided request - {} ", it) }
-                .let { translatableStaticService.create(TranslatableStaticDto(it.key, it.value, it.lang)) }
-                .let { created(TranslatableStaticResponseModel(it.key, it.value, it.language.lang)) }
+                .let { translatableStaticService.create(TranslatableStaticDto(it.key, it.entityUuid, it.value, it.lang)) }
+                .let { created(TranslatableStaticResponseModel(it.key, it.entity.uuid, it.value, it.language.lang)) }
                 .also { logger.debug("Successfully created TranslatableStatic for provided request - {} ", request) }
     } catch (e: LanguageNotFoundByLangException) {
         internal(TranslationControllerErrorType.LANGUAGE_NOT_FOUND_BY_LANG_EXCEPTION)
@@ -117,8 +117,8 @@ class TranslationController {
                         }
                     }
                 }
-                .map { translatableStaticService.updateValue(TranslatableStaticDto(key, it.value, it.lang)) }
-                .map { TranslatableStaticResponseModel(it.key, it.value, it.language.lang) }
+                .map { translatableStaticService.updateValue(TranslatableStaticDto(key, it.entityUuid, it.value, it.lang)) }
+                .map { TranslatableStaticResponseModel(it.key, it.entity.uuid, it.value, it.language.lang) }
                 .let { ok(object : AbstractApiResponseModel, ArrayList<TranslatableStaticResponseModel>(it) {}) }
                 .also { logger.debug("Successfully updated TranslatableStatic for provided request - {} ", request) }
     } catch (e: LanguageNotFoundByLangException) {
@@ -129,24 +129,24 @@ class TranslationController {
 
     @ValidateActionRequest
     @RequestMapping(value = ["/static"], method = [RequestMethod.GET])
-    fun getStaticTranslation(@RequestParam("uuid", required = false) uuid: String?, @RequestParam("key") key: String, @RequestParam("lang", required = false) lang: String?) = try {
+    fun getStaticTranslation(@RequestParam("key") key: String, @RequestParam("uuid", required = true) uuid: String, @RequestParam("lang", required = false) lang: String?) = try {
         key
-                .also { logger.trace("Retrieving TranslatableStatic for provided key - {}, lang - {} ", it, lang) }
+                .also { logger.trace("Retrieving TranslatableStatic for provided key - {}, entity uuid - {} and lang - {} ", it, uuid, lang) }
                 .let {
                     if (lang == null) {
-                        translatableStaticService.getByKey(it)
-                                .map { TranslatableStaticResponseModel(it.key, it.value, it.language.lang) }
+                        translatableStaticService.getByKeyAndEntityUuid(it, uuid)
+                                .map { TranslatableStaticResponseModel(it.key, it.entity.uuid, it.value, it.language.lang) }
                                 .groupBy { it.lang }
                                 .let { ok(TranslatableStaticsPageResponseModel(it)) }
                                 .also { logger.debug("Retrieved TranslatableStatic for provided key - {}, lang - {} ", key, lang) }
 
                     } else {
-                        translatableStaticService.getByKeyAndLanguageLang(it, lang)
-                                .let { ok(TranslatableStaticResponseModel(it.key, it.value, it.language.lang)) }
+                        translatableStaticService.getByKeyAndEntityUuidAndLanguageLang(it, uuid, lang)
+                                .let { ok(TranslatableStaticResponseModel(it.key, it.entity.uuid, it.value, it.language.lang)) }
                                 .also { logger.debug("Retrieved TranslatableStatic for provided key - {}", key) }
                     }
                 }
-    } catch (e: TranslatableStaticNotFoundByKeyException) {
+    } catch (e: TranslatableStaticNotFoundByKeyAndEntityUuidException) {
         internal(TranslationControllerErrorType.TRANSLATABLE_STATIC_NOT_FOUND_BY_KEY_EXCEPTION)
     } catch (e: LanguageNotFoundByLangException) {
         internal(TranslationControllerErrorType.LANGUAGE_NOT_FOUND_BY_LANG_EXCEPTION)
@@ -159,7 +159,7 @@ class TranslationController {
     fun searchStaticTranslations(@RequestParam("term", required = false) term: String?, @RequestParam("lang", required = false) lang: String?, @RequestParam("page", required = false) page: Int?) = term
             .also { logger.trace("Retrieving TranslatableStatic list for provided term - {}, page - {} ", it, page) }
             .let { translatableStaticService.search(it, lang, page) }
-            .map { TranslatableStaticResponseModel(it.key, it.value, it.language.lang) }
+            .map { TranslatableStaticResponseModel(it.key, it.entity.uuid, it.value, it.language.lang) }
             .groupBy { it.lang }
             .let { ok(TranslatableStaticsPageResponseModel(it)) }
             .also { logger.debug("Retrieved TranslatableStatic list for provided term - {}, page - {} ", term, page) }

@@ -15,11 +15,13 @@ import org.springframework.stereotype.Repository
 @Repository
 interface TranslatableStaticRepository : JpaRepository<TranslatableStatic, Long> {
 
-    fun findByKey(key: String): List<TranslatableStatic>
+    fun findByKeyAndEntity_Id(key: String, entityId: Long): List<TranslatableStatic>
 
-    fun findByKeyAndLanguage_Id(key: String, languageId: Long): TranslatableStatic?
+    fun findByKeyAndEntity_IdAndLanguage_Lang(key: String, entityId: Long, lang: String): TranslatableStatic?
 
-    fun findByKeyAndLanguage_Lang(key: String, lang: String): TranslatableStatic?
+    fun findByKeyAndEntity_UuidAndLanguage_Lang(key: String, entityUuid: String, lang: String): TranslatableStatic?
+
+    fun findByKeyAndEntity_IdAndLanguage_Id(key: String, entityId: Long, languageId: Long): TranslatableStatic?
 
     @Query("from TranslatableStatic ts where (:lang = '' or (ts.language.lang = :lang and :lang <> '')) order by ts.key asc")
     fun findByLangOrderByKeyAsc(@Param("lang") lang: String, pageable: Pageable): List<TranslatableStatic>

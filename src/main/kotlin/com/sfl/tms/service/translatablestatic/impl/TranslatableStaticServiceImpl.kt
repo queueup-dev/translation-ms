@@ -3,11 +3,13 @@ package com.sfl.tms.service.translatablestatic.impl
 import com.sfl.tms.domain.translatablestastic.TranslatableStatic
 import com.sfl.tms.persistence.translatablestastics.TranslatableStaticRepository
 import com.sfl.tms.service.language.LanguageService
+import com.sfl.tms.service.translatable.entity.TranslatableEntityService
+import com.sfl.tms.service.translatable.entity.exception.TranslatableEntityNotFoundByUuidException
 import com.sfl.tms.service.translatablestatic.TranslatableStaticService
 import com.sfl.tms.service.translatablestatic.dto.TranslatableStaticDto
 import com.sfl.tms.service.translatablestatic.exception.TranslatableStaticExistException
-import com.sfl.tms.service.translatablestatic.exception.TranslatableStaticNotFoundByKeyAndLanguageLangException
-import com.sfl.tms.service.translatablestatic.exception.TranslatableStaticNotFoundByKeyException
+import com.sfl.tms.service.translatablestatic.exception.TranslatableStaticNotFoundByKeyAndEntityUuidAndLanguageLangException
+import com.sfl.tms.service.translatablestatic.exception.TranslatableStaticNotFoundByKeyAndEntityUuidException
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.PageRequest
@@ -25,6 +27,9 @@ class TranslatableStaticServiceImpl : TranslatableStaticService {
     //region Injection
 
     @Autowired
+    private lateinit var translatableEntityService: TranslatableEntityService
+
+    @Autowired
     private lateinit var translatableStaticRepository: TranslatableStaticRepository
 
     @Autowired
@@ -33,37 +38,40 @@ class TranslatableStaticServiceImpl : TranslatableStaticService {
     //endregion
 
     @Transactional(readOnly = true)
-    override fun findByKeyAndLanguageLang(key: String, lang: String): TranslatableStatic? = key
-            .also { logger.trace("Retrieving TranslatableStatic for provided key - {}, lang - {}", key, lang) }
-            .let { translatableStaticRepository.findByKeyAndLanguage_Lang(it, lang) }
-            .also { logger.debug("Retrieved TranslatableStatic for provided key - {}, lang - {}", key, lang) }
+    override fun findByKeyAndEntityUuidAndLanguageLang(key: String, entityUuid: String, lang: String): TranslatableStatic? = key
+            .also { logger.trace("Retrieving TranslatableStatic for provided key - {}, entity uuid - {} and lang - {}", key, entityUuid, lang) }
+            .let { translatableStaticRepository.findByKeyAndEntity_UuidAndLanguage_Lang(it, entityUuid, lang) }
+            .also { logger.debug("Retrieved TranslatableStatic for provided key - {}, entity uuid - {} and lang - {}", key, entityUuid, lang) }
 
-    @Throws(TranslatableStaticNotFoundByKeyAndLanguageLangException::class)
+    @Throws(TranslatableStaticNotFoundByKeyAndEntityUuidException::class, TranslatableEntityNotFoundByUuidException::class)
     @Transactional(readOnly = true)
-    override fun getByKeyAndLanguageLang(key: String, lang: String): TranslatableStatic = key
-            .also { logger.trace("Retrieving TranslatableStatic for provided key - {}, lang - {}", key, lang) }
+    override fun getByKeyAndEntityUuid(key: String, uuid: String): List<TranslatableStatic> = key
+            .also { logger.trace("Retrieving TranslatableStatic for provided key - {} and entity uuid - {}", it, uuid) }
             .let {
-                findByKeyAndLanguageLang(it, lang).let {
-                    if (it == null) {
-                        logger.error("Can't find TranslatableStatic for key - {}, lang - {}", key, lang)
-                        throw TranslatableStaticNotFoundByKeyAndLanguageLangException(key, lang)
+
+                val entity = translatableEntityService.getByUuid(uuid)
+
+                translatableStaticRepository.findByKeyAndEntity_Id(it, entity.id).let {
+                    if (it.isEmpty()) {
+                        logger.error("Can't find TranslatableStatic for key - {} and entity uuid - {}", key, uuid)
+                        throw TranslatableStaticNotFoundByKeyAndEntityUuidException(key, uuid)
                     }
-                    logger.debug("Retrieved TranslatableStatic for provided key - {}, lang - {}", key, lang)
+                    logger.debug("Retrieved TranslatableStatic for provided key - {} and entity uuid - {}", key, uuid)
                     it
                 }
             }
 
-    @Throws(TranslatableStaticNotFoundByKeyException::class)
+    @Throws(TranslatableStaticNotFoundByKeyAndEntityUuidAndLanguageLangException::class)
     @Transactional(readOnly = true)
-    override fun getByKey(key: String): List<TranslatableStatic> = key
-            .also { logger.trace("Retrieving TranslatableStatic for provided key - {}", it) }
+    override fun getByKeyAndEntityUuidAndLanguageLang(key: String, uuid: String, lang: String): TranslatableStatic = key
+            .also { logger.trace("Retrieving TranslatableStatic for provided key - {}, entity uuid - {} and lang - {}", it, uuid, lang) }
             .let {
-                translatableStaticRepository.findByKey(it).let {
-                    if (it.isEmpty()) {
-                        logger.error("Can't find TranslatableStatic for key - {}", key)
-                        throw TranslatableStaticNotFoundByKeyException(key)
+                translatableStaticRepository.findByKeyAndEntity_IdAndLanguage_Lang(key = it, entityId = translatableEntityService.getByUuid(uuid).id, lang = lang).let {
+                    if (it == null) {
+                        logger.error("Can't find TranslatableStatic for key - {}, entity uuid - {} and lang - {}", key, uuid, lang)
+                        throw TranslatableStaticNotFoundByKeyAndEntityUuidAndLanguageLangException(key, uuid, lang)
                     }
-                    logger.debug("Retrieved TranslatableStatic for provided key - {}", key)
+                    logger.debug("Retrieved TranslatableStatic for provided key - {}, entity uuid - {} and lang - {}", key, uuid, lang)
                     it
                 }
             }
@@ -73,20 +81,23 @@ class TranslatableStaticServiceImpl : TranslatableStaticService {
     override fun create(dto: TranslatableStaticDto): TranslatableStatic {
         logger.trace("Creating new TranslatableStatic for provided dto - {} ", dto)
 
-        val searchedLanguage = languageService.getByLang(dto.lang)
+        val language = languageService.getByLang(dto.lang)
 
-        val translatableStatics = translatableStaticRepository.findByKeyAndLanguage_Id(dto.key, searchedLanguage.id)
+        val entity = translatableEntityService.getByUuid(dto.entityUuid)
+
+        val translatableStatics = translatableStaticRepository.findByKeyAndEntity_IdAndLanguage_Id(dto.key, entity.id, language.id)
 
         if (translatableStatics != null) {
             logger.error("Unable to create new TranslatableStatic for provided dto - {}. Already exists.", dto)
-            throw TranslatableStaticExistException(dto.key, dto.lang)
+            throw TranslatableStaticExistException(dto.key, dto.entityUuid, dto.lang)
         }
 
         // Create new translation
         return TranslatableStatic()
-                .apply { key = dto.key }
-                .apply { value = dto.value }
-                .apply { language = searchedLanguage }
+                .apply { this.key = dto.key }
+                .apply { this.value = dto.value }
+                .apply { this.entity = entity }
+                .apply { this.language = language }
                 .let { translatableStaticRepository.save(it) }
                 .also { logger.debug("Successfully created new TranslatableStatic for provided dto - {}", dto) }
     }
@@ -94,7 +105,7 @@ class TranslatableStaticServiceImpl : TranslatableStaticService {
     @Transactional
     override fun updateValue(dto: TranslatableStaticDto): TranslatableStatic = dto
             .also { logger.trace("Updating TranslatableStatic for provided dto - {} ", it) }
-            .let { getByKeyAndLanguageLang(dto.key, dto.lang) }
+            .let { getByKeyAndEntityUuidAndLanguageLang(dto.key, dto.entityUuid, dto.lang) }
             .apply { value = dto.value }
             .let { translatableStaticRepository.save(it) }
             .also { logger.debug("Successfully updated TranslatableStatic for provided dto - {}", dto) }
