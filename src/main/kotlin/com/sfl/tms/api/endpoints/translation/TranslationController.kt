@@ -58,7 +58,7 @@ class TranslationController {
 
     //endregion
 
-    //region Entity with translations
+    //region Entity
 
     @ApiOperation(value = "Create translatable entity", response = TranslatableEntityCreateResponseModel::class)
     @ValidateActionRequest

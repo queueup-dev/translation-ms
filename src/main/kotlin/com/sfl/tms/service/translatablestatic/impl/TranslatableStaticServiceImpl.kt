@@ -1,5 +1,6 @@
 package com.sfl.tms.service.translatablestatic.impl
 
+import com.sfl.tms.TmsApplication
 import com.sfl.tms.domain.translatablestastic.TranslatableStatic
 import com.sfl.tms.persistence.translatablestastics.TranslatableStaticRepository
 import com.sfl.tms.service.language.LanguageService
@@ -37,11 +38,17 @@ class TranslatableStaticServiceImpl : TranslatableStaticService {
 
     //endregion
 
+    //region findByKeyAndEntityUuidAndLanguageLang
+
     @Transactional(readOnly = true)
     override fun findByKeyAndEntityUuidAndLanguageLang(key: String, entityUuid: String, lang: String): TranslatableStatic? = key
             .also { logger.trace("Retrieving TranslatableStatic for provided key - {}, entity uuid - {} and lang - {}", key, entityUuid, lang) }
             .let { translatableStaticRepository.findByKeyAndEntity_UuidAndLanguage_Lang(it, entityUuid, lang) }
             .also { logger.debug("Retrieved TranslatableStatic for provided key - {}, entity uuid - {} and lang - {}", key, entityUuid, lang) }
+
+    //endregion
+
+    //region getByKeyAndEntityUuid
 
     @Throws(TranslatableStaticNotFoundByKeyAndEntityUuidException::class, TranslatableEntityNotFoundByUuidException::class)
     @Transactional(readOnly = true)
@@ -61,6 +68,10 @@ class TranslatableStaticServiceImpl : TranslatableStaticService {
                 }
             }
 
+    //endregion
+
+    //region getByKeyAndEntityUuidAndLanguageLang
+
     @Throws(TranslatableStaticNotFoundByKeyAndEntityUuidAndLanguageLangException::class)
     @Transactional(readOnly = true)
     override fun getByKeyAndEntityUuidAndLanguageLang(key: String, uuid: String, lang: String): TranslatableStatic = key
@@ -75,6 +86,10 @@ class TranslatableStaticServiceImpl : TranslatableStaticService {
                     it
                 }
             }
+
+    //endregion
+
+    //region create
 
     @Throws(TranslatableStaticExistException::class)
     @Transactional
@@ -102,6 +117,10 @@ class TranslatableStaticServiceImpl : TranslatableStaticService {
                 .also { logger.debug("Successfully created new TranslatableStatic for provided dto - {}", dto) }
     }
 
+    //endregion
+
+    //region updateValue
+
     @Transactional
     override fun updateValue(dto: TranslatableStaticDto): TranslatableStatic = dto
             .also { logger.trace("Updating TranslatableStatic for provided dto - {} ", it) }
@@ -109,6 +128,10 @@ class TranslatableStaticServiceImpl : TranslatableStaticService {
             .apply { value = dto.value }
             .let { translatableStaticRepository.save(it) }
             .also { logger.debug("Successfully updated TranslatableStatic for provided dto - {}", dto) }
+
+    //endregion
+
+    //region search
 
     @Transactional(readOnly = true)
     override fun search(term: String?, lang: String?, page: Int?): List<TranslatableStatic> = PageRequest.of(page ?: 0, 15)
@@ -122,9 +145,31 @@ class TranslatableStaticServiceImpl : TranslatableStaticService {
             }
             .also { logger.debug("Retrieved TranslatableStatic for provided term - {}, page - {}", term, page) }
 
+    //endregion
+
+    //region copy
+
+    @Transactional
+    override fun copy(uuid: String): List<TranslatableStatic> = uuid
+            .also { logger.trace("Copying static translations for entity with {} uuid.", it) }
+            .let {
+
+                val entity = translatableEntityService.getByUuid(it)
+
+                translatableEntityService.getByUuid(TmsApplication.templateUuid).statics.map {
+                    it
+                            .copy()
+                            .apply { this.entity = entity }
+                            .let { translatableStaticRepository.save(it) }
+                            .also { logger.debug("Copied static translation with {} key and {} language for entity with {} uuid.", it.key, it.language.lang, it.entity.uuid) }
+                }
+            }
+            .also { logger.trace("Successfully copied static translations for entity with {} uuid.", it) }
+
+    //endregion
+
     companion object {
         @JvmStatic
         private val logger = LoggerFactory.getLogger(TranslatableStaticServiceImpl::class.java)
     }
-
 }

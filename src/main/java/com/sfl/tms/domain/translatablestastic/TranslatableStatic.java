@@ -83,6 +83,14 @@ public class TranslatableStatic extends AbstractEntity {
 
     //endregion
 
+    public TranslatableStatic copy() {
+        final TranslatableStatic translatableStatic = new TranslatableStatic();
+        translatableStatic.key = key;
+        translatableStatic.value = value;
+        translatableStatic.language = language;
+        return translatableStatic;
+    }
+
     //region Equals, Hashcode and toString
 
     @Override

@@ -22,4 +22,6 @@ interface TranslatableStaticService {
 
     fun search(term: String?, lang: String?, page: Int?): List<TranslatableStatic>
 
+    fun copy(uuid: String): List<TranslatableStatic>
+
 }

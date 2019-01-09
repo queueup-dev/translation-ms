@@ -35,12 +35,10 @@ class TmsApplication {
         createLanguageIfNotExist("en")
         createLanguageIfNotExist("nl")
 
-        val uuid = "00000000-0000-0000-0000-000000000000"
-
-        var entity = translatableEntityService.findByUuid(uuid)
+        var entity = translatableEntityService.findByUuid(templateUuid)
 
         if (entity == null) {
-            entity = translatableEntityService.create(TranslatableEntityDto(UUID.fromString(uuid).toString(), "Translatable entity template"))
+            entity = translatableEntityService.create(TranslatableEntityDto(UUID.fromString(templateUuid).toString(), "Translatable entity template"))
         }
 
         insertData("en", entity.uuid)
@@ -82,5 +80,7 @@ class TmsApplication {
         fun main(args: Array<String>) {
             SpringApplication.run(TmsApplication::class.java, *args)
         }
+
+        const val templateUuid = "00000000-0000-0000-0000-000000000000"
     }
 }

@@ -6,6 +6,7 @@ import com.sfl.tms.service.translatable.entity.TranslatableEntityService
 import com.sfl.tms.service.translatable.entity.dto.TranslatableEntityDto
 import com.sfl.tms.service.translatable.entity.exception.TranslatableEntityExistsByUuidException
 import com.sfl.tms.service.translatable.entity.exception.TranslatableEntityNotFoundByUuidException
+import com.sfl.tms.service.translatablestatic.TranslatableStaticService
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
@@ -23,6 +24,9 @@ class TranslatableEntityServiceImpl : TranslatableEntityService {
 
     @Autowired
     private lateinit var translatableEntityRepository: TranslatableEntityRepository
+
+    @Autowired
+    private lateinit var translatableStaticService: TranslatableStaticService
 
     //endregion
 
@@ -59,6 +63,9 @@ class TranslatableEntityServiceImpl : TranslatableEntityService {
                                 .apply { name = dto.name }
                                 .let { translatableEntityRepository.save(it) }
                                 .also { logger.debug("Successfully created new TranslatableEntity for provided dto - {}", dto) }
+                                .also { logger.debug("Copying static translations for newly created entity with {} uuid.", it.uuid) }
+                                .also { translatableStaticService.copy(it.uuid) }
+                                .also { logger.debug("Successfully copied static translations for entity with {} uuid.", it) }
                     } else {
                         logger.error("Unable to create new TranslatableEntity for provided dto - {}. Already exists.", dto)
                         throw TranslatableEntityExistsByUuidException(dto.uuid)

@@ -1,5 +1,6 @@
 package com.sfl.tms.service.translatablestatic
 
+import com.sfl.tms.TmsApplication
 import com.sfl.tms.domain.language.Language
 import com.sfl.tms.domain.translatable.TranslatableEntity
 import com.sfl.tms.domain.translatablestastic.TranslatableStatic
@@ -54,14 +55,14 @@ class TranslatableStaticServiceImplTest {
     fun findByKeyAndLanguageIdTest() {
         // test data
         val key = "key"
-        val entityId = 1L
+        val entityUuid = "uuid"
         val lang = "en"
         // mock
-        `when`(translatableStaticRepository.findByKeyAndEntity_IdAndLanguage_Lang(key, entityId, lang)).thenReturn(TranslatableStatic())
+        `when`(translatableStaticRepository.findByKeyAndEntity_UuidAndLanguage_Lang(key, entityUuid, lang)).thenReturn(TranslatableStatic())
         // sut
-        translatableStaticService.findByKeyAndEntityUuidAndLanguageLang(key, entityId, lang)
+        translatableStaticService.findByKeyAndEntityUuidAndLanguageLang(key, entityUuid, lang)
         // verify
-        verify(translatableStaticRepository, times(1)).findByKeyAndEntity_IdAndLanguage_Lang(key, entityId, lang)
+        verify(translatableStaticRepository, times(1)).findByKeyAndEntity_UuidAndLanguage_Lang(key, entityUuid, lang)
     }
 
     //endregion
@@ -335,6 +336,8 @@ class TranslatableStaticServiceImplTest {
 
     //endregion
 
+    //region Search
+
     @Test
     fun searchWithoutTermTest() {
         // test data
@@ -365,4 +368,72 @@ class TranslatableStaticServiceImplTest {
 
         assertTrue(result.isEmpty())
     }
+
+    //endregion
+
+    //region Copy
+
+    @Test(expected = TranslatableEntityNotFoundByUuidException::class)
+    fun copyTranslatableStaticForEntityWhenEntityNotFoundTest() {
+        // test data
+        val entityUuid = "uuid"
+        // mock
+        `when`(translatableEntityService.getByUuid(entityUuid)).thenThrow(TranslatableEntityNotFoundByUuidException::class.java)
+        // sut
+        translatableStaticService.copy(entityUuid)
+        // verify
+        verify(translatableEntityService, times(1)).getByUuid(entityUuid)
+    }
+
+    @Test(expected = TranslatableEntityNotFoundByUuidException::class)
+    fun copyTranslatableStaticForEntityWhenTemplateEntityNotFoundTest() {
+        // test data
+        val entityUuid = "uuid"
+        val entity = TranslatableEntity().apply { uuid = entityUuid }
+        // mock
+        `when`(translatableEntityService.getByUuid(entityUuid)).thenReturn(entity)
+        `when`(translatableEntityService.getByUuid(TmsApplication.templateUuid)).thenThrow(TranslatableEntityNotFoundByUuidException::class.java)
+        // sut
+        translatableStaticService.copy(entityUuid)
+        // verify
+        verify(translatableEntityService, times(1)).getByUuid(entityUuid)
+        verify(translatableEntityService, times(1)).getByUuid(TmsApplication.templateUuid)
+    }
+
+    @Test()
+    fun copyTranslatableStaticForEntityTest() {
+        // test data
+        val key = "key"
+        val value = "value"
+        val entityUuid = "uuid"
+        val entity = TranslatableEntity().apply { uuid = entityUuid }
+        val language = Language().apply { lang = "en" }
+        val templateEntity = TranslatableEntity().apply { uuid = TmsApplication.templateUuid }
+        val static = TranslatableStatic()
+                .apply { this.key = key }
+                .apply { this.value = value }
+                .apply { this.language = language }
+                .apply { this.entity = templateEntity }
+
+        templateEntity.apply { statics = setOf(static) }
+        // mock
+        `when`(translatableEntityService.getByUuid(entityUuid)).thenReturn(entity)
+        `when`(translatableEntityService.getByUuid(TmsApplication.templateUuid)).thenReturn(templateEntity)
+        `when`(translatableStaticRepository.save(ArgumentMatchers.any(TranslatableStatic::class.java))).thenReturn(static.apply { this.entity = entity })
+        // sut
+        val result = translatableStaticService.copy(entityUuid)
+        // verify
+        verify(translatableEntityService, times(1)).getByUuid(entityUuid)
+        verify(translatableEntityService, times(1)).getByUuid(TmsApplication.templateUuid)
+        verify(translatableStaticRepository, times(1)).save(ArgumentMatchers.any(TranslatableStatic::class.java))
+
+        assertTrue(result.isNotEmpty())
+        assertEquals(1, result.size)
+        result.forEach {
+            assertEquals(entityUuid, it.entity.uuid)
+        }
+    }
+
+
+    //endregion
 }
