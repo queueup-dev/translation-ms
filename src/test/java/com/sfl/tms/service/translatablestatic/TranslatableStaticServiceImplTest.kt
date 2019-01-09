@@ -341,14 +341,15 @@ class TranslatableStaticServiceImplTest {
     @Test
     fun searchWithoutTermTest() {
         // test data
+        val uuid = "uuid"
         val lang = "en"
         val pageable = PageRequest.of(0, 15)
         // mock
-        `when`(translatableStaticRepository.findByLangOrderByKeyAsc(lang, pageable)).thenReturn(emptyList())
+        `when`(translatableStaticRepository.findByEntityUuidAndLangOrderByKeyAsc(uuid, lang, pageable)).thenReturn(emptyList())
         // sut
-        val result = translatableStaticService.search(null, lang, null)
+        val result = translatableStaticService.search(uuid, null, lang, null)
         // verify
-        verify(translatableStaticRepository, times(1)).findByLangOrderByKeyAsc(lang, pageable)
+        verify(translatableStaticRepository, times(1)).findByEntityUuidAndLangOrderByKeyAsc(uuid, lang, pageable)
 
         assertTrue(result.isEmpty())
     }
@@ -356,15 +357,16 @@ class TranslatableStaticServiceImplTest {
     @Test
     fun searchWithTermTest() {
         // test data
+        val uuid = "uuid"
         val lang = "en"
         val term = "term"
         val pageable = PageRequest.of(0, 15)
         // mock
-        `when`(translatableStaticRepository.findByLangAndKeyLikeOrderByKeyAsc(lang, "$term%", pageable)).thenReturn(emptyList())
+        `when`(translatableStaticRepository.findByEntityUuidAndLangAndKeyLikeOrderByKeyAsc(uuid, lang, "$term%", pageable)).thenReturn(emptyList())
         // sut
-        val result = translatableStaticService.search(term, lang, 0)
+        val result = translatableStaticService.search(uuid, term, lang, 0)
         // verify
-        verify(translatableStaticRepository, times(1)).findByLangAndKeyLikeOrderByKeyAsc(lang, "$term%", pageable)
+        verify(translatableStaticRepository, times(1)).findByEntityUuidAndLangAndKeyLikeOrderByKeyAsc(uuid, lang, "$term%", pageable)
 
         assertTrue(result.isEmpty())
     }

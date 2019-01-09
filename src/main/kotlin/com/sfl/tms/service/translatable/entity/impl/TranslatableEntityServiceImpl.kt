@@ -73,6 +73,25 @@ class TranslatableEntityServiceImpl : TranslatableEntityService {
                 }
             }
 
+    @Throws(TranslatableEntityExistsByUuidException::class)
+    @Transactional
+    override fun createTemplate(dto: TranslatableEntityDto): TranslatableEntity = dto
+            .also { logger.trace("Creating new TranslatableEntity for provided dto - {} ", dto) }
+            .let {
+                findByUuid(dto.uuid).let {
+                    if (it == null) {
+                        TranslatableEntity()
+                                .apply { uuid = dto.uuid }
+                                .apply { name = dto.name }
+                                .let { translatableEntityRepository.save(it) }
+                                .also { logger.debug("Successfully created new TranslatableEntity for provided dto - {}", dto) }
+                    } else {
+                        logger.error("Unable to create new TranslatableEntity for provided dto - {}. Already exists.", dto)
+                        throw TranslatableEntityExistsByUuidException(dto.uuid)
+                    }
+                }
+            }
+
     companion object {
         @JvmStatic
         private val logger = LoggerFactory.getLogger(TranslatableEntityServiceImpl::class.java)

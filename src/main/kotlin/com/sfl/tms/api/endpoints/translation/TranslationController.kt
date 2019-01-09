@@ -111,8 +111,8 @@ class TranslationController {
 
     @ApiOperation(value = "Update translatable static for entity", response = List::class)
     @ValidateActionRequest
-    @RequestMapping(value = ["/static/{key}"], method = [RequestMethod.PATCH])
-    fun updateTranslatableStatic(@PathVariable("key") key: String, @RequestBody request: List<TranslatableStaticUpdateRequestModel>): ResponseEntity<ResultModel<out AbstractApiModel>> = try {
+    @RequestMapping(value = ["/static/{uuid}"], method = [RequestMethod.PATCH])
+    fun updateTranslatableStatic(@PathVariable("uuid") uuid: String, @RequestBody request: List<TranslatableStaticUpdateRequestModel>): ResponseEntity<ResultModel<out AbstractApiModel>> = try {
         request
                 .also { logger.trace("Updating TranslatableStatic for provided request - {} ", it) }
                 .also {
@@ -122,7 +122,7 @@ class TranslationController {
                         }
                     }
                 }
-                .map { translatableStaticService.updateValue(TranslatableStaticDto(key, it.entityUuid, it.value, it.lang)) }
+                .map { translatableStaticService.updateValue(TranslatableStaticDto(it.key, uuid, it.value, it.lang)) }
                 .map { TranslatableStaticResponseModel(it.key, it.entity.uuid, it.value, it.language.lang) }
                 .let { ok(object : AbstractApiResponseModel, ArrayList<TranslatableStaticResponseModel>(it) {}) }
                 .also { logger.debug("Successfully updated TranslatableStatic for provided request - {} ", request) }
@@ -163,9 +163,9 @@ class TranslationController {
     @ApiOperation(value = "Search translatable static by key and language", response = TranslatableStaticResponseModel::class)
     @ValidateActionRequest
     @RequestMapping(value = ["/static/search"], method = [RequestMethod.GET])
-    fun searchStaticTranslations(@RequestParam("term", required = false) term: String?, @RequestParam("lang", required = false) lang: String?, @RequestParam("page", required = false) page: Int?) = term
-            .also { logger.trace("Retrieving TranslatableStatic list for provided term - {}, page - {} ", it, page) }
-            .let { translatableStaticService.search(it, lang, page) }
+    fun searchStaticTranslations(@RequestParam("uuid", required = false) uuid: String, @RequestParam("term", required = false) term: String?, @RequestParam("lang", required = false) lang: String?, @RequestParam("page", required = false) page: Int?) = uuid
+            .also { logger.trace("Retrieving TranslatableStatic list for provided entity with uuid - {}, term - {}, language - {} and page - {} ", it, term, lang, page) }
+            .let { translatableStaticService.search(it, term, lang, page) }
             .map { TranslatableStaticResponseModel(it.key, it.entity.uuid, it.value, it.language.lang) }
             .groupBy { it.lang }
             .let { ok(TranslatableStaticsPageResponseModel(it)) }

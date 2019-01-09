@@ -134,16 +134,16 @@ class TranslatableStaticServiceImpl : TranslatableStaticService {
     //region search
 
     @Transactional(readOnly = true)
-    override fun search(term: String?, lang: String?, page: Int?): List<TranslatableStatic> = PageRequest.of(page ?: 0, 15)
-            .also { logger.trace("Retrieving TranslatableStatic for provided search term - {}, page id - {}", term, page) }
+    override fun search(uuid: String, term: String?, lang: String?, page: Int?): List<TranslatableStatic> = PageRequest.of(page ?: 0, 15)
+            .also { logger.trace("Retrieving TranslatableStatic for provided uuid - {}, term - {}, language - {} and page id - {}", uuid, term, lang, page) }
             .let {
                 if (term == null) {
-                    translatableStaticRepository.findByLangOrderByKeyAsc(lang ?: "", it)
+                    translatableStaticRepository.findByEntityUuidAndLangOrderByKeyAsc(uuid = uuid, lang = lang ?: "", pageable = it)
                 } else {
-                    translatableStaticRepository.findByLangAndKeyLikeOrderByKeyAsc(lang ?: "", "$term%", it)
+                    translatableStaticRepository.findByEntityUuidAndLangAndKeyLikeOrderByKeyAsc(uuid = uuid, lang = lang ?: "", term = "$term%", pageable = it)
                 }
             }
-            .also { logger.debug("Retrieved TranslatableStatic for provided term - {}, page - {}", term, page) }
+            .also { logger.debug("Retrieved TranslatableStatic for provided uuid - {}, term - {}, language - {} and page id - {}", uuid, term, lang, page) }
 
     //endregion
 

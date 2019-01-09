@@ -23,10 +23,10 @@ interface TranslatableStaticRepository : JpaRepository<TranslatableStatic, Long>
 
     fun findByKeyAndEntity_IdAndLanguage_Id(key: String, entityId: Long, languageId: Long): TranslatableStatic?
 
-    @Query("from TranslatableStatic ts where (:lang = '' or (ts.language.lang = :lang and :lang <> '')) order by ts.key asc")
-    fun findByLangOrderByKeyAsc(@Param("lang") lang: String, pageable: Pageable): List<TranslatableStatic>
+    @Query("from TranslatableStatic ts where ts.entity.uuid = :uuid and (:lang = '' or (ts.language.lang = :lang and :lang <> '')) order by ts.key asc")
+    fun findByEntityUuidAndLangOrderByKeyAsc(@Param("uuid") uuid: String, @Param("lang") lang: String, pageable: Pageable): List<TranslatableStatic>
 
-    @Query("from TranslatableStatic ts where (:lang = '' or (ts.language.lang = :lang and :lang <> '')) and lower(ts.key) like lower(:term) order by ts.key asc")
-    fun findByLangAndKeyLikeOrderByKeyAsc(@Param("lang") lang: String, @Param("term") term: String, pageable: Pageable): List<TranslatableStatic>
+    @Query("from TranslatableStatic ts where ts.entity.uuid = :uuid and (:lang = '' or (ts.language.lang = :lang and :lang <> '')) and lower(ts.key) like lower(:term) order by ts.key asc")
+    fun findByEntityUuidAndLangAndKeyLikeOrderByKeyAsc(@Param("uuid") uuid: String, @Param("lang") lang: String, @Param("term") term: String, pageable: Pageable): List<TranslatableStatic>
 
 }

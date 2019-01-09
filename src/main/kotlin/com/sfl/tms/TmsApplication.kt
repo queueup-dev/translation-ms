@@ -38,7 +38,7 @@ class TmsApplication {
         var entity = translatableEntityService.findByUuid(templateUuid)
 
         if (entity == null) {
-            entity = translatableEntityService.create(TranslatableEntityDto(UUID.fromString(templateUuid).toString(), "Translatable entity template"))
+            entity = translatableEntityService.createTemplate(TranslatableEntityDto(UUID.fromString(templateUuid).toString(), "Translatable entity template"))
         }
 
         insertData("en", entity.uuid)
@@ -59,7 +59,7 @@ class TmsApplication {
 
             if (v is Map<*, *>) {
                 v.forEach { k2, value ->
-                    createOrUpdateIfExist(key + "_" + k2 as String, uuid, lang, value as String)
+                    createOrUpdateIfExist(key + "." + k2 as String, uuid, lang, value as String)
                 }
             } else {
                 createOrUpdateIfExist(key, uuid, lang, v as String)

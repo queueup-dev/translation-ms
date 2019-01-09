@@ -16,4 +16,6 @@ interface TranslatableEntityService {
 
     fun create(dto: TranslatableEntityDto): TranslatableEntity
 
+    fun createTemplate(dto: TranslatableEntityDto): TranslatableEntity
+
 }
