@@ -138,7 +138,11 @@ class TranslatableStaticServiceImpl : TranslatableStaticService {
             .also { logger.trace("Retrieving TranslatableStatic for provided uuid - {}, term - {}, language - {} and page id - {}", uuid, term, lang, page) }
             .let {
                 if (term == null) {
-                    translatableStaticRepository.findByEntityUuidAndLangOrderByKeyAsc(uuid = uuid, lang = lang ?: "", pageable = it)
+                    if (page == null) {
+                        translatableStaticRepository.findByEntityUuidAndLangOrderByKeyAsc(uuid = uuid, lang = lang ?: "")
+                    } else {
+                        translatableStaticRepository.findByEntityUuidAndLangOrderByKeyAscPage(uuid = uuid, lang = lang ?: "", pageable = it)
+                    }
                 } else {
                     translatableStaticRepository.findByEntityUuidAndLangAndKeyLikeOrderByKeyAsc(uuid = uuid, lang = lang ?: "", term = "$term%", pageable = it)
                 }

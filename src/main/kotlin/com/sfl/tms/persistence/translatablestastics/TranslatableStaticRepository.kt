@@ -1,6 +1,7 @@
 package com.sfl.tms.persistence.translatablestastics
 
 import com.sfl.tms.domain.translatablestastic.TranslatableStatic
+import org.springframework.cache.annotation.Cacheable
 import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
@@ -23,8 +24,12 @@ interface TranslatableStaticRepository : JpaRepository<TranslatableStatic, Long>
 
     fun findByKeyAndEntity_IdAndLanguage_Id(key: String, entityId: Long, languageId: Long): TranslatableStatic?
 
+    @Cacheable(value = ["statics"])
     @Query("from TranslatableStatic ts where ts.entity.uuid = :uuid and (:lang = '' or (ts.language.lang = :lang and :lang <> '')) order by ts.key asc")
-    fun findByEntityUuidAndLangOrderByKeyAsc(@Param("uuid") uuid: String, @Param("lang") lang: String, pageable: Pageable): List<TranslatableStatic>
+    fun findByEntityUuidAndLangOrderByKeyAsc(@Param("uuid") uuid: String, @Param("lang") lang: String): List<TranslatableStatic>
+
+    @Query("from TranslatableStatic ts where ts.entity.uuid = :uuid and (:lang = '' or (ts.language.lang = :lang and :lang <> '')) order by ts.key asc")
+    fun findByEntityUuidAndLangOrderByKeyAscPage(@Param("uuid") uuid: String, @Param("lang") lang: String, pageable: Pageable): List<TranslatableStatic>
 
     @Query("from TranslatableStatic ts where ts.entity.uuid = :uuid and (:lang = '' or (ts.language.lang = :lang and :lang <> '')) and lower(ts.key) like lower(:term) order by ts.key asc")
     fun findByEntityUuidAndLangAndKeyLikeOrderByKeyAsc(@Param("uuid") uuid: String, @Param("lang") lang: String, @Param("term") term: String, pageable: Pageable): List<TranslatableStatic>

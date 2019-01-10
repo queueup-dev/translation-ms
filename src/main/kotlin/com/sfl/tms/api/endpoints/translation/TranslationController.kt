@@ -41,6 +41,7 @@ import org.springframework.web.bind.annotation.*
  * Date: 12/5/18
  * Time: 2:05 PM
  */
+@CrossOrigin(origins = ["*"])
 @RestController
 @RequestMapping("/translation")
 class TranslationController {
