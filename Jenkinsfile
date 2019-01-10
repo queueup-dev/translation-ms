@@ -6,7 +6,7 @@ node {
     def defaultProjectDockerRegistryUsername = "jenkins"
     def defaultProjectDockerRegistryPassword = "J3nk1ns"
 //    def gradleHome = tool 'GRADLE_5.0'
-    def scannerHome = tool 'SONAR_SCANNER_3.0.3.778'
+//    def scannerHome = tool 'SONAR_SCANNER_3.0.3.778'
     env.JAVA_HOME = tool 'JDK_u162'
 //    env.PATH = "${gradleHome}/bin:${scannerHome}/bin:${env.PATH}"
 
