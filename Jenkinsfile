@@ -5,17 +5,17 @@ node {
     def defaultProjectDockerRegistry = "registry.sflpro.com"
     def defaultProjectDockerRegistryUsername = "jenkins"
     def defaultProjectDockerRegistryPassword = "J3nk1ns"
-    def gradleHome = tool 'GRADLE_5.0'
+//    def gradleHome = tool 'GRADLE_5.0'
     def scannerHome = tool 'SONAR_SCANNER_3.0.3.778'
     env.JAVA_HOME = tool 'JDK_u162'
-    env.PATH = "${gradleHome}/bin:${scannerHome}/bin:${env.PATH}"
+//    env.PATH = "${gradleHome}/bin:${scannerHome}/bin:${env.PATH}"
 
     stage('Checkout project') {
         checkout scm
     }
 
     stage('Build') {
-        sh "gradle -x test build"
+        sh "./gradlew -x test build"
     }
 
     def loginToRegistry = { String url = defaultProjectDockerRegistry,
@@ -26,14 +26,14 @@ node {
 
     def buildDockerImage = { String environment, String registry ->
         stage('Build docker image') {
-            sh "gradle -x test buildDockerWithLatestTag -Penvironment=$environment -PdockerRegistryUrl=${registry}"
+            sh "./gradlew -x test buildDockerWithLatestTag -Penvironment=$environment -PdockerRegistryUrl=${registry}"
             sh "docker rmi ${registry}/translation-ms-$environment:latest"
         }
     }
 
     def executeSonarAnalysis = {
         stage('SonarQube analysis') {
-            sh "gradle --info sonarqube -Dsonar.login=${env.SONAR_LOGIN} -Dsonar.host.url=${env.SONAR_HOST_URL}"
+            sh "./gradlew --info sonarqube -Dsonar.login=${env.SONAR_LOGIN} -Dsonar.host.url=${env.SONAR_HOST_URL}"
         }
     }
 
