@@ -10,6 +10,8 @@ import com.sfl.tms.service.translatable.entity.dto.TranslatableEntityDto
  */
 interface TranslatableEntityService {
 
+    fun findAll(): List<TranslatableEntity>
+
     fun findByUuid(uuid: String): TranslatableEntity?
 
     fun getByUuid(uuid: String): TranslatableEntity

@@ -2,6 +2,7 @@ package com.sfl.tms.service.translatablestatic
 
 import com.sfl.tms.domain.translatablestastic.TranslatableStatic
 import com.sfl.tms.service.translatablestatic.dto.TranslatableStaticDto
+import com.sfl.tms.service.translatablestatic.dto.TranslatableStaticTemplateDto
 
 /**
  * User: Vazgen Danielyan
@@ -17,6 +18,8 @@ interface TranslatableStaticService {
     fun getByKeyAndEntityUuidAndLanguageLang(key: String, uuid: String, lang: String): TranslatableStatic
 
     fun create(dto: TranslatableStaticDto): TranslatableStatic
+
+    fun createTemplate(dto: TranslatableStaticTemplateDto): TranslatableStatic
 
     fun updateValue(dto: TranslatableStaticDto): TranslatableStatic
 

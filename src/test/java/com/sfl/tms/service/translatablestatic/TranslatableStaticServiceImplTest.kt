@@ -10,6 +10,7 @@ import com.sfl.tms.service.language.exception.LanguageNotFoundByLangException
 import com.sfl.tms.service.translatable.entity.TranslatableEntityService
 import com.sfl.tms.service.translatable.entity.exception.TranslatableEntityNotFoundByUuidException
 import com.sfl.tms.service.translatablestatic.dto.TranslatableStaticDto
+import com.sfl.tms.service.translatablestatic.dto.TranslatableStaticTemplateDto
 import com.sfl.tms.service.translatablestatic.exception.TranslatableStaticExistException
 import com.sfl.tms.service.translatablestatic.exception.TranslatableStaticNotFoundByKeyAndEntityUuidAndLanguageLangException
 import com.sfl.tms.service.translatablestatic.exception.TranslatableStaticNotFoundByKeyAndEntityUuidException
@@ -271,6 +272,170 @@ class TranslatableStaticServiceImplTest {
 
     //endregion
 
+    //region Create translatable static template
+
+    @Test(expected = LanguageNotFoundByLangException::class)
+    fun createTemplateWhenLanguageNotFoundTest() {
+        // test data
+        val key = "key"
+        val value = "value"
+        val lang = "en"
+        val dto = TranslatableStaticTemplateDto(key, value, lang)
+        // mock
+        `when`(languageService.getByLang(lang)).thenThrow(LanguageNotFoundByLangException::class.java)
+        // sut
+        translatableStaticService.createTemplate(dto)
+        // verify
+        verify(languageService, times(1)).getByLang(lang)
+    }
+
+    @Test(expected = TranslatableEntityNotFoundByUuidException::class)
+    fun createTemplateWhenEntityNotFoundTest() {
+        // test data
+        val key = "key"
+        val value = "value"
+        val lang = "en"
+        val dto = TranslatableStaticTemplateDto(key, value, lang)
+        val language = Language().apply { this.id = 1L }.apply { this.lang = lang }
+        // mock
+        `when`(languageService.getByLang(lang)).thenReturn(language)
+        `when`(translatableEntityService.getByUuid(TmsApplication.templateUuid)).thenThrow(TranslatableEntityNotFoundByUuidException::class.java)
+        // sut
+        translatableStaticService.createTemplate(dto)
+        // verify
+        verify(languageService, times(1)).getByLang(lang)
+        verify(translatableEntityService, times(1)).getByUuid(TmsApplication.templateUuid)
+    }
+
+    @Test(expected = TranslatableStaticExistException::class)
+    fun createTemplateWhenTranslatableStaticAlreadyExistTest() {
+        // test data
+        val key = "key"
+        val value = "value"
+        val lang = "en"
+        val dto = TranslatableStaticTemplateDto(key, value, lang)
+        val language = Language().apply { this.id = 1L }.apply { this.lang = lang }
+        val entity = TranslatableEntity().apply { id = 1L }.apply { uuid = TmsApplication.templateUuid }
+        val static = TranslatableStatic()
+        // mock
+        `when`(languageService.getByLang(lang)).thenReturn(language)
+        `when`(translatableEntityService.getByUuid(TmsApplication.templateUuid)).thenReturn(entity)
+        `when`(translatableStaticRepository.findByKeyAndEntity_IdAndLanguage_Id(key, entityId = entity.id, languageId = language.id)).thenReturn(static)
+        // sut
+        translatableStaticService.createTemplate(dto)
+        // verify
+        verify(languageService, times(1)).getByLang(lang)
+        verify(translatableEntityService, times(1)).getByUuid(TmsApplication.templateUuid)
+        verify(translatableStaticRepository, times(1)).findByKeyAndEntity_IdAndLanguage_Id(key, entityId = entity.id, languageId = language.id)
+    }
+
+    @Test
+    fun createTemplateTestForSkipping() {
+        // test data
+        val key = "key"
+        val entityUuid = "uuid"
+        val value = "value"
+        val lang = "en"
+        val languageId = 1L
+        val language = Language().apply { id = languageId }.apply { this.lang = lang }
+        val templateEntity = TranslatableEntity().apply { id = 1L }.apply { uuid = TmsApplication.templateUuid }
+        val entity = TranslatableEntity().apply { id = 2L }.apply { uuid = entityUuid }
+        val dto = TranslatableStaticTemplateDto(key, value, lang)
+        val translatableStatic = TranslatableStatic().apply { this.key = key }.apply { this.value = value }.apply { this.language = language }
+        // mock
+        `when`(languageService.getByLang(lang)).thenReturn(language)
+        `when`(translatableEntityService.getByUuid(TmsApplication.templateUuid)).thenReturn(templateEntity)
+        `when`(translatableStaticRepository.findByKeyAndEntity_IdAndLanguage_Id(key, entityId = templateEntity.id, languageId = language.id)).thenReturn(null)
+        `when`(translatableStaticRepository.save(ArgumentMatchers.any(TranslatableStatic::class.java))).thenReturn(translatableStatic)
+        `when`(translatableEntityService.findAll()).thenReturn(listOf(entity))
+        `when`(translatableEntityService.getByUuid(entity.uuid)).thenReturn(entity)
+        `when`(translatableStaticRepository.findByKeyAndEntity_IdAndLanguage_Lang(key, entity.id, lang)).thenReturn(translatableStatic)
+        // sut
+        val result = translatableStaticService.createTemplate(dto)
+        // verify
+        verify(languageService, times(1)).getByLang(lang)
+        verify(translatableEntityService, times(1)).getByUuid(TmsApplication.templateUuid)
+        verify(translatableStaticRepository, times(1)).findByKeyAndEntity_IdAndLanguage_Id(key, entityId = templateEntity.id, languageId = language.id)
+        verify(translatableStaticRepository, times(1)).save(ArgumentMatchers.any(TranslatableStatic::class.java))
+        verify(translatableEntityService, times(1)).findAll()
+        verify(translatableEntityService, times(1)).getByUuid(entity.uuid)
+        verify(translatableStaticRepository, times(1)).findByKeyAndEntity_IdAndLanguage_Lang(key, entity.id, lang)
+
+        assertEquals(key, result.key)
+        assertEquals(value, result.value)
+        assertEquals(languageId, result.language.id)
+    }
+
+    @Test(expected = TranslatableEntityNotFoundByUuidException::class)
+    fun createTemplateWhenRetrievedTranslatableEntityNotFoundTest() {
+        // test data
+        val key = "key"
+        val entityUuid = "uuid"
+        val value = "value"
+        val lang = "en"
+        val languageId = 1L
+        val language = Language().apply { id = languageId }.apply { this.lang = lang }
+        val templateEntity = TranslatableEntity().apply { id = 1L }.apply { uuid = TmsApplication.templateUuid }
+        val entity = TranslatableEntity().apply { id = 2L }.apply { uuid = entityUuid }
+        val dto = TranslatableStaticTemplateDto(key, value, lang)
+        val translatableStatic = TranslatableStatic().apply { this.key = key }.apply { this.value = value }.apply { this.language = language }
+        // mock
+        `when`(languageService.getByLang(lang)).thenReturn(language)
+        `when`(translatableEntityService.getByUuid(TmsApplication.templateUuid)).thenReturn(templateEntity)
+        `when`(translatableStaticRepository.findByKeyAndEntity_IdAndLanguage_Id(key, entityId = templateEntity.id, languageId = language.id)).thenReturn(null)
+        `when`(translatableStaticRepository.save(ArgumentMatchers.any(TranslatableStatic::class.java))).thenReturn(translatableStatic)
+        `when`(translatableEntityService.findAll()).thenReturn(listOf(entity))
+        `when`(translatableEntityService.getByUuid(entity.uuid)).thenThrow(TranslatableEntityNotFoundByUuidException::class.java)
+        // sut
+        translatableStaticService.createTemplate(dto)
+        // verify
+        verify(languageService, times(1)).getByLang(lang)
+        verify(translatableEntityService, times(1)).getByUuid(TmsApplication.templateUuid)
+        verify(translatableStaticRepository, times(1)).findByKeyAndEntity_IdAndLanguage_Id(key, entityId = templateEntity.id, languageId = language.id)
+        verify(translatableStaticRepository, times(1)).save(ArgumentMatchers.any(TranslatableStatic::class.java))
+        verify(translatableEntityService, times(1)).findAll()
+        verify(translatableEntityService, times(1)).getByUuid(entity.uuid)
+    }
+
+    @Test
+    fun createTemplateTest() {
+        // test data
+        val key = "key"
+        val entityUuid = "uuid"
+        val value = "value"
+        val lang = "en"
+        val languageId = 1L
+        val language = Language().apply { id = languageId }.apply { this.lang = lang }
+        val templateEntity = TranslatableEntity().apply { id = 1L }.apply { uuid = TmsApplication.templateUuid }
+        val entity = TranslatableEntity().apply { id = 2L }.apply { uuid = entityUuid }
+        val dto = TranslatableStaticTemplateDto(key, value, lang)
+        val translatableStatic = TranslatableStatic().apply { this.key = key }.apply { this.value = value }.apply { this.language = language }
+        // mock
+        `when`(languageService.getByLang(lang)).thenReturn(language)
+        `when`(translatableEntityService.getByUuid(TmsApplication.templateUuid)).thenReturn(templateEntity)
+        `when`(translatableStaticRepository.findByKeyAndEntity_IdAndLanguage_Id(key, entityId = templateEntity.id, languageId = language.id)).thenReturn(null)
+        `when`(translatableStaticRepository.save(ArgumentMatchers.any(TranslatableStatic::class.java))).thenReturn(translatableStatic)
+        `when`(translatableEntityService.findAll()).thenReturn(listOf(entity))
+        `when`(translatableEntityService.getByUuid(entity.uuid)).thenReturn(entity)
+        `when`(translatableStaticRepository.findByKeyAndEntity_IdAndLanguage_Lang(key, entity.id, lang)).thenReturn(null)
+        // sut
+        val result = translatableStaticService.createTemplate(dto)
+        // verify
+        verify(languageService, times(2)).getByLang(lang)
+        verify(translatableEntityService, times(1)).getByUuid(TmsApplication.templateUuid)
+        verify(translatableStaticRepository, times(1)).findByKeyAndEntity_IdAndLanguage_Id(key, entityId = templateEntity.id, languageId = language.id)
+        verify(translatableStaticRepository, times(2)).save(ArgumentMatchers.any(TranslatableStatic::class.java))
+        verify(translatableEntityService, times(1)).findAll()
+        verify(translatableEntityService, times(2)).getByUuid(entity.uuid)
+        verify(translatableStaticRepository, times(1)).findByKeyAndEntity_IdAndLanguage_Lang(key, entity.id, lang)
+
+        assertEquals(key, result.key)
+        assertEquals(value, result.value)
+        assertEquals(languageId, result.language.id)
+    }
+
+    //endregion
+
     //region Update translatable static
 
     @Test(expected = TranslatableEntityNotFoundByUuidException::class)
@@ -339,17 +504,32 @@ class TranslatableStaticServiceImplTest {
     //region Search
 
     @Test
-    fun searchWithoutTermTest() {
+    fun searchWithoutTermWithoutPageTest() {
+        // test data
+        val uuid = "uuid"
+        val lang = "en"
+        // mock
+        `when`(translatableStaticRepository.findByEntityUuidAndLangOrderByKeyAsc(uuid, lang)).thenReturn(emptyList())
+        // sut
+        val result = translatableStaticService.search(uuid, null, lang, null)
+        // verify
+        verify(translatableStaticRepository, times(1)).findByEntityUuidAndLangOrderByKeyAsc(uuid, lang)
+
+        assertTrue(result.isEmpty())
+    }
+
+    @Test
+    fun searchWithoutTermWithPageTest() {
         // test data
         val uuid = "uuid"
         val lang = "en"
         val pageable = PageRequest.of(0, 15)
         // mock
-        `when`(translatableStaticRepository.findByEntityUuidAndLangOrderByKeyAsc(uuid, lang, pageable)).thenReturn(emptyList())
+        `when`(translatableStaticRepository.findByEntityUuidAndLangOrderByKeyAscPage(uuid, lang, pageable)).thenReturn(emptyList())
         // sut
-        val result = translatableStaticService.search(uuid, null, lang, null)
+        val result = translatableStaticService.search(uuid, null, lang, 0)
         // verify
-        verify(translatableStaticRepository, times(1)).findByEntityUuidAndLangOrderByKeyAsc(uuid, lang, pageable)
+        verify(translatableStaticRepository, times(1)).findByEntityUuidAndLangOrderByKeyAscPage(uuid, lang, pageable)
 
         assertTrue(result.isEmpty())
     }

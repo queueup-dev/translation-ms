@@ -31,6 +31,12 @@ class TranslatableEntityServiceImpl : TranslatableEntityService {
     //endregion
 
     @Transactional(readOnly = true)
+    override fun findAll(): List<TranslatableEntity> {
+        logger.trace("Retrieving all TranslatableEntities")
+        return translatableEntityRepository.findAll().also { logger.debug("Retrieved all TranslatableEntities") }
+    }
+
+    @Transactional(readOnly = true)
     override fun findByUuid(uuid: String): TranslatableEntity? = uuid
             .also { logger.trace("Retrieving TranslatableEntity for provided uuid - {} ", uuid) }
             .let { translatableEntityRepository.findByUuid(it) }

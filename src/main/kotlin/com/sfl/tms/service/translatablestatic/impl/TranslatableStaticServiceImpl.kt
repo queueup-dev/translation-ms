@@ -8,6 +8,7 @@ import com.sfl.tms.service.translatable.entity.TranslatableEntityService
 import com.sfl.tms.service.translatable.entity.exception.TranslatableEntityNotFoundByUuidException
 import com.sfl.tms.service.translatablestatic.TranslatableStaticService
 import com.sfl.tms.service.translatablestatic.dto.TranslatableStaticDto
+import com.sfl.tms.service.translatablestatic.dto.TranslatableStaticTemplateDto
 import com.sfl.tms.service.translatablestatic.exception.TranslatableStaticExistException
 import com.sfl.tms.service.translatablestatic.exception.TranslatableStaticNotFoundByKeyAndEntityUuidAndLanguageLangException
 import com.sfl.tms.service.translatablestatic.exception.TranslatableStaticNotFoundByKeyAndEntityUuidException
@@ -72,7 +73,7 @@ class TranslatableStaticServiceImpl : TranslatableStaticService {
 
     //region getByKeyAndEntityUuidAndLanguageLang
 
-    @Throws(TranslatableStaticNotFoundByKeyAndEntityUuidAndLanguageLangException::class)
+    @Throws(TranslatableStaticNotFoundByKeyAndEntityUuidAndLanguageLangException::class, TranslatableEntityNotFoundByUuidException::class)
     @Transactional(readOnly = true)
     override fun getByKeyAndEntityUuidAndLanguageLang(key: String, uuid: String, lang: String): TranslatableStatic = key
             .also { logger.trace("Retrieving TranslatableStatic for provided key - {}, entity uuid - {} and lang - {}", it, uuid, lang) }
@@ -94,7 +95,7 @@ class TranslatableStaticServiceImpl : TranslatableStaticService {
     @Throws(TranslatableStaticExistException::class)
     @Transactional
     override fun create(dto: TranslatableStaticDto): TranslatableStatic {
-        logger.trace("Creating new TranslatableStatic for provided dto - {} ", dto)
+        logger.trace("Creating new TranslatableStatic for provided dto - {}", dto)
 
         val language = languageService.getByLang(dto.lang)
 
@@ -119,8 +120,41 @@ class TranslatableStaticServiceImpl : TranslatableStaticService {
 
     //endregion
 
+    //region createTemplate
+
+    @Transactional
+    override fun createTemplate(dto: TranslatableStaticTemplateDto): TranslatableStatic = dto
+            .also { logger.trace("Creating new TranslatableStatic template for provided dto - {}", dto) }
+            .let { create(TranslatableStaticDto(it.key, TmsApplication.templateUuid, it.value, it.lang)) }
+            .also { logger.debug("Successfully created new TranslatableStatic template for provided dto - {}", dto) }
+            .also { logger.debug("Creating new TranslatableStatic for all existing entities by provided dto - {}", dto) }
+            .also {
+                translatableEntityService
+                        .findAll()
+                        .filter { it.uuid != TmsApplication.templateUuid }
+                        .forEach {
+                            try {
+                                // if found then skipping
+                                getByKeyAndEntityUuidAndLanguageLang(dto.key, it.uuid, dto.lang)
+                                logger.debug("TranslatableStatic found for key - {}, entity uuid - {} and language lang - {}. Skipping creation.", dto.key, it.uuid, dto.lang)
+                            } catch (e: TranslatableStaticNotFoundByKeyAndEntityUuidAndLanguageLangException) {
+                                // if not found then creating translatable static for entity
+                                logger.debug("TranslatableStatic not found for key - {}, entity uuid - {} and language lang - {}. Creating new one.", dto.key, it.uuid, dto.lang)
+                                create(TranslatableStaticDto(dto.key, it.uuid, dto.value, dto.lang))
+                                logger.debug("Successfully created TranslatableStatic for key - {}, entity uuid - {} and language lang - {}. ", dto.key, it.uuid, dto.lang)
+                            } catch (e: TranslatableEntityNotFoundByUuidException) {
+                                logger.error("Unexpected case. Translatable entity with uuid - {} should be exist, because retrieved from db.", it.uuid)
+                                //rethrow exception
+                                throw e
+                            }
+                        }
+            }
+
+    //endregion
+
     //region updateValue
 
+    @Throws(TranslatableEntityNotFoundByUuidException::class, TranslatableStaticNotFoundByKeyAndEntityUuidAndLanguageLangException::class)
     @Transactional
     override fun updateValue(dto: TranslatableStaticDto): TranslatableStatic = dto
             .also { logger.trace("Updating TranslatableStatic for provided dto - {} ", it) }

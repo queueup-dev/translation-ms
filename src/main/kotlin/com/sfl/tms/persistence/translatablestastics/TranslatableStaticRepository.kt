@@ -17,6 +17,8 @@ interface TranslatableStaticRepository : JpaRepository<TranslatableStatic, Long>
 
     fun findByKeyAndEntity_Id(key: String, entityId: Long): List<TranslatableStatic>
 
+    fun findByKeyAndLanguage_Lang(key: String, lang: String): List<TranslatableStatic>
+
     fun findByKeyAndEntity_IdAndLanguage_Lang(key: String, entityId: Long, lang: String): TranslatableStatic?
 
     fun findByKeyAndEntity_UuidAndLanguage_Lang(key: String, entityUuid: String, lang: String): TranslatableStatic?
