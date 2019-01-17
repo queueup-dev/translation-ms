@@ -4,8 +4,10 @@ import com.google.gson.Gson
 import com.sfl.tms.service.language.LanguageService
 import com.sfl.tms.service.translatable.entity.TranslatableEntityService
 import com.sfl.tms.service.translatable.entity.dto.TranslatableEntityDto
-import com.sfl.tms.service.translatablestatic.TranslatableStaticService
-import com.sfl.tms.service.translatablestatic.dto.TranslatableStaticDto
+import com.sfl.tms.service.translatable.field.TranslatableEntityFieldService
+import com.sfl.tms.service.translatable.field.dto.TranslatableEntityFieldDto
+import com.sfl.tms.service.translatable.translation.TranslatableEntityFieldTranslationService
+import com.sfl.tms.service.translatable.translation.dto.TranslatableEntityFieldTranslationDto
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.CommandLineRunner
 import org.springframework.boot.SpringApplication
@@ -19,13 +21,16 @@ class TmsApplication {
     //region Injection
 
     @Autowired
+    private lateinit var languageService: LanguageService
+
+    @Autowired
     private lateinit var translatableEntityService: TranslatableEntityService
 
     @Autowired
-    private lateinit var translatableStaticService: TranslatableStaticService
+    private lateinit var translatableEntityFieldService: TranslatableEntityFieldService
 
     @Autowired
-    private lateinit var languageService: LanguageService
+    private lateinit var translatableEntityFieldTranslationService: TranslatableEntityFieldTranslationService
 
     //endregion
 
@@ -35,45 +40,49 @@ class TmsApplication {
         createLanguageIfNotExist("en")
         createLanguageIfNotExist("nl")
 
-        var entity = translatableEntityService.findByUuid(templateUuid)
+        translatableEntityService.findByUuidAndLabel(templateUuid, templateLabel)
+                ?: translatableEntityService.create(TranslatableEntityDto(UUID.fromString(templateUuid).toString(), templateLabel, "Translatable entity template"))
 
-        if (entity == null) {
-            entity = translatableEntityService.createTemplate(TranslatableEntityDto(UUID.fromString(templateUuid).toString(), "Translatable entity template"))
-        }
-
-        insertData("en", entity.uuid)
-        insertData("nl", entity.uuid)
+        insertData("en", templateUuid, templateLabel)
+        insertData("nl", templateUuid, templateLabel)
     }
 
-    private fun createLanguageIfNotExist(lang: String) {
-        if (languageService.findByLang(lang) == null) {
-            languageService.create(lang)
-        }
-    }
+    //region Utility methods
 
-    private fun insertData(lang: String, uuid: String) {
-        val fromJson = Gson().fromJson(TmsApplication::class.java.getResource("/static/locales-$lang.json").readText(), Map::class.java)
+    private fun createLanguageIfNotExist(lang: String) = languageService.findByLang(lang) ?: languageService.create(lang)
 
-        fromJson.forEach { k, v ->
-            val key = k as String
+    private fun insertData(lang: String, uuid: String, label: String) = Gson()
+            .fromJson(TmsApplication::class.java.getResource("/static/locales-$lang.json").readText(), Map::class.java)
+            .forEach { k, v ->
+                val key = k as String
 
-            if (v is Map<*, *>) {
-                v.forEach { k2, value ->
-                    createOrUpdateIfExist(key + "." + k2 as String, uuid, lang, value as String)
+                if (v is Map<*, *>) {
+                    v.forEach { k2, value ->
+                        createOrUpdateIfExist(key + "." + k2 as String, value as String, uuid, label, lang)
+                    }
+                } else {
+                    createOrUpdateIfExist(key, v as String, uuid, label, lang)
                 }
+            }
+
+
+    private fun createOrUpdateIfExist(key: String, value: String, uuid: String, label: String, lang: String) {
+
+        translatableEntityFieldService.findByKeyAndEntity(key, uuid, label) ?: translatableEntityFieldService.create(TranslatableEntityFieldDto(key, uuid, label))
+
+        translatableEntityFieldTranslationService.findByFieldAndLanguage(key, uuid, label, lang).let {
+
+            val dto = TranslatableEntityFieldTranslationDto(key, value, uuid, label, lang)
+
+            if (it == null) {
+                translatableEntityFieldTranslationService.create(dto)
             } else {
-                createOrUpdateIfExist(key, uuid, lang, v as String)
+                translatableEntityFieldTranslationService.updateValue(dto)
             }
         }
     }
 
-    private fun createOrUpdateIfExist(key: String, uuid: String, lang: String, value: String) = TranslatableStaticDto(key, uuid, value, lang).let {
-        if (translatableStaticService.findByKeyAndEntityUuidAndLanguageLang(it.key, uuid, it.lang) == null) {
-            translatableStaticService.create(it)
-        } else {
-            translatableStaticService.updateValue(it)
-        }
-    }
+    //endregion
 
     companion object {
         @JvmStatic
@@ -81,6 +90,7 @@ class TmsApplication {
             SpringApplication.run(TmsApplication::class.java, *args)
         }
 
-        const val templateUuid = "00000000-0000-0000-0000-000000000000"
+        private const val templateUuid = "00000000-0000-0000-0000-000000000000"
+        private const val templateLabel = "00000000-0000-0000-0000-000000000000"
     }
 }

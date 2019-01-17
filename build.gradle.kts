@@ -53,6 +53,7 @@ buildscript {
 dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
+    implementation("com.nhaarman:mockito-kotlin:1.6.0")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.3.10")

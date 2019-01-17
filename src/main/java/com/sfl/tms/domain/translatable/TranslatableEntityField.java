@@ -17,7 +17,7 @@ import java.util.Set;
 @Table(
         name = "translatable_entity_field",
         uniqueConstraints = {
-                @UniqueConstraint(name = "uk_tef_name_entity_id", columnNames = {"name", "entity_id"})
+                @UniqueConstraint(name = "uk_tef_key_entity_id", columnNames = {"key", "entity_id"})
         }
 )
 @SequenceGenerator(name = "sequence_generator", sequenceName = "translatable_entity_field_seq", allocationSize = 1)
@@ -27,8 +27,8 @@ public class TranslatableEntityField extends AbstractEntity {
 
     //region Properties
 
-    @Column(name = "name", nullable = false)
-    private String name;
+    @Column(name = "key", nullable = false)
+    private String key;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "entity_id", nullable = false, foreignKey = @ForeignKey(name = "fk_tef_entity_id"))
@@ -41,12 +41,12 @@ public class TranslatableEntityField extends AbstractEntity {
 
     //region Getters and setters
 
-    public String getName() {
-        return name;
+    public String getKey() {
+        return key;
     }
 
-    public void setName(final String name) {
-        this.name = name;
+    public void setKey(final String name) {
+        this.key = name;
     }
 
     public TranslatableEntity getEntity() {
@@ -83,7 +83,7 @@ public class TranslatableEntityField extends AbstractEntity {
         TranslatableEntityField rhs = (TranslatableEntityField) obj;
         return new EqualsBuilder()
                 .appendSuper(super.equals(obj))
-                .append(this.name, rhs.name)
+                .append(this.key, rhs.key)
                 .append(getIdOrNull(this.entity), getIdOrNull(rhs.entity))
                 .isEquals();
     }
@@ -92,7 +92,7 @@ public class TranslatableEntityField extends AbstractEntity {
     public int hashCode() {
         return new HashCodeBuilder()
                 .appendSuper(super.hashCode())
-                .append(name)
+                .append(key)
                 .append(getIdOrNull(entity))
                 .toHashCode();
     }
@@ -101,7 +101,7 @@ public class TranslatableEntityField extends AbstractEntity {
     public String toString() {
         return new ToStringBuilder(this)
                 .appendSuper(super.toString())
-                .append("name", name)
+                .append("name", key)
                 .append("entity", getIdOrNull(entity))
                 .toString();
     }

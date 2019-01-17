@@ -4,11 +4,11 @@ import com.sfl.tms.domain.translatable.TranslatableEntity
 import com.sfl.tms.domain.translatable.TranslatableEntityField
 import com.sfl.tms.persistence.translatable.TranslatableEntityFieldRepository
 import com.sfl.tms.service.translatable.entity.TranslatableEntityService
-import com.sfl.tms.service.translatable.entity.exception.TranslatableEntityNotFoundByUuidException
+import com.sfl.tms.service.translatable.entity.exception.TranslatableEntityNotFoundByUuidAndLabelException
 import com.sfl.tms.service.translatable.field.TranslatableEntityFieldService
 import com.sfl.tms.service.translatable.field.dto.TranslatableEntityFieldDto
 import com.sfl.tms.service.translatable.field.exception.TranslatableEntityFieldExistsForTranslatableEntityException
-import com.sfl.tms.service.translatable.field.exception.TranslatableEntityFieldNotFoundByNameAndEntityUuidException
+import com.sfl.tms.service.translatable.field.exception.TranslatableEntityFieldNotFoundException
 import org.junit.Assert
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -39,110 +39,132 @@ class TranslatableEntityFieldServiceImplTest {
 
     //endregion
 
+    //region findByKeyAndEntityUuidAndEntityLabelTest
+
     @Test
-    fun findTranslatableEntityFieldTest() {
+    fun findByKeyAndEntityTest() {
         // test data
-        val entityUuid = "entity_uuid"
-        val fieldName = "field_name"
-        val entity = TranslatableEntity().apply { this.uuid = entityUuid }
-        val field = TranslatableEntityField().apply { this.name = fieldName }.apply { this.entity = entity }
+        val key = "key"
+        val uuid = "uuid"
+        val label = "label"
+        val entity = TranslatableEntity()
+        val field = TranslatableEntityField().apply { this.key = key }.apply { this.entity = entity }
         // mock
-        `when`(translatableEntityFieldRepository.findByNameAndEntity_Uuid(fieldName, entityUuid)).thenReturn(field)
+        `when`(translatableEntityService.getByUuidAndLabel(uuid, label)).thenReturn(entity)
+        `when`(translatableEntityFieldRepository.findByKeyAndEntity(key, entity)).thenReturn(field)
         // sut
-        val result = translatableEntityFieldService.findByNameAndEntityUuid(fieldName, entityUuid);
+        val result = translatableEntityFieldService.findByKeyAndEntity(key, uuid, label)
         // verify
-        verify(translatableEntityFieldRepository, times(1)).findByNameAndEntity_Uuid(fieldName, entityUuid)
+        verify(translatableEntityService, times(1)).getByUuidAndLabel(uuid, label)
+        verify(translatableEntityFieldRepository, times(1)).findByKeyAndEntity(key, entity)
 
         Assert.assertNotNull(result)
-        Assert.assertEquals(fieldName, result!!.name)
-        Assert.assertEquals(entityUuid, result.entity.uuid)
+        Assert.assertEquals(key, result!!.key)
     }
 
-    @Test(expected = TranslatableEntityFieldNotFoundByNameAndEntityUuidException::class)
-    fun getByNameAndEntityUuidWhenTranslatableEntityFieldExistTest() {
+    //endregion
+
+    //region getByKeyAndEntity
+
+    @Test(expected = TranslatableEntityFieldNotFoundException::class)
+    fun getByKeyAndEntityWhenTranslatableEntityFieldNotFoundTest() {
         // test data
-        val entityUuid = "entity_uuid"
-        val fieldName = "field_name"
+        val key = "key"
+        val uuid = "uuid"
+        val label = "label"
+        val entity = TranslatableEntity()
         // mock
-        `when`(translatableEntityFieldRepository.findByNameAndEntity_Uuid(fieldName, entityUuid)).thenReturn(null)
+        `when`(translatableEntityService.getByUuidAndLabel(uuid, label)).thenReturn(entity)
+        `when`(translatableEntityFieldRepository.findByKeyAndEntity(key, entity)).thenReturn(null)
         // sut
-        translatableEntityFieldService.getByNameAndEntityUuid(fieldName, entityUuid);
+        translatableEntityFieldService.getByKeyAndEntity(key, uuid, label)
         // verify
-        verify(translatableEntityFieldRepository, times(1)).findByNameAndEntity_Uuid(fieldName, entityUuid)
+        verify(translatableEntityService, times(1)).getByUuidAndLabel(uuid, label)
+        verify(translatableEntityFieldRepository, times(1)).findByKeyAndEntity(key, entity)
     }
 
     @Test
-    fun getByNameAndEntityUuidTest() {
+    fun getByKeyAndEntityTest() {
         // test data
-        val entityUuid = "entity_uuid"
-        val fieldName = "field_name"
-        val entity = TranslatableEntity().apply { this.uuid = entityUuid }
-        val field = TranslatableEntityField().apply { this.name = fieldName }.apply { this.entity = entity }
+        val key = "key"
+        val uuid = "uuid"
+        val label = "label"
+        val entity = TranslatableEntity()
+        val field = TranslatableEntityField().apply { this.key = key }
         // mock
-        `when`(translatableEntityFieldRepository.findByNameAndEntity_Uuid(fieldName, entityUuid)).thenReturn(field)
+        `when`(translatableEntityService.getByUuidAndLabel(uuid, label)).thenReturn(entity)
+        `when`(translatableEntityFieldRepository.findByKeyAndEntity(key, entity)).thenReturn(field)
         // sut
-        val result = translatableEntityFieldService.getByNameAndEntityUuid(fieldName, entityUuid);
+        val result = translatableEntityFieldService.getByKeyAndEntity(key, uuid, label)
         // verify
-        verify(translatableEntityFieldRepository, times(1)).findByNameAndEntity_Uuid(fieldName, entityUuid)
+        verify(translatableEntityService, times(1)).getByUuidAndLabel(uuid, label)
+        verify(translatableEntityFieldRepository, times(1)).findByKeyAndEntity(key, entity)
 
-        Assert.assertEquals(fieldName, result.name)
-        Assert.assertEquals(entityUuid, result.entity.uuid)
+        Assert.assertEquals(key, result.key)
     }
 
-    @Test(expected = TranslatableEntityNotFoundByUuidException::class)
+    //endregion
+
+    //region create
+
+    @Test(expected = TranslatableEntityNotFoundByUuidAndLabelException::class)
     fun createTranslatableEntityFieldWhenTranslatableEntityNotFoundTest() {
         // test data
+        val key = "key"
         val uuid = "uuid"
-        val name = "name"
-        val dto = TranslatableEntityFieldDto(uuid, name)
+        val label = "label"
+        val dto = TranslatableEntityFieldDto(key, uuid, label)
         // mock
-        `when`(translatableEntityService.getByUuid(uuid)).thenThrow(TranslatableEntityNotFoundByUuidException::class.java)
+        `when`(translatableEntityService.getByUuidAndLabel(uuid, label)).thenThrow(TranslatableEntityNotFoundByUuidAndLabelException::class.java)
         // sut
         translatableEntityFieldService.create(dto)
         // verify
-        verify(translatableEntityService, times(1)).getByUuid(uuid)
+        verify(translatableEntityService, times(1)).getByUuidAndLabel(uuid, label)
     }
 
     @Test(expected = TranslatableEntityFieldExistsForTranslatableEntityException::class)
     fun createTranslatableEntityFieldWhenTranslatableEntityFieldExistTest() {
         // test data
+        val key = "key"
         val uuid = "uuid"
-        val name = "name"
-        val dto = TranslatableEntityFieldDto(uuid, name)
+        val label = "label"
+        val dto = TranslatableEntityFieldDto(key, uuid, label)
         val entity = TranslatableEntity()
-        val field = TranslatableEntityField()
+        val field = TranslatableEntityField().apply { this.entity = entity }
         // mock
-        `when`(translatableEntityService.getByUuid(uuid)).thenReturn(entity)
-        `when`(translatableEntityFieldRepository.findByNameAndEntity_Uuid(name, uuid)).thenReturn(field)
+        `when`(translatableEntityService.getByUuidAndLabel(uuid, label)).thenReturn(entity)
+        `when`(translatableEntityFieldRepository.findByKeyAndEntity(key, entity)).thenReturn(field)
         // sut
         translatableEntityFieldService.create(dto)
         // verify
-        verify(translatableEntityService, times(1)).getByUuid(uuid)
-        verify(translatableEntityFieldRepository, times(1)).findByNameAndEntity_Uuid(name, uuid)
+        verify(translatableEntityService, times(1)).getByUuidAndLabel(uuid, label)
+        verify(translatableEntityFieldRepository, times(1)).findByKeyAndEntity(key, entity)
     }
 
     @Test
     fun createTranslatableEntityFieldTest() {
         // test data
-        val entityUuid = "entity_uuid"
-        val entityName = "entity_name"
-        val fieldName = "field_name"
-        val dto = TranslatableEntityFieldDto(entityUuid, fieldName)
-        val entity = TranslatableEntity().apply { this.uuid = entityUuid }.apply { this.name = entityName }
-        val field = TranslatableEntityField().apply { this.entity = entity }.apply { this.name = fieldName }
+        val key = "key"
+        val uuid = "uuid"
+        val label = "label"
+        val dto = TranslatableEntityFieldDto(key, uuid, label)
+        val entity = TranslatableEntity().apply { this.uuid = uuid }.apply { this.label = label }
+        val field = TranslatableEntityField().apply { this.key = key }.apply { this.entity = entity }
         // mock
-        `when`(translatableEntityService.getByUuid(entityUuid)).thenReturn(entity)
-        `when`(translatableEntityFieldRepository.findByNameAndEntity_Uuid(fieldName, entityUuid)).thenReturn(null)
+        `when`(translatableEntityService.getByUuidAndLabel(uuid, label)).thenReturn(entity)
+        `when`(translatableEntityFieldRepository.findByKeyAndEntity(key, entity)).thenReturn(null)
         `when`(translatableEntityFieldRepository.save(ArgumentMatchers.any(TranslatableEntityField::class.java))).thenReturn(field)
         // sut
         val result = translatableEntityFieldService.create(dto)
         // verify
-        verify(translatableEntityService, times(1)).getByUuid(entityUuid)
-        verify(translatableEntityFieldRepository, times(1)).findByNameAndEntity_Uuid(fieldName, entityUuid)
+        verify(translatableEntityService, times(2)).getByUuidAndLabel(uuid, label)
+        verify(translatableEntityFieldRepository, times(1)).findByKeyAndEntity(key, entity)
         verify(translatableEntityFieldRepository, times(1)).save(ArgumentMatchers.any(TranslatableEntityField::class.java))
 
-        Assert.assertEquals(fieldName, result.name)
-        Assert.assertEquals(entityUuid, result.entity.uuid)
-        Assert.assertEquals(entityName, result.entity.name)
+        Assert.assertEquals(key, result.key)
+        Assert.assertEquals(uuid, result.entity.uuid)
+        Assert.assertEquals(label, result.entity.label)
     }
+
+    //endregion
 }

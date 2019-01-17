@@ -12,6 +12,6 @@ import org.springframework.stereotype.Repository
 @Repository
 interface TranslatableEntityRepository : JpaRepository<TranslatableEntity, Long> {
 
-    fun findByUuid(uuid: String): TranslatableEntity?
+    fun findByUuidAndLabel(uuid: String, label: String): TranslatableEntity?
 
 }

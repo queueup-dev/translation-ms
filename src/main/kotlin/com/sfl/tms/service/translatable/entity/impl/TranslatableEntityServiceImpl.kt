@@ -4,9 +4,8 @@ import com.sfl.tms.domain.translatable.TranslatableEntity
 import com.sfl.tms.persistence.translatable.TranslatableEntityRepository
 import com.sfl.tms.service.translatable.entity.TranslatableEntityService
 import com.sfl.tms.service.translatable.entity.dto.TranslatableEntityDto
-import com.sfl.tms.service.translatable.entity.exception.TranslatableEntityExistsByUuidException
-import com.sfl.tms.service.translatable.entity.exception.TranslatableEntityNotFoundByUuidException
-import com.sfl.tms.service.translatablestatic.TranslatableStaticService
+import com.sfl.tms.service.translatable.entity.exception.TranslatableEntityExistsByUuidAndLabelException
+import com.sfl.tms.service.translatable.entity.exception.TranslatableEntityNotFoundByUuidAndLabelException
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
@@ -25,10 +24,9 @@ class TranslatableEntityServiceImpl : TranslatableEntityService {
     @Autowired
     private lateinit var translatableEntityRepository: TranslatableEntityRepository
 
-    @Autowired
-    private lateinit var translatableStaticService: TranslatableStaticService
-
     //endregion
+
+    //region findAll
 
     @Transactional(readOnly = true)
     override fun findAll(): List<TranslatableEntity> {
@@ -36,67 +34,60 @@ class TranslatableEntityServiceImpl : TranslatableEntityService {
         return translatableEntityRepository.findAll().also { logger.debug("Retrieved all TranslatableEntities") }
     }
 
-    @Transactional(readOnly = true)
-    override fun findByUuid(uuid: String): TranslatableEntity? = uuid
-            .also { logger.trace("Retrieving TranslatableEntity for provided uuid - {} ", uuid) }
-            .let { translatableEntityRepository.findByUuid(it) }
-            .also { logger.debug("Retrieved TranslatableEntity for provided uuid - {} ", uuid) }
+    //endregion
 
-    @Throws(TranslatableEntityNotFoundByUuidException::class)
+    //region findByUuidAndLabel
+
     @Transactional(readOnly = true)
-    override fun getByUuid(uuid: String): TranslatableEntity = uuid
-            .also { logger.trace("Retrieving TranslatableEntity for provided uuid - {} ", uuid) }
+    override fun findByUuidAndLabel(uuid: String, label: String): TranslatableEntity? = uuid
+            .also { logger.trace("Retrieving TranslatableEntity for provided uuid - {} and label - {}", uuid, label) }
+            .let { translatableEntityRepository.findByUuidAndLabel(it, label) }
+            .also { logger.debug("Retrieved TranslatableEntity for provided uuid - {} and label - {}", uuid, label) }
+
+    //endregion
+
+    //region getByUuidAndLabel
+
+    @Throws(TranslatableEntityNotFoundByUuidAndLabelException::class)
+    @Transactional(readOnly = true)
+    override fun getByUuidAndLabel(uuid: String, label: String): TranslatableEntity = uuid
+            .also { logger.trace("Retrieving TranslatableEntity for provided uuid - {} and label - {}", uuid, label) }
             .let {
-                findByUuid(uuid).let {
+                findByUuidAndLabel(uuid, label).let {
                     if (it == null) {
-                        logger.error("Can't find TranslatableEntity for uuid - {}", uuid)
-                        throw TranslatableEntityNotFoundByUuidException(uuid)
+                        logger.error("Can't find TranslatableEntity for uuid - {} and label - {}", uuid, label)
+                        throw TranslatableEntityNotFoundByUuidAndLabelException(uuid, label)
                     }
-                    logger.debug("Retrieved TranslatableEntity for provided uuid - {} ", uuid)
+                    logger.debug("Retrieved TranslatableEntity for provided uuid - {} and label - {}", uuid, label)
                     it
                 }
             }
 
-    @Throws(TranslatableEntityExistsByUuidException::class)
+    //endregion
+
+    //region create
+
+    @Throws(TranslatableEntityExistsByUuidAndLabelException::class)
     @Transactional
     override fun create(dto: TranslatableEntityDto): TranslatableEntity = dto
             .also { logger.trace("Creating new TranslatableEntity for provided dto - {} ", dto) }
             .let {
-                findByUuid(dto.uuid).let {
+                findByUuidAndLabel(dto.uuid, dto.label).let {
                     if (it == null) {
                         TranslatableEntity()
                                 .apply { uuid = dto.uuid }
+                                .apply { label = dto.label }
                                 .apply { name = dto.name }
                                 .let { translatableEntityRepository.save(it) }
                                 .also { logger.debug("Successfully created new TranslatableEntity for provided dto - {}", dto) }
-                                .also { logger.debug("Copying static translations for newly created entity with {} uuid.", it.uuid) }
-                                .also { translatableStaticService.copy(it.uuid) }
-                                .also { logger.debug("Successfully copied static translations for entity with {} uuid.", it) }
                     } else {
                         logger.error("Unable to create new TranslatableEntity for provided dto - {}. Already exists.", dto)
-                        throw TranslatableEntityExistsByUuidException(dto.uuid)
+                        throw TranslatableEntityExistsByUuidAndLabelException(dto.uuid, dto.label)
                     }
                 }
             }
 
-    @Throws(TranslatableEntityExistsByUuidException::class)
-    @Transactional
-    override fun createTemplate(dto: TranslatableEntityDto): TranslatableEntity = dto
-            .also { logger.trace("Creating new TranslatableEntity for provided dto - {} ", dto) }
-            .let {
-                findByUuid(dto.uuid).let {
-                    if (it == null) {
-                        TranslatableEntity()
-                                .apply { uuid = dto.uuid }
-                                .apply { name = dto.name }
-                                .let { translatableEntityRepository.save(it) }
-                                .also { logger.debug("Successfully created new TranslatableEntity for provided dto - {}", dto) }
-                    } else {
-                        logger.error("Unable to create new TranslatableEntity for provided dto - {}. Already exists.", dto)
-                        throw TranslatableEntityExistsByUuidException(dto.uuid)
-                    }
-                }
-            }
+    //endregion
 
     companion object {
         @JvmStatic

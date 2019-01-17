@@ -12,12 +12,10 @@ interface TranslatableEntityService {
 
     fun findAll(): List<TranslatableEntity>
 
-    fun findByUuid(uuid: String): TranslatableEntity?
+    fun findByUuidAndLabel(uuid: String, label: String): TranslatableEntity?
 
-    fun getByUuid(uuid: String): TranslatableEntity
+    fun getByUuidAndLabel(uuid: String, label: String): TranslatableEntity
 
     fun create(dto: TranslatableEntityDto): TranslatableEntity
-
-    fun createTemplate(dto: TranslatableEntityDto): TranslatableEntity
 
 }

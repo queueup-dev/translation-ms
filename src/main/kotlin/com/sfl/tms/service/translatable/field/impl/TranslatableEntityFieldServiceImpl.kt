@@ -3,10 +3,11 @@ package com.sfl.tms.service.translatable.field.impl
 import com.sfl.tms.domain.translatable.TranslatableEntityField
 import com.sfl.tms.persistence.translatable.TranslatableEntityFieldRepository
 import com.sfl.tms.service.translatable.entity.TranslatableEntityService
+import com.sfl.tms.service.translatable.entity.exception.TranslatableEntityNotFoundByUuidAndLabelException
 import com.sfl.tms.service.translatable.field.TranslatableEntityFieldService
 import com.sfl.tms.service.translatable.field.dto.TranslatableEntityFieldDto
 import com.sfl.tms.service.translatable.field.exception.TranslatableEntityFieldExistsForTranslatableEntityException
-import com.sfl.tms.service.translatable.field.exception.TranslatableEntityFieldNotFoundByNameAndEntityUuidException
+import com.sfl.tms.service.translatable.field.exception.TranslatableEntityFieldNotFoundException
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
@@ -30,47 +31,59 @@ class TranslatableEntityFieldServiceImpl : TranslatableEntityFieldService {
 
     //endregion
 
-    @Transactional(readOnly = true)
-    override fun findByNameAndEntityUuid(name: String, entityUuid: String): TranslatableEntityField? = name
-            .also { logger.trace("Retrieving TranslatableEntityField by provided name - {} and TranslatableEntity {} entityUuid.", name, entityUuid) }
-            .let { translatableEntityFieldRepository.findByNameAndEntity_Uuid(name, entityUuid) }
-            .also { logger.debug("Retrieved TranslatableEntityField for provided name - {} and TranslatableEntity {} entityUuid.", name, entityUuid) }
+    //region findByKeyAndEntity
 
-    @Throws(TranslatableEntityFieldNotFoundByNameAndEntityUuidException::class)
     @Transactional(readOnly = true)
-    override fun getByNameAndEntityUuid(name: String, entityUuid: String): TranslatableEntityField = name
-            .also { logger.trace("Retrieving TranslatableEntityField for provided name - {} and entityUuid - {}.", name, entityUuid) }
+    override fun findByKeyAndEntity(key: String, uuid: String, label: String): TranslatableEntityField? = key
+            .also { logger.trace("Retrieving TranslatableEntityField by provided key - {} and TranslatableEntity uuid - {} and label - {}.", key, uuid, label) }
+            .let { translatableEntityFieldRepository.findByKeyAndEntity(it, translatableEntityService.getByUuidAndLabel(uuid, label)) }
+            .also { logger.debug("Retrieved TranslatableEntityField for provided key - {} and TranslatableEntity uuid - {} and label - {}.", key, uuid, label) }
+
+    //endregion
+
+    //region getByKeyAndEntity
+
+    @Throws(TranslatableEntityFieldNotFoundException::class)
+    @Transactional(readOnly = true)
+    override fun getByKeyAndEntity(key: String, uuid: String, label: String): TranslatableEntityField = key
+            .also { logger.trace("Retrieving TranslatableEntityField for provided key - {}, uuid - {} and label - {}.", key, uuid, label) }
             .let {
-                findByNameAndEntityUuid(name, entityUuid).let {
+                findByKeyAndEntity(it, uuid, label).let {
                     if (it == null) {
-                        logger.error("Can't find TranslatableEntityField for name - {} and entityUuid - {}.", name, entityUuid)
-                        throw TranslatableEntityFieldNotFoundByNameAndEntityUuidException(name, entityUuid)
+                        logger.error("Can't find TranslatableEntityField for key - {}, uuid - {} and label - {}.", key, uuid, label)
+                        throw TranslatableEntityFieldNotFoundException(key, uuid, label)
                     }
-                    logger.debug("Retrieved TranslatableEntityField for provided name - {} and entityUuid - {}.", name, entityUuid)
+                    logger.debug("Retrieved TranslatableEntityField for provided key - {}, uuid - {} and label - {}.", key, uuid, label)
                     it
                 }
             }
 
-    @Throws(TranslatableEntityFieldExistsForTranslatableEntityException::class)
+    //endregion
+
+    //region create
+
+    @Throws(TranslatableEntityNotFoundByUuidAndLabelException::class, TranslatableEntityFieldExistsForTranslatableEntityException::class)
     @Transactional
     override fun create(dto: TranslatableEntityFieldDto): TranslatableEntityField = dto
             .also { logger.trace("Creating new TranslatableEntityField for provided dto - {} ", dto) }
             .let {
-                val translatableEntity = translatableEntityService.getByUuid(dto.entityUuid)
+                val translatableEntity = translatableEntityService.getByUuidAndLabel(dto.uuid, dto.label)
 
-                findByNameAndEntityUuid(dto.fieldName, dto.entityUuid).let {
+                findByKeyAndEntity(dto.key, dto.uuid, dto.label).let {
                     if (it == null) {
                         TranslatableEntityField()
-                                .apply { name = dto.fieldName }
+                                .apply { key = dto.key }
                                 .apply { entity = translatableEntity }
                                 .let { translatableEntityFieldRepository.save(it) }
                                 .also { logger.debug("Successfully created new TranslatableEntityField for provided dto - {}", dto) }
                     } else {
                         logger.error("Unable to create new TranslatableEntityField for provided dto - {}. Already exists.", dto)
-                        throw TranslatableEntityFieldExistsForTranslatableEntityException(dto.fieldName, dto.entityUuid)
+                        throw TranslatableEntityFieldExistsForTranslatableEntityException(dto.key, dto.uuid, dto.label)
                     }
                 }
             }
+
+    //endregion
 
     companion object {
         @JvmStatic

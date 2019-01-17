@@ -10,11 +10,8 @@
         <class>com.sfl.tms.domain.language.Language</class>
 
         <class>com.sfl.tms.domain.translatable.TranslatableEntity</class>
-
         <class>com.sfl.tms.domain.translatable.TranslatableEntityField</class>
         <class>com.sfl.tms.domain.translatable.TranslatableEntityFieldTranslation</class>
-
-        <class>com.sfl.tms.domain.translatablestastic.TranslatableStatic</class>
 
         <properties>
             <property name="hibernate.temp.use_jdbc_metadata_defaults" value="false"/>

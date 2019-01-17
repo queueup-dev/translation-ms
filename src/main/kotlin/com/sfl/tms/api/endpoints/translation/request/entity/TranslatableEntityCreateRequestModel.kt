@@ -10,11 +10,15 @@ import org.apache.commons.lang3.StringUtils
  * Date: 12/5/18
  * Time: 4:22 PM
  */
-data class TranslatableEntityCreateRequestModel(val uuid: String, val name: String) : AbstractApiRequestModel() {
+data class TranslatableEntityCreateRequestModel(val uuid: String, val label: String, val name: String) : AbstractApiRequestModel() {
     override fun validateRequiredFields(): List<ErrorType> = ArrayList<ErrorType>()
             .apply {
                 if (StringUtils.isEmpty(uuid)) {
                     add(TranslationControllerErrorType.TRANSLATABLE_ENTITY_UUID_MISSING)
+                }
+            }.apply {
+                if (StringUtils.isEmpty(label)) {
+                    add(TranslationControllerErrorType.TRANSLATABLE_ENTITY_LABEL_MISSING)
                 }
             }.apply {
                 if (StringUtils.isEmpty(name)) {

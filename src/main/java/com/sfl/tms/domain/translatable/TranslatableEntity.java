@@ -1,7 +1,6 @@
 package com.sfl.tms.domain.translatable;
 
 import com.sfl.tms.domain.AbstractEntity;
-import com.sfl.tms.domain.translatablestastic.TranslatableStatic;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -18,10 +17,11 @@ import java.util.Set;
 @Table(
         name = "translatable_entity",
         indexes = {
-                @Index(name = "idx_translatable_entity_uuid", columnList = "uuid")
+                @Index(name = "idx_te_uuid", columnList = "uuid"),
+                @Index(name = "idx_te_label", columnList = "label")
         },
         uniqueConstraints = {
-                @UniqueConstraint(name = "uk_translatable_entity_uuid", columnNames = "uuid")
+                @UniqueConstraint(name = "uk_te_uuid_label", columnNames = {"uuid", "label"})
         }
 )
 @SequenceGenerator(name = "sequence_generator", sequenceName = "translatable_entity_seq", allocationSize = 1)
@@ -34,14 +34,14 @@ public class TranslatableEntity extends AbstractEntity {
     @Column(name = "uuid", nullable = false)
     private String uuid;
 
+    @Column(name = "label", nullable = false)
+    private String label;
+
     @Column(name = "name", nullable = false)
     private String name;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "entity")
     private Set<TranslatableEntityField> fields;
-
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "entity")
-    private Set<TranslatableStatic> statics;
 
     //endregion
 
@@ -53,6 +53,14 @@ public class TranslatableEntity extends AbstractEntity {
 
     public void setUuid(final String uuid) {
         this.uuid = uuid;
+    }
+
+    public String getLabel() {
+        return label;
+    }
+
+    public void setLabel(final String label) {
+        this.label = label;
     }
 
     public String getName() {
@@ -69,14 +77,6 @@ public class TranslatableEntity extends AbstractEntity {
 
     public void setFields(final Set<TranslatableEntityField> fields) {
         this.fields = fields;
-    }
-
-    public Set<TranslatableStatic> getStatics() {
-        return statics;
-    }
-
-    public void setStatics(final Set<TranslatableStatic> statics) {
-        this.statics = statics;
     }
 
     //endregion
@@ -98,6 +98,7 @@ public class TranslatableEntity extends AbstractEntity {
         return new EqualsBuilder()
                 .appendSuper(super.equals(obj))
                 .append(this.uuid, rhs.uuid)
+                .append(this.label, rhs.label)
                 .append(this.name, rhs.name)
                 .isEquals();
     }
@@ -108,6 +109,7 @@ public class TranslatableEntity extends AbstractEntity {
                 .appendSuper(super.hashCode())
                 .append(uuid)
                 .append(name)
+                .append(label)
                 .toHashCode();
     }
 
@@ -116,6 +118,7 @@ public class TranslatableEntity extends AbstractEntity {
         return new ToStringBuilder(this)
                 .appendSuper(super.toString())
                 .append("uuid", uuid)
+                .append("label", label)
                 .append("name", name)
                 .toString();
     }

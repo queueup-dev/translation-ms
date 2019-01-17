@@ -11,27 +11,24 @@ import com.sfl.tms.api.endpoints.AbstractBaseController.Companion.ok
 import com.sfl.tms.api.endpoints.translation.error.TranslationControllerErrorType
 import com.sfl.tms.api.endpoints.translation.request.entity.TranslatableEntityCreateRequestModel
 import com.sfl.tms.api.endpoints.translation.request.field.TranslatableEntityFieldCreateRequestModel
-import com.sfl.tms.api.endpoints.translation.request.statics.TranslatableStaticCreateRequestModel
-import com.sfl.tms.api.endpoints.translation.request.statics.TranslatableStaticTemplateCreateRequestModel
-import com.sfl.tms.api.endpoints.translation.request.statics.TranslatableStaticUpdateRequestModel
+import com.sfl.tms.api.endpoints.translation.request.translation.TranslatableEntityFieldTranslationCreateRequestModel
+import com.sfl.tms.api.endpoints.translation.request.translation.TranslatableEntityFieldTranslationUpdateRequestModel
 import com.sfl.tms.api.endpoints.translation.response.entity.TranslatableEntityCreateResponseModel
 import com.sfl.tms.api.endpoints.translation.response.field.TranslatableEntityFieldCreateResponseModel
-import com.sfl.tms.api.endpoints.translation.response.statics.TranslatableStaticResponseModel
-import com.sfl.tms.api.endpoints.translation.response.statics.TranslatableStaticsPageResponseModel
+import com.sfl.tms.api.endpoints.translation.response.translation.TranslatableEntityFieldTranslationResponseModel
 import com.sfl.tms.service.language.exception.LanguageNotFoundByLangException
 import com.sfl.tms.service.translatable.entity.TranslatableEntityService
 import com.sfl.tms.service.translatable.entity.dto.TranslatableEntityDto
-import com.sfl.tms.service.translatable.entity.exception.TranslatableEntityExistsByUuidException
-import com.sfl.tms.service.translatable.entity.exception.TranslatableEntityNotFoundByUuidException
+import com.sfl.tms.service.translatable.entity.exception.TranslatableEntityExistsByUuidAndLabelException
+import com.sfl.tms.service.translatable.entity.exception.TranslatableEntityNotFoundByUuidAndLabelException
 import com.sfl.tms.service.translatable.field.TranslatableEntityFieldService
 import com.sfl.tms.service.translatable.field.dto.TranslatableEntityFieldDto
 import com.sfl.tms.service.translatable.field.exception.TranslatableEntityFieldExistsForTranslatableEntityException
-import com.sfl.tms.service.translatablestatic.TranslatableStaticService
-import com.sfl.tms.service.translatablestatic.dto.TranslatableStaticDto
-import com.sfl.tms.service.translatablestatic.dto.TranslatableStaticTemplateDto
-import com.sfl.tms.service.translatablestatic.exception.TranslatableStaticExistException
-import com.sfl.tms.service.translatablestatic.exception.TranslatableStaticNotFoundByKeyAndEntityUuidAndLanguageLangException
-import com.sfl.tms.service.translatablestatic.exception.TranslatableStaticNotFoundByKeyAndEntityUuidException
+import com.sfl.tms.service.translatable.field.exception.TranslatableEntityFieldNotFoundException
+import com.sfl.tms.service.translatable.translation.TranslatableEntityFieldTranslationService
+import com.sfl.tms.service.translatable.translation.dto.TranslatableEntityFieldTranslationDto
+import com.sfl.tms.service.translatable.translation.exception.TranslatableFieldTranslationExistException
+import com.sfl.tms.service.translatable.translation.exception.TranslatableFieldTranslationNotFoundException
 import io.swagger.annotations.ApiOperation
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
@@ -58,7 +55,7 @@ class TranslationController {
     private lateinit var translatableEntityFieldService: TranslatableEntityFieldService
 
     @Autowired
-    private lateinit var translatableStaticService: TranslatableStaticService
+    private lateinit var translatableEntityFieldTranslationService: TranslatableEntityFieldTranslationService
 
     //endregion
 
@@ -70,16 +67,16 @@ class TranslationController {
     fun createTranslatableEntity(@RequestBody request: TranslatableEntityCreateRequestModel): ResponseEntity<ResultModel<out AbstractApiModel>> = try {
         request
                 .also { logger.trace("Creating new TranslatableEntity for provided request - {} ", it) }
-                .let { translatableEntityService.create(TranslatableEntityDto(it.uuid, it.name)) }
-                .let { created(TranslatableEntityCreateResponseModel(it.uuid, it.name)) }
+                .let { translatableEntityService.create(TranslatableEntityDto(it.uuid, it.label, it.name)) }
+                .let { created(TranslatableEntityCreateResponseModel(it.uuid, it.label, it.name)) }
                 .also { logger.debug("Successfully created TranslatableEntity for provided request - {} ", request) }
-    } catch (e: TranslatableEntityExistsByUuidException) {
+    } catch (e: TranslatableEntityExistsByUuidAndLabelException) {
         internal(TranslationControllerErrorType.TRANSLATABLE_ENTITY_EXISTS_BY_UUID_EXCEPTION)
     }
 
     //endregion
 
-    //region Field with translations
+    //region Field
 
     @ApiOperation(value = "Create translatable entity field", response = TranslatableEntityFieldCreateResponseModel::class)
     @ValidateActionRequest
@@ -87,126 +84,74 @@ class TranslationController {
     fun createTranslatableEntityField(@RequestBody request: TranslatableEntityFieldCreateRequestModel): ResponseEntity<ResultModel<out AbstractApiModel>> = try {
         request
                 .also { logger.trace("Creating new translatable entity field for provided request - {} ", it) }
-                .let { translatableEntityFieldService.create(TranslatableEntityFieldDto(it.entityUuid, it.fieldName)) }
-                .let { created(TranslatableEntityFieldCreateResponseModel(it.entity.uuid, it.name)) }
+                .let { translatableEntityFieldService.create(TranslatableEntityFieldDto(it.key, it.uuid, it.label)) }
+                .let { created(TranslatableEntityFieldCreateResponseModel(it.entity.uuid, it.key)) }
                 .also { logger.debug("Successfully created translatable entity field for provided request - {} ", request) }
+    } catch (e: TranslatableEntityNotFoundByUuidAndLabelException) {
+        internal(TranslationControllerErrorType.TRANSLATABLE_ENTITY_NOT_FOUND_BY_UUID_EXCEPTION)
     } catch (e: TranslatableEntityFieldExistsForTranslatableEntityException) {
         internal(TranslationControllerErrorType.TRANSLATABLE_ENTITY_FIELD_EXISTS_BY_UUID_EXCEPTION)
     }
 
     //endregion
 
-    //region Static translations
+    //region Create translatable entity field translation
 
-    //region Create translatable static for entity
-
-    @ApiOperation(value = "Create translatable static for entity", response = TranslatableStaticResponseModel::class)
+    @ApiOperation(value = "Create translatable entity field translation", response = TranslatableEntityFieldTranslationResponseModel::class)
     @ValidateActionRequest
-    @RequestMapping(value = ["/static"], method = [RequestMethod.POST])
-    fun createTranslatableStatic(@RequestBody request: TranslatableStaticCreateRequestModel): ResponseEntity<ResultModel<out AbstractApiModel>> = try {
+    @RequestMapping(value = ["/entity/field/translation"], method = [RequestMethod.POST])
+    fun createTranslatableEntityFieldTranslation(@RequestBody request: TranslatableEntityFieldTranslationCreateRequestModel): ResponseEntity<ResultModel<out AbstractApiModel>> = try {
         request
-                .also { logger.trace("Creating new TranslatableStatic for provided request - {} ", it) }
-                .let { translatableStaticService.create(TranslatableStaticDto(it.key, it.entityUuid, it.value, it.lang)) }
-                .let { created(TranslatableStaticResponseModel(it.key, it.entity.uuid, it.value, it.language.lang)) }
-                .also { logger.debug("Successfully created TranslatableStatic for provided request - {} ", request) }
+                .also { logger.trace("Creating new TranslatableEntityFieldTranslation for provided request - {} ", it) }
+                .let { translatableEntityFieldTranslationService.create(TranslatableEntityFieldTranslationDto(it.key, it.value, it.uuid, it.label, it.lang)) }
+                .let { created(TranslatableEntityFieldTranslationResponseModel(it.field.key, it.value, it.field.entity.uuid, it.field.entity.label, it.language.lang)) }
+                .also { logger.debug("Successfully created TranslatableEntityFieldTranslation for provided request - {} ", request) }
     } catch (e: LanguageNotFoundByLangException) {
         internal(TranslationControllerErrorType.LANGUAGE_NOT_FOUND_BY_LANG_EXCEPTION)
-    } catch (e: TranslatableStaticExistException) {
-        internal(TranslationControllerErrorType.TRANSLATABLE_STATIC_EXIST_EXCEPTION)
+    } catch (e: TranslatableFieldTranslationExistException) {
+        internal(TranslationControllerErrorType.TRANSLATABLE_ENTITY_FIELD_TRANSLATION_EXIST_EXCEPTION)
+    } catch (e: TranslatableEntityNotFoundByUuidAndLabelException) {
+        internal(TranslationControllerErrorType.TRANSLATABLE_ENTITY_NOT_FOUND_BY_UUID_EXCEPTION)
+    } catch (e: TranslatableEntityFieldExistsForTranslatableEntityException) {
+        internal(TranslationControllerErrorType.TRANSLATABLE_ENTITY_FIELD_EXISTS_BY_UUID_EXCEPTION)
     }
 
     //endregion
 
-    //region Create translatable static template
+    //region Update translatable entity field translation
 
-    @ApiOperation(value = "Create translatable static template ", response = TranslatableStaticResponseModel::class)
+    @ApiOperation(value = "Update translatable entity field translation", response = List::class)
     @ValidateActionRequest
-    @RequestMapping(value = ["/static/template"], method = [RequestMethod.POST])
-    fun createTranslatableStaticTemplate(@RequestBody request: TranslatableStaticTemplateCreateRequestModel): ResponseEntity<ResultModel<out AbstractApiModel>> = try {
+    @RequestMapping(value = ["/entity/{uuid}/{label}/field/{key}/translation"], method = [RequestMethod.PATCH])
+    fun updateTranslatableEntityFieldTranslation(
+            @PathVariable("uuid") uuid: String,
+            @PathVariable("label") label: String,
+            @PathVariable("key") key: String,
+            @RequestBody request: List<TranslatableEntityFieldTranslationUpdateRequestModel>): ResponseEntity<ResultModel<out AbstractApiModel>> = try {
         request
-                .also { logger.trace("Creating new TranslatableStatic template for provided request - {} ", it) }
-                .let { translatableStaticService.createTemplate(TranslatableStaticTemplateDto(it.key, it.value, it.lang)) }
-                .let { created(TranslatableStaticResponseModel(it.key, it.entity.uuid, it.value, it.language.lang)) }
-                .also { logger.debug("Successfully created TranslatableStatic for provided request - {} ", request) }
-    } catch (e: LanguageNotFoundByLangException) {
-        internal(TranslationControllerErrorType.LANGUAGE_NOT_FOUND_BY_LANG_EXCEPTION)
-    } catch (e: TranslatableStaticExistException) {
-        internal(TranslationControllerErrorType.TRANSLATABLE_STATIC_EXIST_EXCEPTION)
-    }
-
-    //endregion
-
-    //region Update translatable static for entity
-
-    @ApiOperation(value = "Update translatable static for entity", response = List::class)
-    @ValidateActionRequest
-    @RequestMapping(value = ["/static/{uuid}"], method = [RequestMethod.PATCH])
-    fun updateTranslatableStatic(@PathVariable("uuid") uuid: String, @RequestBody request: List<TranslatableStaticUpdateRequestModel>): ResponseEntity<ResultModel<out AbstractApiModel>> = try {
-        request
-                .also { logger.trace("Updating TranslatableStatic for provided request - {} ", it) }
+                .also { logger.trace("Updating TranslatableEntityFieldTranslation for provided request - {} ", it) }
                 .also {
-                    it.map { it.validateRequiredFields() }.flatten().distinct().let {
-                        if (it.isNotEmpty()) {
-                            return ResponseEntity(ResultModel<ErrorType>(it), HttpStatus.BAD_REQUEST)
-                        }
-                    }
+                    it
+                            .map { it.validateRequiredFields() }
+                            .flatten()
+                            .distinct()
+                            .let {
+                                if (it.isNotEmpty()) {
+                                    return ResponseEntity(ResultModel<ErrorType>(it), HttpStatus.BAD_REQUEST)
+                                }
+                            }
                 }
-                .map { translatableStaticService.updateValue(TranslatableStaticDto(it.key, uuid, it.value, it.lang)) }
-                .map { TranslatableStaticResponseModel(it.key, it.entity.uuid, it.value, it.language.lang) }
-                .let { ok(object : AbstractApiResponseModel, ArrayList<TranslatableStaticResponseModel>(it) {}) }
-                .also { logger.debug("Successfully updated TranslatableStatic for provided request - {} ", request) }
-    } catch (e: TranslatableEntityNotFoundByUuidException) {
-        internal(TranslationControllerErrorType.TRANSLATABLE_ENTITY_NOT_FOUND_BY_UUID_EXCEPTION)
-    } catch (e: TranslatableStaticNotFoundByKeyAndEntityUuidAndLanguageLangException) {
-        internal(TranslationControllerErrorType.TRANSLATABLE_STATIC_NOT_FOUND_BY_KEY_AND_ENTITY_UUID_LANGUAGE_LANG_EXCEPTION)
+                .map { translatableEntityFieldTranslationService.updateValue(TranslatableEntityFieldTranslationDto(key, it.value, uuid, label, it.lang)) }
+                .map { TranslatableEntityFieldTranslationResponseModel(key, it.value, uuid, label, it.language.lang) }
+                .let { ok(object : AbstractApiResponseModel, ArrayList<TranslatableEntityFieldTranslationResponseModel>(it) {}) }
+                .also { logger.debug("Successfully updated TranslatableEntityFieldTranslation for provided request - {} ", request) }
+    } catch (e: LanguageNotFoundByLangException) {
+        internal(TranslationControllerErrorType.LANGUAGE_NOT_FOUND_BY_LANG_EXCEPTION)
+    } catch (e: TranslatableEntityFieldNotFoundException) {
+        internal(TranslationControllerErrorType.TRANSLATABLE_ENTITY_FIELD_NOT_FOUND_EXCEPTION)
+    } catch (e: TranslatableFieldTranslationNotFoundException) {
+        internal(TranslationControllerErrorType.TRANSLATABLE_ENTITY_FIELD_TRANSLATION_NOT_FOUND_EXCEPTION)
     }
-
-    //endregion
-
-    //region Get translatable static for key, entity and language
-
-    @ApiOperation(value = "Get translatable static for key, entity and language", response = TranslatableStaticResponseModel::class)
-    @ValidateActionRequest
-    @RequestMapping(value = ["/static"], method = [RequestMethod.GET])
-    fun getStaticTranslation(@RequestParam("key") key: String, @RequestParam("uuid", required = true) uuid: String, @RequestParam("lang", required = false) lang: String?) = try {
-        key
-                .also { logger.trace("Retrieving TranslatableStatic for provided key - {}, entity uuid - {} and lang - {} ", it, uuid, lang) }
-                .let {
-                    if (lang == null) {
-                        translatableStaticService.getByKeyAndEntityUuid(it, uuid)
-                                .map { TranslatableStaticResponseModel(it.key, it.entity.uuid, it.value, it.language.lang) }
-                                .groupBy { it.lang }
-                                .let { ok(TranslatableStaticsPageResponseModel(it)) }
-                                .also { logger.debug("Retrieved TranslatableStatic for provided key - {}, lang - {} ", key, lang) }
-
-                    } else {
-                        translatableStaticService.getByKeyAndEntityUuidAndLanguageLang(it, uuid, lang)
-                                .let { ok(TranslatableStaticResponseModel(it.key, it.entity.uuid, it.value, it.language.lang)) }
-                                .also { logger.debug("Retrieved TranslatableStatic for provided key - {}", key) }
-                    }
-                }
-    } catch (e: TranslatableEntityNotFoundByUuidException) {
-        internal(TranslationControllerErrorType.TRANSLATABLE_ENTITY_NOT_FOUND_BY_UUID_EXCEPTION)
-    } catch (e: TranslatableStaticNotFoundByKeyAndEntityUuidException) {
-        internal(TranslationControllerErrorType.TRANSLATABLE_STATIC_NOT_FOUND_BY_KEY_AND_ENTITY_UUID_EXCEPTION)
-    }
-
-    //endregion
-
-    //region Search translatable static by key and language
-
-    @ApiOperation(value = "Search translatable static by key and language", response = TranslatableStaticResponseModel::class)
-    @ValidateActionRequest
-    @RequestMapping(value = ["/static/search"], method = [RequestMethod.GET])
-    fun searchStaticTranslations(@RequestParam("uuid", required = false) uuid: String, @RequestParam("term", required = false) term: String?, @RequestParam("lang", required = false) lang: String?, @RequestParam("page", required = false) page: Int?) = uuid
-            .also { logger.trace("Retrieving TranslatableStatic list for provided entity with uuid - {}, term - {}, language - {} and page - {} ", it, term, lang, page) }
-            .let { translatableStaticService.search(it, term, lang, page) }
-            .map { TranslatableStaticResponseModel(it.key, it.entity.uuid, it.value, it.language.lang) }
-            .groupBy { it.lang }
-            .let { ok(TranslatableStaticsPageResponseModel(it)) }
-            .also { logger.debug("Retrieved TranslatableStatic list for provided term - {}, page - {} ", term, page) }
-
-    //endregion
 
     //endregion
 

@@ -27,8 +27,8 @@ public class TranslatableEntityFieldTranslation extends AbstractEntity {
 
     //region Properties
 
-    @Column(name = "text", nullable = false)
-    private String text;
+    @Column(name = "value", columnDefinition = "text")
+    private String value;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "field_id", nullable = false, foreignKey = @ForeignKey(name = "fk_tef_field_id"))
@@ -42,12 +42,12 @@ public class TranslatableEntityFieldTranslation extends AbstractEntity {
 
     //region Getters and setters
 
-    public String getText() {
-        return text;
+    public String getValue() {
+        return value;
     }
 
-    public void setText(final String text) {
-        this.text = text;
+    public void setValue(final String value) {
+        this.value = value;
     }
 
     public TranslatableEntityField getField() {
@@ -84,7 +84,7 @@ public class TranslatableEntityFieldTranslation extends AbstractEntity {
         TranslatableEntityFieldTranslation rhs = (TranslatableEntityFieldTranslation) obj;
         return new EqualsBuilder()
                 .appendSuper(super.equals(obj))
-                .append(this.text, rhs.text)
+                .append(this.value, rhs.value)
                 .append(this.field, rhs.field)
                 .append(this.language, rhs.language)
                 .isEquals();
@@ -94,7 +94,7 @@ public class TranslatableEntityFieldTranslation extends AbstractEntity {
     public int hashCode() {
         return new HashCodeBuilder()
                 .appendSuper(super.hashCode())
-                .append(text)
+                .append(value)
                 .append(field)
                 .append(language)
                 .toHashCode();
@@ -104,7 +104,7 @@ public class TranslatableEntityFieldTranslation extends AbstractEntity {
     public String toString() {
         return new ToStringBuilder(this)
                 .appendSuper(super.toString())
-                .append("text", text)
+                .append("value", value)
                 .append("field", field)
                 .append("language", language)
                 .toString();

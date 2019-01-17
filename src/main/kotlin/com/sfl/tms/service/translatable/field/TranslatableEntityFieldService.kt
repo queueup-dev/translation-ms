@@ -10,9 +10,9 @@ import com.sfl.tms.service.translatable.field.dto.TranslatableEntityFieldDto
  */
 interface TranslatableEntityFieldService {
 
-    fun findByNameAndEntityUuid(name: String, entityUuid: String): TranslatableEntityField?
+    fun findByKeyAndEntity(key: String, uuid: String, label: String): TranslatableEntityField?
 
-    fun getByNameAndEntityUuid(name: String, entityUuid: String): TranslatableEntityField
+    fun getByKeyAndEntity(key: String, uuid: String, label: String): TranslatableEntityField
 
     fun create(dto: TranslatableEntityFieldDto): TranslatableEntityField
 }
