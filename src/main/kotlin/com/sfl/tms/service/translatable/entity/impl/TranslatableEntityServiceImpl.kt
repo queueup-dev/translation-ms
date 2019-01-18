@@ -4,8 +4,8 @@ import com.sfl.tms.domain.translatable.TranslatableEntity
 import com.sfl.tms.persistence.translatable.TranslatableEntityRepository
 import com.sfl.tms.service.translatable.entity.TranslatableEntityService
 import com.sfl.tms.service.translatable.entity.dto.TranslatableEntityDto
-import com.sfl.tms.service.translatable.entity.exception.TranslatableEntityExistsByUuidAndLabelException
-import com.sfl.tms.service.translatable.entity.exception.TranslatableEntityNotFoundByUuidAndLabelException
+import com.sfl.tms.service.translatable.entity.exception.TranslatableEntityExistsException
+import com.sfl.tms.service.translatable.entity.exception.TranslatableEntityNotFoundException
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
@@ -48,7 +48,7 @@ class TranslatableEntityServiceImpl : TranslatableEntityService {
 
     //region getByUuidAndLabel
 
-    @Throws(TranslatableEntityNotFoundByUuidAndLabelException::class)
+    @Throws(TranslatableEntityNotFoundException::class)
     @Transactional(readOnly = true)
     override fun getByUuidAndLabel(uuid: String, label: String): TranslatableEntity = uuid
             .also { logger.trace("Retrieving TranslatableEntity for provided uuid - {} and label - {}", uuid, label) }
@@ -56,7 +56,7 @@ class TranslatableEntityServiceImpl : TranslatableEntityService {
                 findByUuidAndLabel(uuid, label).let {
                     if (it == null) {
                         logger.error("Can't find TranslatableEntity for uuid - {} and label - {}", uuid, label)
-                        throw TranslatableEntityNotFoundByUuidAndLabelException(uuid, label)
+                        throw TranslatableEntityNotFoundException(uuid, label)
                     }
                     logger.debug("Retrieved TranslatableEntity for provided uuid - {} and label - {}", uuid, label)
                     it
@@ -67,7 +67,7 @@ class TranslatableEntityServiceImpl : TranslatableEntityService {
 
     //region create
 
-    @Throws(TranslatableEntityExistsByUuidAndLabelException::class)
+    @Throws(TranslatableEntityExistsException::class)
     @Transactional
     override fun create(dto: TranslatableEntityDto): TranslatableEntity = dto
             .also { logger.trace("Creating new TranslatableEntity for provided dto - {} ", dto) }
@@ -82,7 +82,7 @@ class TranslatableEntityServiceImpl : TranslatableEntityService {
                                 .also { logger.debug("Successfully created new TranslatableEntity for provided dto - {}", dto) }
                     } else {
                         logger.error("Unable to create new TranslatableEntity for provided dto - {}. Already exists.", dto)
-                        throw TranslatableEntityExistsByUuidAndLabelException(dto.uuid, dto.label)
+                        throw TranslatableEntityExistsException(dto.uuid, dto.label)
                     }
                 }
             }

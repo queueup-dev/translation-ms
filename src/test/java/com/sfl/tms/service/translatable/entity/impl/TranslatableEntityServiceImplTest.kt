@@ -4,8 +4,8 @@ import com.sfl.tms.domain.translatable.TranslatableEntity
 import com.sfl.tms.persistence.translatable.TranslatableEntityRepository
 import com.sfl.tms.service.translatable.entity.TranslatableEntityService
 import com.sfl.tms.service.translatable.entity.dto.TranslatableEntityDto
-import com.sfl.tms.service.translatable.entity.exception.TranslatableEntityExistsByUuidAndLabelException
-import com.sfl.tms.service.translatable.entity.exception.TranslatableEntityNotFoundByUuidAndLabelException
+import com.sfl.tms.service.translatable.entity.exception.TranslatableEntityExistsException
+import com.sfl.tms.service.translatable.entity.exception.TranslatableEntityNotFoundException
 import org.junit.Assert
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -81,7 +81,7 @@ class TranslatableEntityServiceImplTest {
 
     //region getByUuidAndLabel
 
-    @Test(expected = TranslatableEntityNotFoundByUuidAndLabelException::class)
+    @Test(expected = TranslatableEntityNotFoundException::class)
     fun getByUuidWhenTranslatableEntityNotFoundTest() {
         // test data
         val uuid = "uuid"
@@ -115,7 +115,7 @@ class TranslatableEntityServiceImplTest {
 
     //region create
 
-    @Test(expected = TranslatableEntityExistsByUuidAndLabelException::class)
+    @Test(expected = TranslatableEntityExistsException::class)
     fun createTranslatableEntityWhenEntityAlreadyExistsTest() {
         // test data
         val uuid = "uuid"

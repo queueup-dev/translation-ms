@@ -30,6 +30,10 @@ public class TranslatableEntityField extends AbstractEntity {
     @Column(name = "key", nullable = false)
     private String key;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "type", nullable = false)
+    private TranslatableEntityFieldType type;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "entity_id", nullable = false, foreignKey = @ForeignKey(name = "fk_tef_entity_id"))
     private TranslatableEntity entity;
@@ -47,6 +51,14 @@ public class TranslatableEntityField extends AbstractEntity {
 
     public void setKey(final String name) {
         this.key = name;
+    }
+
+    public TranslatableEntityFieldType getType() {
+        return type;
+    }
+
+    public void setType(final TranslatableEntityFieldType type) {
+        this.type = type;
     }
 
     public TranslatableEntity getEntity() {
@@ -84,6 +96,7 @@ public class TranslatableEntityField extends AbstractEntity {
         return new EqualsBuilder()
                 .appendSuper(super.equals(obj))
                 .append(this.key, rhs.key)
+                .append(this.type, rhs.type)
                 .append(getIdOrNull(this.entity), getIdOrNull(rhs.entity))
                 .isEquals();
     }
@@ -93,6 +106,7 @@ public class TranslatableEntityField extends AbstractEntity {
         return new HashCodeBuilder()
                 .appendSuper(super.hashCode())
                 .append(key)
+                .append(type)
                 .append(getIdOrNull(entity))
                 .toHashCode();
     }
@@ -102,6 +116,7 @@ public class TranslatableEntityField extends AbstractEntity {
         return new ToStringBuilder(this)
                 .appendSuper(super.toString())
                 .append("name", key)
+                .append("type", type)
                 .append("entity", getIdOrNull(entity))
                 .toString();
     }

@@ -3,6 +3,7 @@ package com.sfl.tms.api.endpoints.translation.request.field
 import com.sfl.tms.api.common.model.error.ErrorType
 import com.sfl.tms.api.common.model.request.AbstractApiRequestModel
 import com.sfl.tms.api.endpoints.translation.error.TranslationControllerErrorType
+import com.sfl.tms.domain.translatable.TranslatableEntityFieldType
 import org.apache.commons.lang3.StringUtils
 
 /**
@@ -10,7 +11,7 @@ import org.apache.commons.lang3.StringUtils
  * Date: 12/5/18
  * Time: 4:22 PM
  */
-data class TranslatableEntityFieldCreateRequestModel(val key: String, val uuid: String, val label: String) : AbstractApiRequestModel() {
+data class TranslatableEntityFieldCreateRequestModel(val key: String, val type: TranslatableEntityFieldType, val uuid: String, val label: String) : AbstractApiRequestModel() {
     override fun validateRequiredFields(): List<ErrorType> = ArrayList<ErrorType>()
             .apply {
                 if (StringUtils.isEmpty(uuid)) {

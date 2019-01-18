@@ -38,7 +38,7 @@ enum class TranslationControllerErrorType : ErrorType {
 
     //region exception
 
-    TRANSLATABLE_ENTITY_NOT_FOUND_BY_UUID_EXCEPTION,
+    TRANSLATABLE_ENTITY_NOT_FOUND_EXCEPTION,
     TRANSLATABLE_ENTITY_EXISTS_BY_UUID_EXCEPTION,
 
     //endregion

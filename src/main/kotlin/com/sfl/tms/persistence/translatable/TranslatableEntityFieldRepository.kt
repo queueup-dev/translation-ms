@@ -2,6 +2,7 @@ package com.sfl.tms.persistence.translatable
 
 import com.sfl.tms.domain.translatable.TranslatableEntity
 import com.sfl.tms.domain.translatable.TranslatableEntityField
+import com.sfl.tms.domain.translatable.TranslatableEntityFieldType
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
 
@@ -12,5 +13,5 @@ import org.springframework.stereotype.Repository
  */
 @Repository
 interface TranslatableEntityFieldRepository : JpaRepository<TranslatableEntityField, Long> {
-    fun findByKeyAndEntity(key: String, entity: TranslatableEntity): TranslatableEntityField?
+    fun findByKeyAndTypeAndEntity(key: String, type: TranslatableEntityFieldType, entity: TranslatableEntity): TranslatableEntityField?
 }

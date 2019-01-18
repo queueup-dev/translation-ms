@@ -1,6 +1,7 @@
 package com.sfl.tms
 
 import com.google.gson.Gson
+import com.sfl.tms.domain.translatable.TranslatableEntityFieldType
 import com.sfl.tms.service.language.LanguageService
 import com.sfl.tms.service.translatable.entity.TranslatableEntityService
 import com.sfl.tms.service.translatable.entity.dto.TranslatableEntityDto
@@ -65,14 +66,14 @@ class TmsApplication {
                 }
             }
 
-
     private fun createOrUpdateIfExist(key: String, value: String, uuid: String, label: String, lang: String) {
 
-        translatableEntityFieldService.findByKeyAndEntity(key, uuid, label) ?: translatableEntityFieldService.create(TranslatableEntityFieldDto(key, uuid, label))
+        translatableEntityFieldService.findByKeyAndEntity(key, TranslatableEntityFieldType.STATIC, uuid, label)
+                ?: translatableEntityFieldService.create(TranslatableEntityFieldDto(key, TranslatableEntityFieldType.STATIC, uuid, label))
 
-        translatableEntityFieldTranslationService.findByFieldAndLanguage(key, uuid, label, lang).let {
+        translatableEntityFieldTranslationService.findByFieldAndLanguage(key, TranslatableEntityFieldType.STATIC, uuid, label, lang).let {
 
-            val dto = TranslatableEntityFieldTranslationDto(key, value, uuid, label, lang)
+            val dto = TranslatableEntityFieldTranslationDto(key, TranslatableEntityFieldType.STATIC, value, uuid, label, lang)
 
             if (it == null) {
                 translatableEntityFieldTranslationService.create(dto)
@@ -90,7 +91,7 @@ class TmsApplication {
             SpringApplication.run(TmsApplication::class.java, *args)
         }
 
-        private const val templateUuid = "00000000-0000-0000-0000-000000000000"
-        private const val templateLabel = "00000000-0000-0000-0000-000000000000"
+        const val templateUuid = "00000000-0000-0000-0000-000000000000"
+        const val templateLabel = "00000000-0000-0000-0000-000000000000"
     }
 }

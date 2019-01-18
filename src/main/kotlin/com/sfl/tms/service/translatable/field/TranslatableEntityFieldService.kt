@@ -1,6 +1,7 @@
 package com.sfl.tms.service.translatable.field
 
 import com.sfl.tms.domain.translatable.TranslatableEntityField
+import com.sfl.tms.domain.translatable.TranslatableEntityFieldType
 import com.sfl.tms.service.translatable.field.dto.TranslatableEntityFieldDto
 
 /**
@@ -10,9 +11,11 @@ import com.sfl.tms.service.translatable.field.dto.TranslatableEntityFieldDto
  */
 interface TranslatableEntityFieldService {
 
-    fun findByKeyAndEntity(key: String, uuid: String, label: String): TranslatableEntityField?
+    fun findByKeyAndEntity(key: String, type: TranslatableEntityFieldType, uuid: String, label: String): TranslatableEntityField?
 
-    fun getByKeyAndEntity(key: String, uuid: String, label: String): TranslatableEntityField
+    fun getByKeyAndEntity(key: String, type:TranslatableEntityFieldType, uuid: String, label: String): TranslatableEntityField
 
     fun create(dto: TranslatableEntityFieldDto): TranslatableEntityField
+
+    fun copyStatics(uuid: String, label: String)
 }

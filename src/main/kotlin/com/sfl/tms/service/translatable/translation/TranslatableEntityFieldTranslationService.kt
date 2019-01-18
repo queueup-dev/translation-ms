@@ -1,6 +1,7 @@
 package com.sfl.tms.service.translatable.translation
 
 import com.sfl.tms.domain.translatable.TranslatableEntityFieldTranslation
+import com.sfl.tms.domain.translatable.TranslatableEntityFieldType
 import com.sfl.tms.service.translatable.translation.dto.TranslatableEntityFieldTranslationDto
 
 /**
@@ -10,11 +11,11 @@ import com.sfl.tms.service.translatable.translation.dto.TranslatableEntityFieldT
  */
 interface TranslatableEntityFieldTranslationService {
 
-    fun findByFieldAndLanguage(key: String, uuid: String, label: String, lang: String): TranslatableEntityFieldTranslation?
+    fun findByFieldAndLanguage(key: String, type: TranslatableEntityFieldType, uuid: String, label: String, lang: String): TranslatableEntityFieldTranslation?
 
-    fun getByFieldAndLanguage(key: String, uuid: String, label: String, lang: String): TranslatableEntityFieldTranslation
+    fun getByFieldAndLanguage(key: String, type: TranslatableEntityFieldType, uuid: String, label: String, lang: String): TranslatableEntityFieldTranslation
 
-    fun getByKeyAndEntity(key: String, uuid: String, label: String): List<TranslatableEntityFieldTranslation>
+    fun getByKeyAndEntity(key: String, type: TranslatableEntityFieldType, uuid: String, label: String): List<TranslatableEntityFieldTranslation>
 
     fun create(dto: TranslatableEntityFieldTranslationDto): TranslatableEntityFieldTranslation
 
