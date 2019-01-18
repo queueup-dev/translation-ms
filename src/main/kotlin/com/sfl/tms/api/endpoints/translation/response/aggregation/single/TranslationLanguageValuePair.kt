@@ -1,4 +1,4 @@
-package com.sfl.tms.api.endpoints.translation.response.aggregation
+package com.sfl.tms.api.endpoints.translation.response.aggregation.single
 
 /**
  * User: Vazgen Danielyan

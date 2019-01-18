@@ -14,9 +14,9 @@ import com.sfl.tms.api.endpoints.translation.request.entity.TranslatableEntityCr
 import com.sfl.tms.api.endpoints.translation.request.field.TranslatableEntityFieldCreateRequestModel
 import com.sfl.tms.api.endpoints.translation.request.translation.TranslatableEntityFieldTranslationCreateRequestModel
 import com.sfl.tms.api.endpoints.translation.request.translation.TranslatableEntityFieldTranslationUpdateRequestModel
-import com.sfl.tms.api.endpoints.translation.response.aggregation.TranslationAggregationByKey
-import com.sfl.tms.api.endpoints.translation.response.aggregation.TranslationKeyValuePair
-import com.sfl.tms.api.endpoints.translation.response.aggregation.TranslationLanguageValuePair
+import com.sfl.tms.api.endpoints.translation.response.aggregation.single.TranslationAggregationByKey
+import com.sfl.tms.api.endpoints.translation.response.aggregation.single.TranslationKeyValuePair
+import com.sfl.tms.api.endpoints.translation.response.aggregation.single.TranslationLanguageValuePair
 import com.sfl.tms.api.endpoints.translation.response.entity.TranslatableEntityCreateResponseModel
 import com.sfl.tms.api.endpoints.translation.response.field.TranslatableEntityFieldCreateResponseModel
 import com.sfl.tms.api.endpoints.translation.response.translation.TranslatableEntityFieldTranslationResponseModel
