@@ -68,7 +68,7 @@ class TmsApplication {
 
     private fun createOrUpdateIfExist(key: String, value: String, uuid: String, label: String, lang: String) {
 
-        translatableEntityFieldService.findByKeyAndEntity(key, TranslatableEntityFieldType.STATIC, uuid, label)
+        translatableEntityFieldService.findByKeyAndTypeAndEntity(key, TranslatableEntityFieldType.STATIC, uuid, label)
                 ?: translatableEntityFieldService.create(TranslatableEntityFieldDto(key, TranslatableEntityFieldType.STATIC, uuid, label))
 
         translatableEntityFieldTranslationService.findByFieldAndLanguage(key, TranslatableEntityFieldType.STATIC, uuid, label, lang).let {

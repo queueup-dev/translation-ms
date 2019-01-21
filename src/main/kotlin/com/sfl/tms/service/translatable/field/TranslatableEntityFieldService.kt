@@ -11,9 +11,9 @@ import com.sfl.tms.service.translatable.field.dto.TranslatableEntityFieldDto
  */
 interface TranslatableEntityFieldService {
 
-    fun findByKeyAndEntity(key: String, type: TranslatableEntityFieldType, uuid: String, label: String): TranslatableEntityField?
+    fun findByKeyAndTypeAndEntity(key: String, type: TranslatableEntityFieldType, uuid: String, label: String): TranslatableEntityField?
 
-    fun getByKeyAndEntity(key: String, type:TranslatableEntityFieldType, uuid: String, label: String): TranslatableEntityField
+    fun getByKeyAndTypeAndEntity(key: String, type:TranslatableEntityFieldType, uuid: String, label: String): TranslatableEntityField
 
     fun create(dto: TranslatableEntityFieldDto): TranslatableEntityField
 

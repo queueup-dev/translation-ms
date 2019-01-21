@@ -10,15 +10,19 @@ import com.sfl.tms.api.endpoints.AbstractBaseController.Companion.internal
 import com.sfl.tms.api.endpoints.AbstractBaseController.Companion.notFound
 import com.sfl.tms.api.endpoints.AbstractBaseController.Companion.ok
 import com.sfl.tms.api.endpoints.translation.error.TranslationControllerErrorType
+import com.sfl.tms.api.endpoints.translation.request.aggregation.TranslationKeyValuePair
+import com.sfl.tms.api.endpoints.translation.request.aggregation.multiple.TranslationAggregationByEntityRequestModel
 import com.sfl.tms.api.endpoints.translation.request.entity.TranslatableEntityCreateRequestModel
 import com.sfl.tms.api.endpoints.translation.request.field.TranslatableEntityFieldCreateRequestModel
 import com.sfl.tms.api.endpoints.translation.request.translation.TranslatableEntityFieldTranslationCreateRequestModel
 import com.sfl.tms.api.endpoints.translation.request.translation.TranslatableEntityFieldTranslationUpdateRequestModel
+import com.sfl.tms.api.endpoints.translation.response.aggregation.multiple.TranslationAggregationByEntityResponseModel
 import com.sfl.tms.api.endpoints.translation.response.aggregation.single.TranslationAggregationByKey
-import com.sfl.tms.api.endpoints.translation.response.aggregation.single.TranslationKeyValuePair
 import com.sfl.tms.api.endpoints.translation.response.aggregation.single.TranslationLanguageValuePair
 import com.sfl.tms.api.endpoints.translation.response.entity.TranslatableEntityCreateResponseModel
 import com.sfl.tms.api.endpoints.translation.response.field.TranslatableEntityFieldCreateResponseModel
+import com.sfl.tms.api.endpoints.translation.response.helper.TranslationControllerHelper
+import com.sfl.tms.api.endpoints.translation.response.helper.exception.TranslatableEntityMissingException
 import com.sfl.tms.api.endpoints.translation.response.translation.TranslatableEntityFieldTranslationResponseModel
 import com.sfl.tms.domain.translatable.TranslatableEntityFieldType
 import com.sfl.tms.service.language.exception.LanguageNotFoundByLangException
@@ -61,6 +65,9 @@ class TranslationController {
 
     @Autowired
     private lateinit var translatableEntityFieldTranslationService: TranslatableEntityFieldTranslationService
+
+    @Autowired
+    private lateinit var translationControllerHelper: TranslationControllerHelper
 
     //endregion
 
@@ -203,6 +210,27 @@ class TranslationController {
         )
     } catch (e: TranslatableEntityNotFoundException) {
         notFound(TranslationControllerErrorType.TRANSLATABLE_ENTITY_NOT_FOUND_EXCEPTION)
+    }
+
+    //endregion
+
+    //region Bulk create/update
+
+    @ApiOperation(value = "Create/update translatable entity, field, translations", response = TranslationAggregationByEntityResponseModel::class)
+    @ValidateActionRequest
+    @RequestMapping(value = ["/entity/field/{type}/translation/bulk"], method = [RequestMethod.POST])
+    fun createOrUpdateTranslatableEntityWithDependencies(@PathVariable("type") type: TranslatableEntityFieldType, @RequestBody request: TranslationAggregationByEntityRequestModel): ResponseEntity<ResultModel<out AbstractApiModel>> = try {
+        created(translationControllerHelper.createOrUpdateTranslatableEntityWithDependencies(request, type))
+    } catch (e: TranslatableEntityMissingException) {
+        internal(TranslationControllerErrorType.TRANSLATABLE_ENTITY_NAME_MISSING)
+    } catch (e: LanguageNotFoundByLangException) {
+        internal(TranslationControllerErrorType.LANGUAGE_NOT_FOUND_BY_LANG_EXCEPTION)
+    } catch (e: TranslatableFieldTranslationExistException) {
+        internal(TranslationControllerErrorType.TRANSLATABLE_ENTITY_FIELD_TRANSLATION_EXIST_EXCEPTION)
+    } catch (e: TranslatableEntityNotFoundException) {
+        notFound(TranslationControllerErrorType.TRANSLATABLE_ENTITY_NOT_FOUND_EXCEPTION)
+    } catch (e: TranslatableEntityFieldExistsForTranslatableEntityException) {
+        internal(TranslationControllerErrorType.TRANSLATABLE_ENTITY_FIELD_EXISTS_BY_UUID_EXCEPTION)
     }
 
     //endregion

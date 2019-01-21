@@ -38,24 +38,24 @@ class TranslatableEntityFieldServiceImpl : TranslatableEntityFieldService {
 
     //endregion
 
-    //region findByKeyAndEntity
+    //region findByKeyAndTypeAndEntity
 
     @Transactional(readOnly = true)
-    override fun findByKeyAndEntity(key: String, type: TranslatableEntityFieldType, uuid: String, label: String): TranslatableEntityField? = key
+    override fun findByKeyAndTypeAndEntity(key: String, type: TranslatableEntityFieldType, uuid: String, label: String): TranslatableEntityField? = key
             .also { logger.trace("Retrieving TranslatableEntityField by provided key - {}, type - {} and TranslatableEntity uuid - {} and label - {}.", key, type, uuid, label) }
             .let { translatableEntityFieldRepository.findByKeyAndTypeAndEntity(it, type, translatableEntityService.getByUuidAndLabel(uuid, label)) }
             .also { logger.debug("Retrieved TranslatableEntityField for provided key - {} and TranslatableEntity uuid - {} and label - {}.", key, uuid, label) }
 
     //endregion
 
-    //region getByKeyAndEntity
+    //region getByKeyAndTypeAndEntity
 
     @Throws(TranslatableEntityFieldNotFoundException::class)
     @Transactional(readOnly = true)
-    override fun getByKeyAndEntity(key: String, type: TranslatableEntityFieldType, uuid: String, label: String): TranslatableEntityField = key
+    override fun getByKeyAndTypeAndEntity(key: String, type: TranslatableEntityFieldType, uuid: String, label: String): TranslatableEntityField = key
             .also { logger.trace("Retrieving TranslatableEntityField for provided key - {}, type - {}, uuid - {} and label - {}.", key, type, uuid, label) }
             .let {
-                findByKeyAndEntity(it, type, uuid, label).let {
+                findByKeyAndTypeAndEntity(it, type, uuid, label).let {
                     if (it == null) {
                         logger.error("Can't find TranslatableEntityField for key - {}, type - {}, uuid - {} and label - {}.", key, type, uuid, label)
                         throw TranslatableEntityFieldNotFoundException(key, type, uuid, label)
@@ -76,7 +76,7 @@ class TranslatableEntityFieldServiceImpl : TranslatableEntityFieldService {
             .let {
                 val translatableEntity = translatableEntityService.getByUuidAndLabel(dto.uuid, dto.label)
 
-                findByKeyAndEntity(dto.key, dto.type, dto.uuid, dto.label).let {
+                findByKeyAndTypeAndEntity(dto.key, dto.type, dto.uuid, dto.label).let {
                     if (it == null) {
                         TranslatableEntityField()
                                 .apply { key = dto.key }

@@ -62,7 +62,7 @@ class TranslatableEntityFieldServiceImplTest {
         `when`(translatableEntityService.getByUuidAndLabel(uuid, label)).thenReturn(entity)
         `when`(translatableEntityFieldRepository.findByKeyAndTypeAndEntity(key, type, entity)).thenReturn(field)
         // sut
-        val result = translatableEntityFieldService.findByKeyAndEntity(key, type, uuid, label)
+        val result = translatableEntityFieldService.findByKeyAndTypeAndEntity(key, type, uuid, label)
         // verify
         verify(translatableEntityService, times(1)).getByUuidAndLabel(uuid, label)
         verify(translatableEntityFieldRepository, times(1)).findByKeyAndTypeAndEntity(key, type, entity)
@@ -73,7 +73,7 @@ class TranslatableEntityFieldServiceImplTest {
 
     //endregion
 
-    //region getByKeyAndEntity
+    //region getByKeyAndTypeAndEntity
 
     @Test(expected = TranslatableEntityFieldNotFoundException::class)
     fun getByKeyAndEntityWhenTranslatableEntityFieldNotFoundTest() {
@@ -87,7 +87,7 @@ class TranslatableEntityFieldServiceImplTest {
         `when`(translatableEntityService.getByUuidAndLabel(uuid, label)).thenReturn(entity)
         `when`(translatableEntityFieldRepository.findByKeyAndTypeAndEntity(key, type, entity)).thenReturn(null)
         // sut
-        translatableEntityFieldService.getByKeyAndEntity(key, type, uuid, label)
+        translatableEntityFieldService.getByKeyAndTypeAndEntity(key, type, uuid, label)
         // verify
         verify(translatableEntityService, times(1)).getByUuidAndLabel(uuid, label)
         verify(translatableEntityFieldRepository, times(1)).findByKeyAndTypeAndEntity(key, type, entity)
@@ -106,7 +106,7 @@ class TranslatableEntityFieldServiceImplTest {
         `when`(translatableEntityService.getByUuidAndLabel(uuid, label)).thenReturn(entity)
         `when`(translatableEntityFieldRepository.findByKeyAndTypeAndEntity(key, type, entity)).thenReturn(field)
         // sut
-        val result = translatableEntityFieldService.getByKeyAndEntity(key, type, uuid, label)
+        val result = translatableEntityFieldService.getByKeyAndTypeAndEntity(key, type, uuid, label)
         // verify
         verify(translatableEntityService, times(1)).getByUuidAndLabel(uuid, label)
         verify(translatableEntityFieldRepository, times(1)).findByKeyAndTypeAndEntity(key, type, entity)

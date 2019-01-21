@@ -58,11 +58,11 @@ class TranslatableEntityFieldTranslationServiceImplTest {
         val lang = "en"
         val type = TranslatableEntityFieldType.STATIC
         // mock
-        `when`(translatableEntityFieldService.getByKeyAndEntity(key, type, uuid, label)).thenThrow(TranslatableEntityFieldNotFoundException::class.java)
+        `when`(translatableEntityFieldService.getByKeyAndTypeAndEntity(key, type, uuid, label)).thenThrow(TranslatableEntityFieldNotFoundException::class.java)
         // sut
         translatableEntityFieldTranslationService.findByFieldAndLanguage(key, type, uuid, label, lang)
         // verify
-        verify(translatableEntityFieldService, times(1)).getByKeyAndEntity(key, type, uuid, label)
+        verify(translatableEntityFieldService, times(1)).getByKeyAndTypeAndEntity(key, type, uuid, label)
     }
 
     @Test(expected = LanguageNotFoundByLangException::class)
@@ -76,12 +76,12 @@ class TranslatableEntityFieldTranslationServiceImplTest {
         val entity = TranslatableEntity().apply { this.uuid = uuid }.apply { this.label = label }
         val field = TranslatableEntityField().apply { this.key = key }.apply { this.entity = entity }
         // mock
-        `when`(translatableEntityFieldService.getByKeyAndEntity(key, type, uuid, label)).thenReturn(field)
+        `when`(translatableEntityFieldService.getByKeyAndTypeAndEntity(key, type, uuid, label)).thenReturn(field)
         `when`(languageService.getByLang(lang)).thenThrow(LanguageNotFoundByLangException::class.java)
         // sut
         translatableEntityFieldTranslationService.findByFieldAndLanguage(key, type, uuid, label, lang)
         // verify
-        verify(translatableEntityFieldService, times(1)).getByKeyAndEntity(key, type, uuid, label)
+        verify(translatableEntityFieldService, times(1)).getByKeyAndTypeAndEntity(key, type, uuid, label)
         verify(languageService, times(1)).getByLang(lang)
     }
 
@@ -99,13 +99,13 @@ class TranslatableEntityFieldTranslationServiceImplTest {
         val field = TranslatableEntityField().apply { this.key = key }.apply { this.entity = entity }
         val translation = TranslatableEntityFieldTranslation().apply { this.value = value }.apply { this.field = field }.apply { this.language = language }
         // mock
-        `when`(translatableEntityFieldService.getByKeyAndEntity(key, type, uuid, label)).thenReturn(field)
+        `when`(translatableEntityFieldService.getByKeyAndTypeAndEntity(key, type, uuid, label)).thenReturn(field)
         `when`(languageService.getByLang(lang)).thenReturn(language)
         `when`(translatableEntityFieldTranslationRepository.findByFieldAndLanguage(field, language)).thenReturn(translation)
         // sut
         val result = translatableEntityFieldTranslationService.findByFieldAndLanguage(key, type, uuid, label, lang)
         // verify
-        verify(translatableEntityFieldService, times(1)).getByKeyAndEntity(key, type, uuid, label)
+        verify(translatableEntityFieldService, times(1)).getByKeyAndTypeAndEntity(key, type, uuid, label)
         verify(languageService, times(1)).getByLang(lang)
         verify(translatableEntityFieldTranslationRepository, times(1)).findByFieldAndLanguage(field, language)
 
@@ -130,13 +130,13 @@ class TranslatableEntityFieldTranslationServiceImplTest {
         val entity = TranslatableEntity().apply { this.uuid = uuid }.apply { this.label = label }
         val field = TranslatableEntityField().apply { this.key = key }.apply { this.entity = entity }
         // mock
-        `when`(translatableEntityFieldService.getByKeyAndEntity(key, type, uuid, label)).thenReturn(field)
+        `when`(translatableEntityFieldService.getByKeyAndTypeAndEntity(key, type, uuid, label)).thenReturn(field)
         `when`(languageService.getByLang(lang)).thenReturn(language)
         `when`(translatableEntityFieldTranslationRepository.findByFieldAndLanguage(field, language)).thenReturn(null)
         // sut
         translatableEntityFieldTranslationService.getByFieldAndLanguage(key, type, uuid, label, lang)
         // verify
-        verify(translatableEntityFieldService, times(1)).getByKeyAndEntity(key, type, uuid, label)
+        verify(translatableEntityFieldService, times(1)).getByKeyAndTypeAndEntity(key, type, uuid, label)
         verify(languageService, times(1)).getByLang(lang)
         verify(translatableEntityFieldTranslationRepository, times(1)).findByFieldAndLanguage(field, language)
     }
@@ -155,13 +155,13 @@ class TranslatableEntityFieldTranslationServiceImplTest {
         val field = TranslatableEntityField().apply { this.key = key }.apply { this.entity = entity }
         val translation = TranslatableEntityFieldTranslation().apply { this.value = value }.apply { this.field = field }.apply { this.language = language }
         // mock
-        `when`(translatableEntityFieldService.getByKeyAndEntity(key, type, uuid, label)).thenReturn(field)
+        `when`(translatableEntityFieldService.getByKeyAndTypeAndEntity(key, type, uuid, label)).thenReturn(field)
         `when`(languageService.getByLang(lang)).thenReturn(language)
         `when`(translatableEntityFieldTranslationRepository.findByFieldAndLanguage(field, language)).thenReturn(translation)
         // sut
         val result = translatableEntityFieldTranslationService.getByFieldAndLanguage(key, type, uuid, label, lang)
         // verify
-        verify(translatableEntityFieldService, times(1)).getByKeyAndEntity(key, type, uuid, label)
+        verify(translatableEntityFieldService, times(1)).getByKeyAndTypeAndEntity(key, type, uuid, label)
         verify(languageService, times(1)).getByLang(lang)
         verify(translatableEntityFieldTranslationRepository, times(1)).findByFieldAndLanguage(field, language)
 
@@ -172,7 +172,7 @@ class TranslatableEntityFieldTranslationServiceImplTest {
 
     //endregion
 
-    //region getByKeyAndEntity
+    //region getByKeyAndTypeAndEntity
 
     @Test
     fun getByKeyAndEntityUuidAndEntityLabelTest() {
@@ -189,12 +189,12 @@ class TranslatableEntityFieldTranslationServiceImplTest {
         val translation = TranslatableEntityFieldTranslation().apply { this.value = value }.apply { this.field = field }.apply { this.language = language }
         val list = listOf(translation)
         // mock
-        `when`(translatableEntityFieldService.getByKeyAndEntity(key, type, uuid, label)).thenReturn(field)
+        `when`(translatableEntityFieldService.getByKeyAndTypeAndEntity(key, type, uuid, label)).thenReturn(field)
         `when`(translatableEntityFieldTranslationRepository.findByField(field)).thenReturn(list)
         // sut
         val result = translatableEntityFieldTranslationService.getByKeyAndEntity(key, type, uuid, label)
         // verify
-        verify(translatableEntityFieldService, times(1)).getByKeyAndEntity(key, type, uuid, label)
+        verify(translatableEntityFieldService, times(1)).getByKeyAndTypeAndEntity(key, type, uuid, label)
         verify(translatableEntityFieldTranslationRepository, times(1)).findByField(field)
 
         Assert.assertTrue(result.isNotEmpty())
@@ -242,19 +242,19 @@ class TranslatableEntityFieldTranslationServiceImplTest {
         val translation = TranslatableEntityFieldTranslation().apply { this.id = 1L }.apply { this.value = value }.apply { this.field = field }.apply { this.language = language }
         // mock
         `when`(languageService.getByLang(lang)).thenReturn(language)
-        `when`(translatableEntityFieldService.findByKeyAndEntity(key, type, uuid, label)).thenReturn(null)
+        `when`(translatableEntityFieldService.findByKeyAndTypeAndEntity(key, type, uuid, label)).thenReturn(null)
         `when`(translatableEntityFieldService.create(com.nhaarman.mockito_kotlin.any())).thenReturn(field)
         //retrieve translation
-        `when`(translatableEntityFieldService.getByKeyAndEntity(key, type, uuid, label)).thenReturn(field)
+        `when`(translatableEntityFieldService.getByKeyAndTypeAndEntity(key, type, uuid, label)).thenReturn(field)
         `when`(translatableEntityFieldTranslationRepository.findByFieldAndLanguage(field, language)).thenReturn(translation)
         // sut
         translatableEntityFieldTranslationService.create(dto)
         // verify
         verify(languageService, times(2)).getByLang(lang)
-        verify(translatableEntityFieldService, times(1)).findByKeyAndEntity(key, type, uuid, label)
+        verify(translatableEntityFieldService, times(1)).findByKeyAndTypeAndEntity(key, type, uuid, label)
         verify(translatableEntityFieldService, times(1)).create(com.nhaarman.mockito_kotlin.any())
 
-        verify(translatableEntityFieldService, times(1)).getByKeyAndEntity(key, type, uuid, label)
+        verify(translatableEntityFieldService, times(1)).getByKeyAndTypeAndEntity(key, type, uuid, label)
         verify(translatableEntityFieldTranslationRepository, times(1)).findByFieldAndLanguage(field, language)
     }
 
@@ -274,17 +274,17 @@ class TranslatableEntityFieldTranslationServiceImplTest {
         val translation = TranslatableEntityFieldTranslation().apply { this.id = 1L }.apply { this.value = value }.apply { this.field = field }.apply { this.language = language }
         // mock
         `when`(languageService.getByLang(lang)).thenReturn(language)
-        `when`(translatableEntityFieldService.findByKeyAndEntity(key, type, uuid, label)).thenReturn(field)
+        `when`(translatableEntityFieldService.findByKeyAndTypeAndEntity(key, type, uuid, label)).thenReturn(field)
         //retrieve translation
-        `when`(translatableEntityFieldService.getByKeyAndEntity(key, type, uuid, label)).thenReturn(field)
+        `when`(translatableEntityFieldService.getByKeyAndTypeAndEntity(key, type, uuid, label)).thenReturn(field)
         `when`(translatableEntityFieldTranslationRepository.findByFieldAndLanguage(field, language)).thenReturn(translation)
         // sut
         translatableEntityFieldTranslationService.create(dto)
         // verify
         verify(languageService, times(2)).getByLang(lang)
-        verify(translatableEntityFieldService, times(1)).findByKeyAndEntity(key, type, uuid, label)
+        verify(translatableEntityFieldService, times(1)).findByKeyAndTypeAndEntity(key, type, uuid, label)
 
-        verify(translatableEntityFieldService, times(1)).getByKeyAndEntity(key, type, uuid, label)
+        verify(translatableEntityFieldService, times(1)).getByKeyAndTypeAndEntity(key, type, uuid, label)
         verify(translatableEntityFieldTranslationRepository, times(1)).findByFieldAndLanguage(field, language)
     }
 
@@ -304,20 +304,20 @@ class TranslatableEntityFieldTranslationServiceImplTest {
         val translation = TranslatableEntityFieldTranslation().apply { this.id = 1L }.apply { this.value = value }.apply { this.field = field }.apply { this.language = language }
         // mock
         `when`(languageService.getByLang(lang)).thenReturn(language)
-        `when`(translatableEntityFieldService.findByKeyAndEntity(key, type, uuid, label)).thenReturn(null)
+        `when`(translatableEntityFieldService.findByKeyAndTypeAndEntity(key, type, uuid, label)).thenReturn(null)
         `when`(translatableEntityFieldService.create(com.nhaarman.mockito_kotlin.any())).thenReturn(field)
         //retrieve translation
-        `when`(translatableEntityFieldService.getByKeyAndEntity(key, type, uuid, label)).thenReturn(field)
+        `when`(translatableEntityFieldService.getByKeyAndTypeAndEntity(key, type, uuid, label)).thenReturn(field)
         `when`(translatableEntityFieldTranslationRepository.findByFieldAndLanguage(field, language)).thenReturn(null)
         `when`(translatableEntityFieldTranslationRepository.save(any(TranslatableEntityFieldTranslation::class.java))).thenReturn(translation)
         // sut
         val result = translatableEntityFieldTranslationService.create(dto)
         // verify
         verify(languageService, times(2)).getByLang(lang)
-        verify(translatableEntityFieldService, times(1)).findByKeyAndEntity(key, type, uuid, label)
+        verify(translatableEntityFieldService, times(1)).findByKeyAndTypeAndEntity(key, type, uuid, label)
         verify(translatableEntityFieldService, times(1)).create(com.nhaarman.mockito_kotlin.any())
 
-        verify(translatableEntityFieldService, times(1)).getByKeyAndEntity(key, type, uuid, label)
+        verify(translatableEntityFieldService, times(1)).getByKeyAndTypeAndEntity(key, type, uuid, label)
         verify(translatableEntityFieldTranslationRepository, times(1)).findByFieldAndLanguage(field, language)
         verify(translatableEntityFieldTranslationRepository, times(1)).save(any(TranslatableEntityFieldTranslation::class.java))
 
@@ -349,14 +349,14 @@ class TranslatableEntityFieldTranslationServiceImplTest {
         val translation = TranslatableEntityFieldTranslation().apply { this.id = 1L }.apply { this.value = oldValue }.apply { this.field = field }.apply { this.language = language }
         // mock
         `when`(languageService.getByLang(lang)).thenReturn(language)
-        `when`(translatableEntityFieldService.getByKeyAndEntity(key, type, uuid, label)).thenReturn(field)
+        `when`(translatableEntityFieldService.getByKeyAndTypeAndEntity(key, type, uuid, label)).thenReturn(field)
         `when`(translatableEntityFieldTranslationRepository.findByFieldAndLanguage(field, language)).thenReturn(translation)
         `when`(translatableEntityFieldTranslationRepository.save(any(TranslatableEntityFieldTranslation::class.java))).thenReturn(translation.apply { this.value = newValue })
         // sut
         val result = translatableEntityFieldTranslationService.updateValue(dto)
         // verify
         verify(languageService, times(1)).getByLang(lang)
-        verify(translatableEntityFieldService, times(1)).getByKeyAndEntity(key, type, uuid, label)
+        verify(translatableEntityFieldService, times(1)).getByKeyAndTypeAndEntity(key, type, uuid, label)
         verify(translatableEntityFieldTranslationRepository, times(1)).findByFieldAndLanguage(field, language)
         verify(translatableEntityFieldTranslationRepository, times(1)).save(any(TranslatableEntityFieldTranslation::class.java))
 
