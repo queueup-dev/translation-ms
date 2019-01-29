@@ -121,7 +121,7 @@ tasks.register<DockerTask>("buildDockerWithLatestTag") {
     runCommand("wget https://download.newrelic.com/newrelic/java-agent/newrelic-agent/current/newrelic-java.zip -P /tmp")
     runCommand("unzip /tmp/newrelic-java.zip -d /opt/newrelic")
 
-    addFile("${System.getProperty("user.dir")}/rest/server/build/libs/translation-ms-$version.jar", "/opt/jar/translation-ms.jar")
+    addFile("${System.getProperty("user.dir")}/rest/server/build/libs/server.jar", "/opt/jar/translation-ms.jar")
 
     runCommand("touch /opt/jar/translation-ms.jar")
 
