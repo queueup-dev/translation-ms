@@ -5,31 +5,6 @@ import se.transmode.gradle.plugins.docker.DockerTask
 group = "com.sfl.tms"
 version = "0.0.1-SNAPSHOT"
 
-//region Plugins
-
-plugins {
-    val kotlinVersion = "1.3.11"
-    val springBootVersion = "2.1.1.RELEASE"
-
-    kotlin("jvm") version kotlinVersion apply true
-    kotlin("plugin.jpa") version kotlinVersion apply true
-    kotlin("plugin.allopen") version kotlinVersion apply true
-    kotlin("plugin.spring") version kotlinVersion apply true
-
-    id("org.springframework.boot") version springBootVersion apply true
-
-    id("org.sonarqube") version "2.6.2" apply true
-
-    jacoco apply true
-}
-
-apply {
-    plugin("docker")
-    plugin("io.spring.dependency-management")
-}
-
-//endregion
-
 //region Build script
 
 buildscript {
@@ -48,49 +23,79 @@ buildscript {
 
 //endregion
 
-//region Dependencies
+//region Plugins
 
-dependencies {
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-    implementation("org.jetbrains.kotlin:kotlin-reflect")
-    implementation("com.nhaarman:mockito-kotlin:1.6.0")
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+plugins {
+    val kotlinVersion = "1.3.11"
+    val springBootVersion = "2.1.2.RELEASE"
 
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.3.10")
+    kotlin("jvm") version kotlinVersion
+    kotlin("plugin.jpa") version kotlinVersion
+    kotlin("plugin.allopen") version kotlinVersion
+    kotlin("plugin.spring") version kotlinVersion
 
-    implementation("org.springframework.boot:spring-boot-starter-web")
-    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-    implementation("org.springframework.boot:spring-boot-starter-actuator")
-    implementation("org.springframework.boot:spring-boot-configuration-processor")
+    id("org.springframework.boot") version springBootVersion
+    id("io.spring.dependency-management") version "1.0.6.RELEASE"
 
-    testImplementation("org.springframework.boot:spring-boot-starter-test")
+    id("org.sonarqube") version "2.6.2" apply true
 
-    implementation("org.hibernate:hibernate-java8:")
-    implementation("org.postgresql:postgresql:42.2.5")
+    jacoco apply true
+}
 
-    implementation("org.apache.commons:commons-lang3:")
-    implementation("com.google.code.gson:gson:2.8.5")
-
-    implementation("io.springfox:springfox-swagger2:2.9.2")
-    implementation("io.springfox:springfox-swagger-ui:2.9.2")
-
-    implementation("net.logstash.logback:logstash-logback-encoder:5.2")
+apply {
+    plugin("docker")
 }
 
 //endregion
 
-//region SpringBoot
+//region Projects
 
-springBoot {
-    mainClassName = "com.sfl.tms.TmsApplication"
+allprojects {
+    repositories {
+        mavenCentral()
+    }
+}
 
-    buildInfo {
-        properties {
-            name = project.name
-            group = project.group.toString()
-            version = project.version.toString()
-            artifact = "translation-ms"
+subprojects {
+    apply(plugin = "org.jetbrains.kotlin.jvm")
+    apply(plugin = "org.jetbrains.kotlin.plugin.jpa")
+    apply(plugin = "org.jetbrains.kotlin.plugin.allopen")
+    apply(plugin = "org.jetbrains.kotlin.plugin.spring")
+
+    apply(plugin = "io.spring.dependency-management")
+
+    dependencies {
+        compile(kotlin("stdlib-jdk8"))
+        compile(kotlin("reflect"))
+    }
+
+    dependencyManagement {
+        imports {
+            mavenBom("org.springframework.boot:spring-boot-dependencies:2.1.2.RELEASE")
+            mavenBom("org.springframework.cloud:spring-cloud-dependencies:Greenwich.RELEASE")
         }
+    }
+
+    configure<JavaPluginConvention> {
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
+    }
+
+    tasks.withType<KotlinCompile> {
+        kotlinOptions {
+            jvmTarget = "1.8"
+            freeCompilerArgs = listOf("-Xjsr305=strict")
+        }
+    }
+
+    tasks.create<Delete>("delete") {
+        delete {
+            files("out")
+        }
+    }
+
+    repositories {
+        mavenCentral()
     }
 }
 
@@ -98,25 +103,8 @@ springBoot {
 
 //region Tasks
 
-configure<JavaPluginConvention> {
-    setSourceCompatibility(1.8)
-    setTargetCompatibility(1.8)
-}
-
-tasks.withType<JavaCompile> {
-    options.isFork = true
-}
-
-tasks.withType<KotlinCompile> {
-    kotlinOptions {
-        jvmTarget = "1.8"
-        freeCompilerArgs = listOf("-Xjsr305=strict")
-    }
-}
-
 tasks.getByName<BootJar>("bootJar") {
-    mainClassName = "com.sfl.tms.TmsApplication"
-    launchScript()
+    enabled = false
 }
 
 tasks.register<DockerTask>("buildDockerWithLatestTag") {
@@ -133,7 +121,7 @@ tasks.register<DockerTask>("buildDockerWithLatestTag") {
     runCommand("wget https://download.newrelic.com/newrelic/java-agent/newrelic-agent/current/newrelic-java.zip -P /tmp")
     runCommand("unzip /tmp/newrelic-java.zip -d /opt/newrelic")
 
-    addFile("${System.getProperty("user.dir")}/build/libs/translation-ms-$version.jar", "/opt/jar/translation-ms.jar")
+    addFile("${System.getProperty("user.dir")}/rest/server/build/libs/translation-ms-$version.jar", "/opt/jar/translation-ms.jar")
 
     runCommand("touch /opt/jar/translation-ms.jar")
 
@@ -164,18 +152,6 @@ sonarqube {
         property("sonar.exclusions", "**/aspect/**")
         property("sonar.jacoco.reportPaths", "$buildDir/jacoco/test.exec")
     }
-}
-
-//endregion
-
-//region Repositories
-
-repositories {
-    maven("https://plugins.gradle.org/m2/")
-    maven("https://oss.sonatype.org/content/repositories/snapshots")
-    mavenLocal()
-    mavenCentral()
-    jcenter()
 }
 
 //endregion
