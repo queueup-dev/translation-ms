@@ -8,6 +8,7 @@ dependencies {
     compile("org.apache.commons:commons-lang3:")
 
     testCompile("org.springframework.boot:spring-boot-starter-test")
+    implementation("com.nhaarman:mockito-kotlin:1.6.0")
 
     compile("net.logstash.logback:logstash-logback-encoder:5.2")
 }
