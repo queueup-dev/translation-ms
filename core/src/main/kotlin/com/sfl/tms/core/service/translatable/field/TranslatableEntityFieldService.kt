@@ -13,7 +13,7 @@ interface TranslatableEntityFieldService {
 
     fun findByKeyAndTypeAndEntity(key: String, type: TranslatableEntityFieldType, uuid: String, label: String): TranslatableEntityField?
 
-    fun getByKeyAndTypeAndEntity(key: String, type:TranslatableEntityFieldType, uuid: String, label: String): TranslatableEntityField
+    fun getByKeyAndTypeAndEntity(key: String, type: TranslatableEntityFieldType, uuid: String, label: String): TranslatableEntityField
 
     fun create(dto: TranslatableEntityFieldDto): TranslatableEntityField
 

@@ -1,7 +1,6 @@
 package com.sfl.tms.rest.common.model
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.annotation.JsonValue
 import com.sfl.tms.rest.common.model.error.ErrorType
 import java.util.*
 
@@ -17,7 +16,7 @@ class ResultModel<T : AbstractApiModel> : AbstractApiModel {
     @JsonProperty
     var result: T? = null
 
-    @JsonValue
+    @JsonProperty(value = "errors")
     var errors: List<ErrorType>? = null
 
     @JsonProperty(value = "success")

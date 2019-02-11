@@ -42,9 +42,9 @@ class TranslatableEntityFieldServiceImpl : TranslatableEntityFieldService {
 
     @Transactional(readOnly = true)
     override fun findByKeyAndTypeAndEntity(key: String, type: TranslatableEntityFieldType, uuid: String, label: String): TranslatableEntityField? = key
-            .also { logger.trace("Retrieving TranslatableEntityField by provided key - {}, type - {} and TranslatableEntity uuid - {} and label - {}.", key, type, uuid, label) }
-            .let { translatableEntityFieldRepository.findByKeyAndTypeAndEntity(it, type, translatableEntityService.getByUuidAndLabel(uuid, label)) }
-            .also { logger.debug("Retrieved TranslatableEntityField for provided key - {} and TranslatableEntity uuid - {} and label - {}.", key, uuid, label) }
+        .also { logger.trace("Retrieving TranslatableEntityField by provided key - {}, type - {} and TranslatableEntity uuid - {} and label - {}.", key, type, uuid, label) }
+        .let { translatableEntityFieldRepository.findByKeyAndTypeAndEntity(it, type, translatableEntityService.getByUuidAndLabel(uuid, label)) }
+        .also { logger.debug("Retrieved TranslatableEntityField for provided key - {} and TranslatableEntity uuid - {} and label - {}.", key, uuid, label) }
 
     //endregion
 
@@ -53,17 +53,17 @@ class TranslatableEntityFieldServiceImpl : TranslatableEntityFieldService {
     @Throws(TranslatableEntityFieldNotFoundException::class)
     @Transactional(readOnly = true)
     override fun getByKeyAndTypeAndEntity(key: String, type: TranslatableEntityFieldType, uuid: String, label: String): TranslatableEntityField = key
-            .also { logger.trace("Retrieving TranslatableEntityField for provided key - {}, type - {}, uuid - {} and label - {}.", key, type, uuid, label) }
-            .let {
-                findByKeyAndTypeAndEntity(it, type, uuid, label).let {
-                    if (it == null) {
-                        logger.error("Can't find TranslatableEntityField for key - {}, type - {}, uuid - {} and label - {}.", key, type, uuid, label)
-                        throw TranslatableEntityFieldNotFoundException(key, type, uuid, label)
-                    }
-                    logger.debug("Retrieved TranslatableEntityField for provided key - {}, type - {}, uuid - {} and label - {}.", key, type, uuid, label)
-                    it
+        .also { logger.trace("Retrieving TranslatableEntityField for provided key - {}, type - {}, uuid - {} and label - {}.", key, type, uuid, label) }
+        .let {
+            findByKeyAndTypeAndEntity(it, type, uuid, label).let {
+                if (it == null) {
+                    logger.error("Can't find TranslatableEntityField for key - {}, type - {}, uuid - {} and label - {}.", key, type, uuid, label)
+                    throw TranslatableEntityFieldNotFoundException(key, type, uuid, label)
                 }
+                logger.debug("Retrieved TranslatableEntityField for provided key - {}, type - {}, uuid - {} and label - {}.", key, type, uuid, label)
+                it
             }
+        }
 
     //endregion
 
@@ -72,24 +72,24 @@ class TranslatableEntityFieldServiceImpl : TranslatableEntityFieldService {
     @Throws(TranslatableEntityNotFoundException::class, TranslatableEntityFieldExistsForTranslatableEntityException::class)
     @Transactional
     override fun create(dto: TranslatableEntityFieldDto): TranslatableEntityField = dto
-            .also { logger.trace("Creating new TranslatableEntityField for provided dto - {} ", dto) }
-            .let {
-                val translatableEntity = translatableEntityService.getByUuidAndLabel(dto.uuid, dto.label)
+        .also { logger.trace("Creating new TranslatableEntityField for provided dto - {} ", dto) }
+        .let {
+            val translatableEntity = translatableEntityService.getByUuidAndLabel(dto.uuid, dto.label)
 
-                findByKeyAndTypeAndEntity(dto.key, dto.type, dto.uuid, dto.label).let {
-                    if (it == null) {
-                        TranslatableEntityField()
-                                .apply { key = dto.key }
-                                .apply { type = dto.type }
-                                .apply { entity = translatableEntity }
-                                .let { translatableEntityFieldRepository.save(it) }
-                                .also { logger.debug("Successfully created new TranslatableEntityField for provided dto - {}", dto) }
-                    } else {
-                        logger.error("Unable to create new TranslatableEntityField for provided dto - {}. Already exists.", dto)
-                        throw TranslatableEntityFieldExistsForTranslatableEntityException(dto.key, dto.uuid, dto.label)
-                    }
+            findByKeyAndTypeAndEntity(dto.key, dto.type, dto.uuid, dto.label).let {
+                if (it == null) {
+                    TranslatableEntityField()
+                        .apply { key = dto.key }
+                        .apply { type = dto.type }
+                        .apply { entity = translatableEntity }
+                        .let { translatableEntityFieldRepository.save(it) }
+                        .also { logger.debug("Successfully created new TranslatableEntityField for provided dto - {}", dto) }
+                } else {
+                    logger.error("Unable to create new TranslatableEntityField for provided dto - {}. Already exists.", dto)
+                    throw TranslatableEntityFieldExistsForTranslatableEntityException(dto.key, dto.uuid, dto.label)
                 }
             }
+        }
 
     //endregion
 
@@ -99,21 +99,21 @@ class TranslatableEntityFieldServiceImpl : TranslatableEntityFieldService {
     override fun copyStatics(uuid: String, label: String) {
         logger.trace("Retrieving TranslatableEntity template.")
         translatableEntityService
-                .getByUuidAndLabel(ServicesProperties.templateUuid, ServicesProperties.templateLabel)
-                .also { logger.debug("Successfully retrieved TranslatableEntity template.") }
-                .fields
-                .filter { it.type == TranslatableEntityFieldType.STATIC }
-                .forEach {
-                    logger.trace("Creating static TranslatableEntityField with key - {} for uuid - {} and label - {}", it.key, uuid, label)
-                    val field = create(TranslatableEntityFieldDto(it.key, TranslatableEntityFieldType.STATIC, uuid, label))
-                    logger.debug("Successfully created static TranslatableEntityField with key - {} for uuid - {} and label - {}", it.key, uuid, label)
+            .getByUuidAndLabel(ServicesProperties.templateUuid, ServicesProperties.templateLabel)
+            .also { logger.debug("Successfully retrieved TranslatableEntity template.") }
+            .fields
+            .filter { it.type == TranslatableEntityFieldType.STATIC }
+            .forEach {
+                logger.trace("Creating static TranslatableEntityField with key - {} for uuid - {} and label - {}", it.key, uuid, label)
+                val field = create(TranslatableEntityFieldDto(it.key, TranslatableEntityFieldType.STATIC, uuid, label))
+                logger.debug("Successfully created static TranslatableEntityField with key - {} for uuid - {} and label - {}", it.key, uuid, label)
 
-                    it.translations.forEach {
-                        logger.trace("Creating TranslatableEntityFieldTranslation with key - {}, value - {} for uuid - {} and label - {}", field.key, it.value, uuid, label)
-                        translatableEntityFieldTranslationService.create(TranslatableEntityFieldTranslationDto(field.key, field.type, it.value, uuid, label, it.language.lang))
-                        logger.debug("Successfully created TranslatableEntityFieldTranslation with key - {}, value - {} for uuid - {} and label - {}", field.key, it.value, uuid, label)
-                    }
+                it.translations.forEach {
+                    logger.trace("Creating TranslatableEntityFieldTranslation with key - {}, value - {} for uuid - {} and label - {}", field.key, it.value, uuid, label)
+                    translatableEntityFieldTranslationService.create(TranslatableEntityFieldTranslationDto(field.key, field.type, it.value, uuid, label, it.language.lang))
+                    logger.debug("Successfully created TranslatableEntityFieldTranslation with key - {}, value - {} for uuid - {} and label - {}", field.key, it.value, uuid, label)
                 }
+            }
     }
 
     //endregion

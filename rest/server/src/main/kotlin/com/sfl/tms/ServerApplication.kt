@@ -42,7 +42,7 @@ class ServerApplication {
         createLanguageIfNotExist("nl")
 
         translatableEntityService.findByUuidAndLabel(templateUuid, templateLabel)
-                ?: translatableEntityService.create(TranslatableEntityDto(UUID.fromString(templateUuid).toString(), templateLabel, "Translatable entity template"))
+            ?: translatableEntityService.create(TranslatableEntityDto(UUID.fromString(templateUuid).toString(), templateLabel, "Translatable entity template"))
 
         insertData("en", templateUuid, templateLabel)
         insertData("nl", templateUuid, templateLabel)
@@ -53,23 +53,23 @@ class ServerApplication {
     private fun createLanguageIfNotExist(lang: String) = languageService.findByLang(lang) ?: languageService.create(lang)
 
     private fun insertData(lang: String, uuid: String, label: String) = Gson()
-            .fromJson(ServerApplication::class.java.getResource("/static/locales-$lang.json").readText(), Map::class.java)
-            .forEach { k, v ->
-                val key = k as String
+        .fromJson(ServerApplication::class.java.getResource("/static/locales-$lang.json").readText(), Map::class.java)
+        .forEach { k, v ->
+            val key = k as String
 
-                if (v is Map<*, *>) {
-                    v.forEach { k2, value ->
-                        createOrUpdateIfExist(key + "." + k2 as String, value as String, uuid, label, lang)
-                    }
-                } else {
-                    createOrUpdateIfExist(key, v as String, uuid, label, lang)
+            if (v is Map<*, *>) {
+                v.forEach { k2, value ->
+                    createOrUpdateIfExist(key + "." + k2 as String, value as String, uuid, label, lang)
                 }
+            } else {
+                createOrUpdateIfExist(key, v as String, uuid, label, lang)
             }
+        }
 
     private fun createOrUpdateIfExist(key: String, value: String, uuid: String, label: String, lang: String) {
 
         translatableEntityFieldService.findByKeyAndTypeAndEntity(key, TranslatableEntityFieldType.STATIC, uuid, label)
-                ?: translatableEntityFieldService.create(TranslatableEntityFieldDto(key, TranslatableEntityFieldType.STATIC, uuid, label))
+            ?: translatableEntityFieldService.create(TranslatableEntityFieldDto(key, TranslatableEntityFieldType.STATIC, uuid, label))
 
         translatableEntityFieldTranslationService.findByFieldAndLanguage(key, TranslatableEntityFieldType.STATIC, uuid, label, lang).let {
 

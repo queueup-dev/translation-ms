@@ -45,25 +45,25 @@ class ClientApplication {
         val gson = GsonBuilder().registerTypeHierarchyAdapter(ErrorType::class.java, jsonDeserializer).registerTypeHierarchyAdapter(AbstractApiModel::class.java, CustomAdapter()).create()
 
         Feign
-                .builder()
-                .logLevel(Logger.Level.FULL)
-                .contract(SpringMvcContract())
-                .client(OkHttpClient())
-                .encoder(GsonEncoder(gson))
-                .decoder(GsonDecoder(gson))
-                .options(Request.Options(100000, 100000))
-                .logger(Slf4jLogger(TranslationApiClient::class.java))
-                .target(TranslationApiClient::class.java, "http://localhost:8080/")
-                .let {
-                    it.createTranslatableEntity(TranslatableEntityCreateRequestModel("ddddfffbcddda", "bdcdfffddddda", "badfffdddddcd")).let {
-                        if (it.success) {
-                            println(it.result)
-                        } else {
-                            println(it.errors)
-                        }
+            .builder()
+            .logLevel(Logger.Level.FULL)
+            .contract(SpringMvcContract())
+            .client(OkHttpClient())
+            .encoder(GsonEncoder(gson))
+            .decoder(GsonDecoder(gson))
+            .options(Request.Options(100000, 100000))
+            .logger(Slf4jLogger(TranslationApiClient::class.java))
+            .target(TranslationApiClient::class.java, "http://localhost:8080/")
+            .let {
+                it.createTranslatableEntity(TranslatableEntityCreateRequestModel("ddddfffbcddda", "bdcdfffddddda", "badfffdddddcd")).let {
+                    if (it.success) {
+                        println(it.result)
+                    } else {
+                        println(it.errors)
                     }
-
                 }
+
+            }
 
     }
 

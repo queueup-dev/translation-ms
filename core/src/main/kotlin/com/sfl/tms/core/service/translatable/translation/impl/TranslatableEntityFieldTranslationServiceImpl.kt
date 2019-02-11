@@ -43,9 +43,9 @@ class TranslatableEntityFieldTranslationServiceImpl : TranslatableEntityFieldTra
     @Throws(TranslatableEntityFieldNotFoundException::class, LanguageNotFoundByLangException::class)
     @Transactional(readOnly = true)
     override fun findByFieldAndLanguage(key: String, type: TranslatableEntityFieldType, uuid: String, label: String, lang: String): TranslatableEntityFieldTranslation? = key
-            .also { logger.trace("Retrieving TranslatableEntityFieldTranslation for provided key - {}, type - {}, uuid - {}, label - {} and lang - {}", key, type, uuid, label, lang) }
-            .let { translatableEntityFieldTranslationRepository.findByFieldAndLanguage(translatableEntityFieldService.getByKeyAndTypeAndEntity(key, type, uuid, label), languageService.getByLang(lang)) }
-            .also { logger.debug("Retrieved TranslatableEntityFieldTranslation for provided key - {}, type - {}, uuid - {}, label - {} and lang - {}", key, type, uuid, label, lang) }
+        .also { logger.trace("Retrieving TranslatableEntityFieldTranslation for provided key - {}, type - {}, uuid - {}, label - {} and lang - {}", key, type, uuid, label, lang) }
+        .let { translatableEntityFieldTranslationRepository.findByFieldAndLanguage(translatableEntityFieldService.getByKeyAndTypeAndEntity(key, type, uuid, label), languageService.getByLang(lang)) }
+        .also { logger.debug("Retrieved TranslatableEntityFieldTranslation for provided key - {}, type - {}, uuid - {}, label - {} and lang - {}", key, type, uuid, label, lang) }
 
     //endregion
 
@@ -54,17 +54,17 @@ class TranslatableEntityFieldTranslationServiceImpl : TranslatableEntityFieldTra
     @Throws(TranslatableFieldTranslationNotFoundException::class)
     @Transactional(readOnly = true)
     override fun getByFieldAndLanguage(key: String, type: TranslatableEntityFieldType, uuid: String, label: String, lang: String): TranslatableEntityFieldTranslation = key
-            .also { logger.trace("Retrieving TranslatableEntityFieldTranslation for provided key - {}, type - {}, uuid - {}, label - {} and lang - {}", it, type, uuid, label, lang) }
-            .let {
-                findByFieldAndLanguage(key, type, uuid, label, lang).let {
-                    if (it == null) {
-                        logger.error("Can't find TranslatableEntityFieldTranslation for key - {}, type - {}, uuid - {}, label - {} and lang - {}", key, type, uuid, label, lang)
-                        throw TranslatableFieldTranslationNotFoundException(key, uuid, label, lang)
-                    }
-                    logger.debug("Retrieved TranslatableEntityFieldTranslation for provided key - {}, type - {}, uuid - {}, label - {} and lang - {}", key, type, uuid, label, lang)
-                    it
+        .also { logger.trace("Retrieving TranslatableEntityFieldTranslation for provided key - {}, type - {}, uuid - {}, label - {} and lang - {}", it, type, uuid, label, lang) }
+        .let {
+            findByFieldAndLanguage(key, type, uuid, label, lang).let {
+                if (it == null) {
+                    logger.error("Can't find TranslatableEntityFieldTranslation for key - {}, type - {}, uuid - {}, label - {} and lang - {}", key, type, uuid, label, lang)
+                    throw TranslatableFieldTranslationNotFoundException(key, uuid, label, lang)
                 }
+                logger.debug("Retrieved TranslatableEntityFieldTranslation for provided key - {}, type - {}, uuid - {}, label - {} and lang - {}", key, type, uuid, label, lang)
+                it
             }
+        }
 
     //endregion
 
@@ -72,9 +72,9 @@ class TranslatableEntityFieldTranslationServiceImpl : TranslatableEntityFieldTra
 
     @Transactional(readOnly = true)
     override fun getByKeyAndEntity(key: String, type: TranslatableEntityFieldType, uuid: String, label: String): List<TranslatableEntityFieldTranslation> = key
-            .also { logger.trace("Retrieving TranslatableEntityFieldTranslation for provided key - {}, type - {}, uuid - {} and label - {}", it, type, uuid, label) }
-            .let { translatableEntityFieldService.getByKeyAndTypeAndEntity(key, type, uuid, label).let { translatableEntityFieldTranslationRepository.findByField(it) } }
-            .also { logger.debug("Retrieved TranslatableEntityFieldTranslation for provided key - {}, type - {}, uuid - {} and label - {}", key, type, uuid, label) }
+        .also { logger.trace("Retrieving TranslatableEntityFieldTranslation for provided key - {}, type - {}, uuid - {} and label - {}", it, type, uuid, label) }
+        .let { translatableEntityFieldService.getByKeyAndTypeAndEntity(key, type, uuid, label).let { translatableEntityFieldTranslationRepository.findByField(it) } }
+        .also { logger.debug("Retrieved TranslatableEntityFieldTranslation for provided key - {}, type - {}, uuid - {} and label - {}", key, type, uuid, label) }
 
     //endregion
 
@@ -100,11 +100,11 @@ class TranslatableEntityFieldTranslationServiceImpl : TranslatableEntityFieldTra
 
         // Create new translation
         return TranslatableEntityFieldTranslation()
-                .apply { this.value = dto.value }
-                .apply { this.field = field }
-                .apply { this.language = language }
-                .let { translatableEntityFieldTranslationRepository.save(it) }
-                .also { logger.debug("Successfully created new TranslatableEntityFieldTranslation for provided dto - {}", dto) }
+            .apply { this.value = dto.value }
+            .apply { this.field = field }
+            .apply { this.language = language }
+            .let { translatableEntityFieldTranslationRepository.save(it) }
+            .also { logger.debug("Successfully created new TranslatableEntityFieldTranslation for provided dto - {}", dto) }
     }
 
     //endregion
@@ -113,11 +113,11 @@ class TranslatableEntityFieldTranslationServiceImpl : TranslatableEntityFieldTra
 
     @Transactional
     override fun updateValue(dto: TranslatableEntityFieldTranslationDto): TranslatableEntityFieldTranslation = dto
-            .also { logger.trace("Updating TranslatableEntityFieldTranslation for provided dto - {} ", it) }
-            .let { getByFieldAndLanguage(dto.key, dto.type, dto.uuid, dto.label, dto.lang) }
-            .apply { value = dto.value }
-            .let { translatableEntityFieldTranslationRepository.save(it) }
-            .also { logger.debug("Successfully updated TranslatableEntityFieldTranslation for provided dto - {}", dto) }
+        .also { logger.trace("Updating TranslatableEntityFieldTranslation for provided dto - {} ", it) }
+        .let { getByFieldAndLanguage(dto.key, dto.type, dto.uuid, dto.label, dto.lang) }
+        .apply { value = dto.value }
+        .let { translatableEntityFieldTranslationRepository.save(it) }
+        .also { logger.debug("Successfully updated TranslatableEntityFieldTranslation for provided dto - {}", dto) }
 
     //endregion
 

@@ -30,7 +30,7 @@ interface TranslationCommunicator {
 
     @ApiOperation(value = "Create translatable entity", response = TranslatableEntityCreateResponseModel::class)
     @RequestMapping(value = ["/entity"], method = [RequestMethod.POST])
-    fun createTranslatableEntity(@RequestBody request: TranslatableEntityCreateRequestModel): ResultModel<out AbstractApiModel>
+    fun createTranslatableEntity(@RequestBody request: TranslatableEntityCreateRequestModel): ResponseEntity<ResultModel<out AbstractApiModel>>
 
     //endregion
 

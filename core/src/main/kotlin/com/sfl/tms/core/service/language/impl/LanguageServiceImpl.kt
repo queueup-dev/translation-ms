@@ -27,24 +27,24 @@ class LanguageServiceImpl : LanguageService {
 
     @Transactional(readOnly = true)
     override fun findByLang(lang: String): Language? = lang
-            .also { logger.trace("Retrieving language for provided lang - {} ", lang) }
-            .let { languageRepository.findByLang(it) }
-            .also { logger.debug("Retrieved language for provided lang - {} ", lang) }
+        .also { logger.trace("Retrieving language for provided lang - {} ", lang) }
+        .let { languageRepository.findByLang(it) }
+        .also { logger.debug("Retrieved language for provided lang - {} ", lang) }
 
     @Throws(LanguageNotFoundByLangException::class)
     @Transactional(readOnly = true)
     override fun getByLang(lang: String): Language = lang
-            .also { logger.trace("Retrieving language for provided lang - {} ", lang) }
-            .let {
-                findByLang(lang).let {
-                    if (it == null) {
-                        logger.error("Can't find language for lang - {}", lang)
-                        throw LanguageNotFoundByLangException(lang)
-                    }
-                    logger.debug("Retrieved language for provided lang - {} ", lang)
-                    it
+        .also { logger.trace("Retrieving language for provided lang - {} ", lang) }
+        .let {
+            findByLang(lang).let {
+                if (it == null) {
+                    logger.error("Can't find language for lang - {}", lang)
+                    throw LanguageNotFoundByLangException(lang)
                 }
+                logger.debug("Retrieved language for provided lang - {} ", lang)
+                it
             }
+        }
 
     @Transactional(readOnly = true)
     override fun getAll(): List<Language> {
@@ -55,20 +55,20 @@ class LanguageServiceImpl : LanguageService {
     @Throws(LanguageExistByLangException::class)
     @Transactional
     override fun create(lang: String): Language = lang
-            .also { logger.trace("Creating new language for provided lang - {} ", lang) }
-            .let {
-                findByLang(it).let {
-                    if (it == null) {
-                        Language()
-                                .apply { this.lang = lang }
-                                .let { languageRepository.save(it) }
-                                .also { logger.debug("Successfully created new Language for provided lang - {}", lang) }
-                    } else {
-                        logger.error("Language with {} lang already exists. Skipping creation.", lang)
-                        throw LanguageExistByLangException(lang)
-                    }
+        .also { logger.trace("Creating new language for provided lang - {} ", lang) }
+        .let {
+            findByLang(it).let {
+                if (it == null) {
+                    Language()
+                        .apply { this.lang = lang }
+                        .let { languageRepository.save(it) }
+                        .also { logger.debug("Successfully created new Language for provided lang - {}", lang) }
+                } else {
+                    logger.error("Language with {} lang already exists. Skipping creation.", lang)
+                    throw LanguageExistByLangException(lang)
                 }
             }
+        }
 
     companion object {
         @JvmStatic

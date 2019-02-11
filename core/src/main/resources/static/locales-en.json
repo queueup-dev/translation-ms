@@ -66,7 +66,7 @@
     "PROFILE_SETTINGS": "My Account",
     "LOG_OUT": "Log Out",
     "USER": "User",
-    "DESCRIPTION":  "Entertainment Jaarkaart B.V. (een samenwerking tussen Cadeau Concepten B.V. en queueup B.V.)",
+    "DESCRIPTION": "Entertainment Jaarkaart B.V. (een samenwerking tussen Cadeau Concepten B.V. en queueup B.V.)",
     "KVK_NUMBER": "KvK nummer: {{number}}"
   },
   "COOKIES_OPTIONS": {
@@ -76,18 +76,15 @@
     "OPTION_2_TEXT": "Om een soepel werkende maar niet persoonlijke website te kunnen laten zien gebruiken we functionele-, analytische- en tracking cookies:",
     "OPTION_3_TITLE": "Basis werkende website",
     "OPTION_3_TEXT": "Bij deze optie worden alleen functionele- en analytische cookies gebruikt voor een website.",
-
     "DETAIL_1": "Functionele cookies: Deze cookies zorgen ervoor dat onze site goed werkt als jij hem gebruikt.",
     "DETAIL_2": "Analytische cookies: Deze cookies geven ons inzicht hoe we de site kunnen verbeteren voor gebruikers.",
     "DETAIL_3": "Tracking cookies: Deze cookies zijn van andere partijen om je online gedrag in kaart te brengen.",
     "DETAIL_4": "Profiling cookies: Deze cookies zorgen ervoor dat de reclames die je ziet relevant zijn.",
-
     "YOUR_COOKIE_PREFERENCES": "Your cookie preferences",
     "PLEASE_CHOOSE_ONE_OPTIONS_TO_ACCEPT_COOKIES": "Geef hieronder aan welke cookies je accepteert op shop.dagjeuitjaarkaart.nl",
     "COOKIE_BANNER_TEXT": "shop.dagjeuitjaarkaart.nl maakt gebruik van cookies om het gebruiksgemak te vergroten en de website zo goed mogelijk te laten functioneren. Door verder te gaan geef je aan hiermee akkoord te gaan. {{readMoreAboutCookies}}.",
-    "CHANGE_PREFERENCE" : "Change preference"
+    "CHANGE_PREFERENCE": "Change preference"
   },
-
   "WELCOME": "WELCOME!",
   "SIGN_UP": "SIGN UP",
   "LOG_OUT": "LOGOUT",
