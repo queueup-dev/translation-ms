@@ -1,6 +1,6 @@
 import org.ajoberstar.grgit.Grgit
 
-group = "${ext["platformGroup"]!!}.api.rest"
+group = "${ext["platformGroup"]!!}.api.rest.client"
 version = ext["platformVersion"]!!
 
 apply(plugin = "io.spring.dependency-management")

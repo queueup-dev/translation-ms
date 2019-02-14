@@ -53,6 +53,7 @@ plugins {
 allprojects {
     repositories {
         mavenCentral()
+        jcenter()
     }
 
     ext {
@@ -95,6 +96,7 @@ subprojects {
 
     repositories {
         mavenCentral()
+        jcenter()
     }
 }
 

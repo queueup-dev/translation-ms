@@ -1,7 +1,15 @@
 import com.bmuschko.gradle.docker.tasks.image.DockerBuildImage
+import com.bmuschko.gradle.docker.tasks.image.DockerPushImage
+import com.bmuschko.gradle.docker.tasks.image.DockerRemoveImage
 import com.bmuschko.gradle.docker.tasks.image.Dockerfile
 import io.spring.gradle.dependencymanagement.dsl.DependencyManagementExtension
+import org.ajoberstar.grgit.Grgit
 import org.springframework.boot.gradle.tasks.bundling.BootJar
+
+group = "${ext["platformGroup"]!!}.api.rest.server"
+version = ext["platformVersion"]!!
+
+val dockerRegistry = "${project.findProperty("dockerRegistry") ?: ""}"
 
 apply(plugin = "org.springframework.boot")
 apply(plugin = "io.spring.dependency-management")
@@ -36,15 +44,15 @@ tasks.getByName<BootJar>("bootJar") {
     launchScript()
 }
 
-val dockerRegistryUrl = "https://${project.findProperty("dockerRegistry") ?: ""}"
-
 docker {
     registryCredentials {
-        url.set(dockerRegistryUrl)
+        url.set("https://$dockerRegistry")
         username.set(System.getenv("DOCKER_REGISTRY_USERNAME"))
         password.set(System.getenv("DOCKER_REGISTRY_PASSWORD"))
     }
 }
+
+//region Create and push tags to docker registry
 
 tasks.register<Dockerfile>("createDockerfile") {
     from("openjdk:8-jre-alpine")
@@ -67,7 +75,39 @@ tasks.register<Dockerfile>("createDockerfile") {
 tasks.register<DockerBuildImage>("buildDockerImage") {
     dependsOn("createDockerfile", "build")
 
-    tags.add("$dockerRegistryUrl/translation-ms-server:$project.version")
-    tags.add("$dockerRegistryUrl/translation-ms-server:$project.version")
-    tags.add("$dockerRegistryUrl/translation-ms-server:$project.version")
+    val git = Grgit.open(mapOf("dir" to file("../../")))
+    val branchName = git.branch.current().name.replace("/", "-")
+    val hash = git.head().getAbbreviatedId(10)
+
+    tags.add("${dockerRegistry}translation-ms-server-${project.version}")
+    tags.add("${dockerRegistry}translation-ms-server-$branchName")
+    tags.add("${dockerRegistry}translation-ms-server-$hash")
 }
+
+getDockerBuildImageTask().tags.get().forEach {
+    tasks.create("pushDockerTag_${it.replace("[/\\\\:<>\"\\?\\*\\|]", "-")}", DockerPushImage::class) {
+        dependsOn(tasks.withType(DockerBuildImage::class))
+        imageName.set(it)
+    }
+}
+
+tasks.create("pushDockerTags") {
+    dependsOn(tasks.withType(DockerPushImage::class))
+}
+
+//endregion
+
+//region remove docker tags
+
+tasks.register<DockerRemoveImage>("removeDockerImage") {
+    force.set(true)
+    targetImageId(getDockerBuildImageTask().imageId)
+}
+
+//endregion
+
+if (project.hasProperty("removeImage")) {
+    tasks.getByName("pushDockerTags").finalizedBy(tasks.getByName("removeDockerImage", DockerRemoveImage::class))
+}
+
+fun getDockerBuildImageTask() = tasks.getByName("buildDockerImage", DockerBuildImage::class)
