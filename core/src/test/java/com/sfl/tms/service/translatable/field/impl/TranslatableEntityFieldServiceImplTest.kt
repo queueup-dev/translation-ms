@@ -192,8 +192,6 @@ class TranslatableEntityFieldServiceImplTest {
         val uuid = "uuid"
         val label = "label"
         val value = "value"
-        val type = TranslatableEntityFieldType.STATIC
-        val dto = TranslatableEntityFieldDto(key, type, uuid, label)
         val language = Language().apply { this.lang = "en" }
         val templateEntity = TranslatableEntity()
             .apply { this.uuid = ServicesProperties.templateUuid }

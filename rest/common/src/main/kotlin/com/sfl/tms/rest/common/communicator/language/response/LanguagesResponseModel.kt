@@ -1,4 +1,4 @@
-package com.sfl.tms.rest.server.language.model.response
+package com.sfl.tms.rest.common.communicator.language.response
 
 import com.sfl.tms.rest.common.model.response.AbstractApiResponseModel
 

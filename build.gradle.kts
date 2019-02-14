@@ -1,9 +1,13 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.springframework.boot.gradle.tasks.bundling.BootJar
-import se.transmode.gradle.plugins.docker.DockerTask
 
-group = "com.sfl.tms"
-version = "0.0.1-SNAPSHOT"
+ext {
+    this["platformGroup"] = "com.sfl.tms"
+    this["platformVersion"] = "0.0.1-SNAPSHOT"
+}
+
+group = ext["platformGroup"]!!
+version = ext["platformVersion"]!!
 
 //region Build script
 
@@ -17,7 +21,7 @@ buildscript {
     }
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:2.1.1.RELEASE")
-        classpath("se.transmode.gradle:gradle-docker:1.2")
+        classpath("org.ajoberstar:grgit:2.2.1")
     }
 }
 
@@ -26,7 +30,7 @@ buildscript {
 //region Plugins
 
 plugins {
-    val kotlinVersion = "1.3.11"
+    val kotlinVersion = "1.3.20"
     val springBootVersion = "2.1.2.RELEASE"
 
     kotlin("jvm") version kotlinVersion
@@ -37,13 +41,9 @@ plugins {
     id("org.springframework.boot") version springBootVersion
     id("io.spring.dependency-management") version "1.0.6.RELEASE"
 
-    id("org.sonarqube") version "2.6.2" apply true
+    id("org.sonarqube") version "2.6.2"
 
     jacoco apply true
-}
-
-apply {
-    plugin("docker")
 }
 
 //endregion
@@ -53,6 +53,11 @@ apply {
 allprojects {
     repositories {
         mavenCentral()
+    }
+
+    ext {
+        this["platformGroup"] = "com.sfl.tms"
+        this["platformVersion"] = "0.0.1-SNAPSHOT"
     }
 }
 
@@ -88,12 +93,6 @@ subprojects {
         }
     }
 
-    tasks.create<Delete>("delete") {
-        delete {
-            files("out")
-        }
-    }
-
     repositories {
         mavenCentral()
     }
@@ -105,31 +104,6 @@ subprojects {
 
 tasks.getByName<BootJar>("bootJar") {
     enabled = false
-}
-
-tasks.register<DockerTask>("buildDockerWithLatestTag") {
-    val registryUrl = if (project.hasProperty("dockerRegistryUrl")) project.properties["dockerRegistryUrl"] else ""
-    val projectEnvironment = if (project.hasProperty("environment")) project.properties["environment"] else ""
-
-    tagVersion = "latest"
-    push = true
-    applicationName = "translation-ms-$projectEnvironment"
-    registry = registryUrl as String?
-
-    addFile("${System.getProperty("user.dir")}/config/newrelic/newrelic.yml", "/opt/newrelic/newrelic.yml")
-
-    runCommand("wget https://download.newrelic.com/newrelic/java-agent/newrelic-agent/current/newrelic-java.zip -P /tmp")
-    runCommand("unzip /tmp/newrelic-java.zip -d /opt/newrelic")
-
-    addFile("${System.getProperty("user.dir")}/rest/server/build/libs/server.jar", "/opt/jar/translation-ms.jar")
-
-    runCommand("touch /opt/jar/translation-ms.jar")
-
-    exposePort(8080)
-
-    entryPoint(arrayOf("java", " -javaagent:/opt/newrelic/newrelic.jar -Dnewrelic.environment=$projectEnvironment \$JAVA_OPTS -jar /opt/jar/translation-ms.jar").toMutableList())
-
-    dockerfile = file("Dockerfile")
 }
 
 //endregion

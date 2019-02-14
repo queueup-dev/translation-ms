@@ -1,79 +1,114 @@
-#!groovy
-import groovy.json.JsonOutput
-
-node {
-    def defaultProjectDockerRegistry = "registry.sflpro.com"
-    def defaultProjectDockerRegistryUsername = "jenkins"
-    def defaultProjectDockerRegistryPassword = "J3nk1ns"
-//    def gradleHome = tool 'GRADLE_5.0'
-//    def scannerHome = tool 'SONAR_SCANNER_3.0.3.778'
-    env.JAVA_HOME = tool 'JDK_u162'
-//    env.PATH = "${gradleHome}/bin:${scannerHome}/bin:${env.PATH}"
-
-    stage('Checkout project') {
-        checkout scm
+pipeline {
+    options {
+        buildDiscarder logRotator(numToKeepStr: '3')
     }
-
-    stage('Build') {
-        sh "./gradlew -x test build"
-    }
-
-    def loginToRegistry = { String url = defaultProjectDockerRegistry,
-                            String user = defaultProjectDockerRegistryUsername,
-                            String pass = defaultProjectDockerRegistryPassword ->
-        sh "docker login ${url} -u ${user} -p ${pass}"
-    }
-
-    def buildDockerImage = { String environment, String registry ->
-        stage('Build docker image') {
-            sh "./gradlew -x test buildDockerWithLatestTag -Penvironment=$environment -PdockerRegistryUrl=${registry}"
-            sh "docker rmi ${registry}/translation-ms-$environment:latest"
+    agent any
+    stages {
+        stage("Build and Test") {
+            agent {
+                docker {
+                    image "$DOCKER_REGISTRY/oracle/serverjre:8"
+                    registryUrl "https://$DOCKER_REGISTRY/"
+                    registryCredentialsId 'nexus'
+                }
+            }
+            steps {
+                sh './gradlew clean build'
+            }
+        }
+        stage("Upload Maven") {
+            when {
+                anyOf {
+                    branch 'master';
+                    branch 'acceptance';
+                    branch 'develop'
+                }
+            }
+            steps {
+                withCredentials(
+                        [
+                                usernamePassword(
+                                        credentialsId: 'nexus',
+                                        usernameVariable: 'SONATYPE_USERNAME',
+                                        passwordVariable: 'SONATYPE_PASSWORD'
+                                )
+                        ]
+                ) {
+                    sh "./gradlew :rest:client:upload"
+                }
+            }
+        }
+        stage("Push Docker") {
+            steps {
+                withCredentials(
+                        [
+                                usernamePassword(
+                                        credentialsId: 'nexus',
+                                        usernameVariable: 'DOCKER_REGISTRY_USERNAME',
+                                        passwordVariable: 'DOCKER_REGISTRY_PASSWORD'
+                                )
+                        ]
+                ) {
+                    sh "./gradlew --exclude-task test pushDockerTags --project-prop dockerRegistry=$DOCKER_REGISTRY --project-prop removeImage"
+                }
+            }
+        }
+        stage("Deploy") {
+            when {
+                anyOf {
+                    branch 'acceptance';
+                    branch 'develop'
+                }
+            }
+            steps {
+                script {
+                    switch (env.BRANCH_NAME) {
+                        case "develop":
+                            environment = "development"
+                            break
+                        case "acceptance":
+                            environment = "acceptance"
+                            break
+                    }
+                }
+                build(
+                        job: 'deploy/master',
+                        parameters: [
+                                string(name: 'environment', value: environment),
+                                booleanParam(name: "core", value: true),
+                                booleanParam(name: "coreConsumer", value: true),
+                                booleanParam(name: "adminGateway", value: true),
+                                booleanParam(name: "coreScheduler", value: true)
+                        ],
+                        propagate: 'true',
+                        wait: 'false'
+                )
+            }
         }
     }
-
-    def executeSonarAnalysis = {
-        stage('SonarQube analysis') {
-            sh "./gradlew --info sonarqube -Dsonar.login=${env.SONAR_LOGIN} -Dsonar.host.url=${env.SONAR_HOST_URL}"
+    post {
+        always {
+            script {
+                switch (currentBuild.currentResult) {
+                    case "SUCCESS":
+                        color = 'good'
+                        break
+                    case "UNSTABLE":
+                        color = 'warning'
+                        break
+                    case "FAILURE":
+                        color = 'danger'
+                        break
+                    default:
+                        color = '#439FE0'
+                        break
+                }
+            }
+            slackSend(
+                    color: "$color",
+                    message: "Build Finished with ${currentBuild.currentResult} - <${env.BUILD_URL}|${env.JOB_NAME} ${env.BUILD_NUMBER}>",
+                    channel: '#qup-jenkins'
+            )
         }
     }
-
-    def callDeploymentJob = { String projectJobName, String projectName ->
-        stage('Call to Deployer') {
-            build job: projectJobName, wait: false, parameters: [
-                    string(name: 'QUP_APP_NAME', value: projectName)
-            ]
-        }
-    }
-
-    // Add whichever params you think you'd most want to have
-    // replace the slackURL below with the hook url provided by
-    // slack when you configure the webhook
-    def notifySlack = { String text, String channel ->
-        def slackURL = 'https://hooks.slack.com/services/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'
-        def payload = JsonOutput.toJson([text      : text,
-                                         channel   : channel,
-                                         username  : "vasil",
-                                         icon_emoji: ":ghost:"])
-        sh "curl -X POST --data-urlencode \'payload=${payload}\' ${slackURL}"
-    }
-
-    switch (BRANCH_NAME) {
-        case "develop":
-            def projectEnv = "test"
-            //executeSonarAnalysis()
-            loginToRegistry(defaultProjectDockerRegistry, defaultProjectDockerRegistryUsername, defaultProjectDockerRegistryPassword)
-            buildDockerImage(projectEnv, defaultProjectDockerRegistry)
-            callDeploymentJob("development-deployer", "translation-ms")
-            break
-        case "master":
-            def projectEnv = "production"
-            //executeSonarAnalysis()
-            loginToRegistry(defaultProjectDockerRegistry, defaultProjectDockerRegistryUsername, defaultProjectDockerRegistryPassword)
-            buildDockerImage(projectEnv, defaultProjectDockerRegistry)
-            //callDeploymentJob("translation-ms", projectEnv)
-            break
-    }
-//    stage('Slack Notification') {
-//        notifySlack("Finalized build translation-ms${env.BUILD_NUMBER} for project Translation MS.", "#v4-builds")
-//    }
 }

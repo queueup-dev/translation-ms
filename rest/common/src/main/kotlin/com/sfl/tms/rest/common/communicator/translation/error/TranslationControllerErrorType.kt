@@ -1,7 +1,5 @@
 package com.sfl.tms.rest.common.communicator.translation.error
 
-import com.fasterxml.jackson.annotation.JsonTypeInfo
-import com.fasterxml.jackson.annotation.JsonTypeName
 import com.sfl.tms.rest.common.model.error.ErrorType
 
 /**
@@ -9,7 +7,6 @@ import com.sfl.tms.rest.common.model.error.ErrorType
  * Date: 12/5/18
  * Time: 4:26 PM
  */
-@JsonTypeName("translationControllerErrorType")
 enum class TranslationControllerErrorType : ErrorType {
 
     //region language
