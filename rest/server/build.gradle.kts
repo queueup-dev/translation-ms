@@ -9,7 +9,9 @@ import org.springframework.boot.gradle.tasks.bundling.BootJar
 group = "${ext["platformGroup"]!!}.api.rest.server"
 version = ext["platformVersion"]!!
 
-val dockerRegistry = "${project.findProperty("dockerRegistry") ?: ""}"
+val dockerRegistry = project.findProperty("dockerRegistry").let {
+    if (it != null && (it as String).isNotEmpty()) "$it/" else ""
+}
 
 apply(plugin = "org.springframework.boot")
 apply(plugin = "io.spring.dependency-management")
@@ -46,7 +48,7 @@ tasks.getByName<BootJar>("bootJar") {
 
 docker {
     registryCredentials {
-        url.set("https://$dockerRegistry")
+        url.set("http://$dockerRegistry")
         username.set(System.getenv("DOCKER_REGISTRY_USERNAME"))
         password.set(System.getenv("DOCKER_REGISTRY_PASSWORD"))
     }
@@ -57,15 +59,25 @@ docker {
 tasks.register<Dockerfile>("createDockerfile") {
     from("openjdk:8-jre-alpine")
 
-    addFile("${System.getProperty("user.dir")}/config/newrelic/newrelic.yml", "/opt/newrelic/newrelic.yml")
+    val destination = project.layout.buildDirectory.file("docker/Dockerfile").get().asFile.parentFile
+
+    copy {
+        from("${System.getProperty("user.dir")}/config/newrelic/newrelic.yml")
+        into(destination)
+    }
+
+    copy {
+        from("${System.getProperty("user.dir")}/rest/server/build/libs/")
+        into(destination)
+    }
+
+    copyFile("newrelic.yml", "/opt/newrelic/newrelic.yml")
 
     runCommand("apk add --update unzip wget && rm -rf /var/cache/apk/*")
     runCommand("wget https://download.newrelic.com/newrelic/java-agent/newrelic-agent/current/newrelic-java.zip -P /tmp")
     runCommand("unzip /tmp/newrelic-java.zip -d /opt/newrelic")
 
-    addFile("${System.getProperty("user.dir")}/rest/server/build/libs/server.jar", "/opt/jar/translation-ms.jar")
-
-    runCommand("touch /opt/jar/translation-ms.jar")
+    copyFile("server*.jar", "/opt/jar/translation-ms.jar")
 
     exposePort(8080)
 
@@ -75,17 +87,17 @@ tasks.register<Dockerfile>("createDockerfile") {
 tasks.register<DockerBuildImage>("buildDockerImage") {
     dependsOn("createDockerfile", "build")
 
-    val git = Grgit.open(mapOf("dir" to file("../../")))
+    val git = Grgit.open(mapOf("dir" to file(System.getProperty("user.dir"))))
     val branchName = git.branch.current().name.replace("/", "-")
     val hash = git.head().getAbbreviatedId(10)
 
-    tags.add("${dockerRegistry}translation-ms-server-${project.version}")
-    tags.add("${dockerRegistry}translation-ms-server-$branchName")
-    tags.add("${dockerRegistry}translation-ms-server-$hash")
+    tags.add("${dockerRegistry}translation-ms-server:${project.version}")
+    tags.add("${dockerRegistry}translation-ms-server:$branchName")
+    tags.add("${dockerRegistry}translation-ms-server:$hash")
 }
 
 getDockerBuildImageTask().tags.get().forEach {
-    tasks.create("pushDockerTag_${it.replace("[/\\\\:<>\"\\?\\*\\|]", "-")}", DockerPushImage::class) {
+    tasks.create("pushDockerTag_${it.replace(Regex("[|/|\\|:|<|>|\"|?|*\\|]"), "-")}", DockerPushImage::class) {
         dependsOn(tasks.withType(DockerBuildImage::class))
         imageName.set(it)
     }
