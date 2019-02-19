@@ -75,10 +75,7 @@ pipeline {
                         job: 'deploy/master',
                         parameters: [
                                 string(name: 'environment', value: environment),
-                                booleanParam(name: "core", value: true),
-                                booleanParam(name: "coreConsumer", value: true),
-                                booleanParam(name: "adminGateway", value: true),
-                                booleanParam(name: "coreScheduler", value: true)
+                                booleanParam(name: "translation", value: true)
                         ],
                         propagate: 'true',
                         wait: 'false'
