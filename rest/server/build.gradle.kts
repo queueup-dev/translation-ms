@@ -59,11 +59,9 @@ docker {
 tasks.register<Dockerfile>("createDockerfile") {
     from("openjdk:8-jre-alpine")
 
-    val destination = project.layout.buildDirectory.file("docker/Dockerfile").get().asFile.parentFile
-
     copy {
         from("${System.getProperty("user.dir")}/rest/server/build/libs/")
-        into(destination)
+        into(project.layout.buildDirectory.file("docker/Dockerfile").get().asFile.parentFile)
     }
 
     copyFile("server*.jar", "/opt/jar/translation-ms.jar")
