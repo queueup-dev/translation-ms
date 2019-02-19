@@ -62,26 +62,13 @@ tasks.register<Dockerfile>("createDockerfile") {
     val destination = project.layout.buildDirectory.file("docker/Dockerfile").get().asFile.parentFile
 
     copy {
-        from("${System.getProperty("user.dir")}/config/newrelic/newrelic.yml")
-        into(destination)
-    }
-
-    copy {
         from("${System.getProperty("user.dir")}/rest/server/build/libs/")
         into(destination)
     }
 
-    copyFile("newrelic.yml", "/opt/newrelic/newrelic.yml")
-
-    runCommand("apk add --update unzip wget && rm -rf /var/cache/apk/*")
-    runCommand("wget https://download.newrelic.com/newrelic/java-agent/newrelic-agent/current/newrelic-java.zip -P /tmp")
-    runCommand("unzip /tmp/newrelic-java.zip -d /opt/newrelic")
-
     copyFile("server*.jar", "/opt/jar/translation-ms.jar")
-
     exposePort(8080)
-
-    entryPoint("java", " -javaagent:/opt/newrelic/newrelic.jar -Dnewrelic.environment=${if (project.hasProperty("environment")) project.properties["environment"] else ""} \$JAVA_OPTS -jar /opt/jar/translation-ms.jar")
+    entryPoint("java", "-jar", "/opt/jar/translation-ms.jar")
 }
 
 tasks.register<DockerBuildImage>("buildDockerImage") {
