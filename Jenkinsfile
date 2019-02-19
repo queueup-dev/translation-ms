@@ -26,28 +26,28 @@ pipeline {
             }
             steps {
                 withCredentials(
-                        [
-                                usernamePassword(
-                                        credentialsId: 'nexus',
-                                        usernameVariable: 'SONATYPE_USERNAME',
-                                        passwordVariable: 'SONATYPE_PASSWORD'
-                                )
-                        ]
+                    [
+                        usernamePassword(
+                            credentialsId: 'nexus',
+                            usernameVariable: 'SONATYPE_USERNAME',
+                            passwordVariable: 'SONATYPE_PASSWORD'
+                        )
+                    ]
                 ) {
-                    sh "./gradlew :rest:client:upload"
+                    sh "./gradlew :rest:client:uploadArchives"
                 }
             }
         }
         stage("Push Docker") {
             steps {
                 withCredentials(
-                        [
-                                usernamePassword(
-                                        credentialsId: 'nexus',
-                                        usernameVariable: 'DOCKER_REGISTRY_USERNAME',
-                                        passwordVariable: 'DOCKER_REGISTRY_PASSWORD'
-                                )
-                        ]
+                    [
+                        usernamePassword(
+                            credentialsId: 'nexus',
+                            usernameVariable: 'DOCKER_REGISTRY_USERNAME',
+                            passwordVariable: 'DOCKER_REGISTRY_PASSWORD'
+                        )
+                    ]
                 ) {
                     sh "./gradlew --exclude-task test pushDockerTags --project-prop dockerRegistry=$DOCKER_REGISTRY --project-prop removeImage"
                 }
