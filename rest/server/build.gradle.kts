@@ -17,7 +17,7 @@ apply(plugin = "org.springframework.boot")
 apply(plugin = "io.spring.dependency-management")
 
 plugins {
-    id("com.bmuschko.docker-remote-api") version "4.4.1"
+    id("com.bmuschko.docker-remote-api") version "4.5.0"
 }
 
 dependencies {
@@ -70,7 +70,7 @@ tasks.register<Dockerfile>("createDockerfile") {
 }
 
 tasks.register<DockerBuildImage>("buildDockerImage") {
-    dependsOn("build", "createDockerfile")
+    dependsOn("createDockerfile", "build")
 
     val git = Grgit.open(mapOf("dir" to file(System.getProperty("user.dir"))))
     val branchName = git.branch.current().name.replace("/", "-")
