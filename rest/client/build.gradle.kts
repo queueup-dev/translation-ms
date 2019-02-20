@@ -46,7 +46,7 @@ tasks.getByName<Upload>("uploadArchives") {
                 }
 
                 pom {
-                    groupId = group
+                    groupId = "com.sfl.tms.rest.client"
                     artifactId = "translation-ms-client"
                     version = environmentPlatformVersion()
                 }
