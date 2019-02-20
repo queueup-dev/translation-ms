@@ -14,7 +14,7 @@ pipeline {
                 }
             }
             steps {
-                sh './gradlew clean build'
+                sh './gradlew wrapper clean build'
             }
         }
         stage("Upload Maven") {
@@ -35,7 +35,7 @@ pipeline {
                         )
                     ]
                 ) {
-                    sh "./gradlew :rest:client:uploadArchives"
+                    sh "./gradlew wrapper :rest:client:uploadArchives"
                 }
             }
         }
@@ -50,7 +50,7 @@ pipeline {
                         )
                     ]
                 ) {
-                    sh "./gradlew --exclude-task test pushDockerTags --project-prop dockerRegistry=$DOCKER_REGISTRY --project-prop removeImage"
+                    sh "./gradlew wrapper --exclude-task test pushDockerTags --project-prop dockerRegistry=$DOCKER_REGISTRY --project-prop removeImage"
                 }
             }
         }
