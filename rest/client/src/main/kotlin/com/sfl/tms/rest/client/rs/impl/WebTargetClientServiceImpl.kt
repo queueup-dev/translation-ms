@@ -2,9 +2,9 @@ package com.sfl.tms.rest.client.rs.impl
 
 import com.sfl.tms.rest.client.rs.ClientService
 import com.sfl.tms.rest.client.rs.WebTargetClientService
-import com.sfl.tms.rest.client.config.TranslationMsClientConfig
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import javax.ws.rs.client.Client
 import javax.ws.rs.client.WebTarget
@@ -23,16 +23,16 @@ class WebTargetClientServiceImpl : WebTargetClientService {
     @Qualifier("clientServiceImpl")
     private lateinit var clientService: ClientService
 
-    @Autowired
-    private lateinit var configuration: TranslationMsClientConfig
+    @Value("\${translation.host}")
+    private lateinit var host: String
 
     //endregion
 
     override val languageWebTarget: WebTarget
-        get() = clientService.getClient().target(configuration.languageApi)
+        get() = clientService.getClient().target("$host/language")
 
     override val translationWebTarget: WebTarget
-        get() = clientService.getClient().target(configuration.translationApi)
+        get() = clientService.getClient().target("$host/translation")
 
     override fun getClient(): Client = clientService.getClient()
 }
