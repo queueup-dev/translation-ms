@@ -1,6 +1,6 @@
 import org.ajoberstar.grgit.Grgit
 
-group = "${ext["platformGroup"]!!}.api.rest.client"
+group = "${ext["platformGroup"]!!}.rest.client"
 version = ext["platformVersion"]!!
 
 val currentGroup = group as String
@@ -12,7 +12,7 @@ plugins {
 }
 
 dependencies {
-    implementation(project(":rest:common")) {
+    compile(project(":rest:common")) {
         exclude(module = "core")
         exclude("org.springframework.boot", "spring-boot-starter-web")
     }
