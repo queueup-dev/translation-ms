@@ -12,7 +12,7 @@ plugins {
 }
 
 dependencies {
-    implementation(project(":rest:common")) {
+    compile(project(":rest:common")) {
         exclude(module = "core")
         exclude("org.springframework.boot", "spring-boot-starter-web")
     }
