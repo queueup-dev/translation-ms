@@ -8,7 +8,6 @@ pipeline {
             agent {
                 docker {
                     image "$DOCKER_REGISTRY/oracle/serverjre:8"
-                    args "--user 1000:1000"
                     registryUrl "https://$DOCKER_REGISTRY/"
                     registryCredentialsId 'nexus'
                 }
