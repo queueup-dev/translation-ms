@@ -8,6 +8,7 @@ pipeline {
             agent {
                 docker {
                     image "$DOCKER_REGISTRY/oracle/serverjre:8"
+                    args "--user 1000:1000"
                     registryUrl "https://$DOCKER_REGISTRY/"
                     registryCredentialsId 'nexus'
                 }
@@ -72,13 +73,13 @@ pipeline {
                     }
                 }
                 build(
-                        job: 'deploy/master',
-                        parameters: [
-                                string(name: 'environment', value: environment),
-                                booleanParam(name: "translation", value: true)
-                        ],
-                        propagate: 'true',
-                        wait: 'false'
+                    job: 'deploy/master',
+                    parameters: [
+                        string(name: 'environment', value: environment),
+                        booleanParam(name: "translation", value: true)
+                    ],
+                    propagate: 'true',
+                    wait: 'false'
                 )
             }
         }
@@ -102,9 +103,9 @@ pipeline {
                 }
             }
             slackSend(
-                    color: "$color",
-                    message: "Build Finished with ${currentBuild.currentResult} - <${env.BUILD_URL}|${env.JOB_NAME} ${env.BUILD_NUMBER}>",
-                    channel: '#qup-jenkins'
+                color: "$color",
+                message: "Build Finished with ${currentBuild.currentResult} - <${env.BUILD_URL}|${env.JOB_NAME} ${env.BUILD_NUMBER}>",
+                channel: '#qup-jenkins'
             )
         }
     }
