@@ -1,3 +1,14 @@
+import org.ajoberstar.grgit.Grgit
+
+group = "${ext["platformGroup"]!!}.rest.common"
+version = ext["platformVersion"]!!
+
+val currentGroup = group as String
+
+plugins {
+    maven
+}
+
 dependencies {
     compile("org.springframework.boot:spring-boot-starter-web")
     compile("org.springframework.boot:spring-boot-starter-aop")
@@ -9,4 +20,34 @@ dependencies {
 
     implementation("org.apache.commons:commons-lang3:")
     implementation(project(":core"))
+}
+
+tasks.getByName<Upload>("uploadArchives") {
+    repositories {
+        withConvention(MavenRepositoryHandlerConvention::class) {
+            mavenDeployer {
+                withGroovyBuilder {
+                    "repository"("url" to uri("https://nexus.ci.funtrips.io/repository/maven-releases/")) {
+                        "authentication"("userName" to System.getenv("SONATYPE_USERNAME"), "password" to System.getenv("SONATYPE_PASSWORD"))
+                    }
+                    "snapshotRepository"("url" to uri("https://nexus.ci.funtrips.io/repository/maven-snapshots/")) {
+                        "authentication"("userName" to System.getenv("SONATYPE_USERNAME"), "password" to System.getenv("SONATYPE_PASSWORD"))
+                    }
+                }
+
+                pom {
+                    groupId = currentGroup
+                    artifactId = "common"
+                    version = environmentPlatformVersion()
+                }
+            }
+        }
+    }
+}
+
+fun environmentPlatformVersion(): String = when (Grgit.open(mapOf("dir" to file("../../"))).branch.current().name) {
+    "development" -> "$version-SNAPSHOT"
+    "acceptance" -> "$version-acceptance-SNAPSHOT"
+    "master" -> "$version"
+    else -> "$version"
 }
