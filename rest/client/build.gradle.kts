@@ -3,6 +3,8 @@ import org.ajoberstar.grgit.Grgit
 group = "${ext["platformGroup"]!!}.api.rest.client"
 version = ext["platformVersion"]!!
 
+val currentGroup = group as String
+
 apply(plugin = "io.spring.dependency-management")
 
 plugins {
@@ -46,7 +48,7 @@ tasks.getByName<Upload>("uploadArchives") {
                 }
 
                 pom {
-                    groupId = "com.sfl.tms.rest.client"
+                    groupId = currentGroup
                     artifactId = "translation-ms-client"
                     version = environmentPlatformVersion()
                 }
