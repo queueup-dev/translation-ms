@@ -13,7 +13,7 @@ pipeline {
                 }
             }
             steps {
-                sh './gradlew clean build'
+                sh './gradlew wrapper clean build'
             }
         }
         stage("Upload Maven") {
@@ -34,7 +34,7 @@ pipeline {
                         )
                     ]
                 ) {
-                    sh "./gradlew :rest:client:uploadArchives"
+                    sh "./gradlew wrapper :rest:client:uploadArchives"
                 }
             }
         }
@@ -49,7 +49,7 @@ pipeline {
                         )
                     ]
                 ) {
-                    sh "./gradlew --exclude-task test pushDockerTags --project-prop dockerRegistry=$DOCKER_REGISTRY --project-prop removeImage"
+                    sh "./gradlew wrapper --exclude-task test pushDockerTags --project-prop dockerRegistry=$DOCKER_REGISTRY --project-prop removeImage"
                 }
             }
         }
@@ -72,13 +72,13 @@ pipeline {
                     }
                 }
                 build(
-                        job: 'deploy/master',
-                        parameters: [
-                                string(name: 'environment', value: environment),
-                                booleanParam(name: "translation", value: true)
-                        ],
-                        propagate: 'true',
-                        wait: 'false'
+                    job: 'deploy/master',
+                    parameters: [
+                        string(name: 'environment', value: environment),
+                        booleanParam(name: "translation", value: true)
+                    ],
+                    propagate: 'true',
+                    wait: 'false'
                 )
             }
         }
@@ -102,9 +102,9 @@ pipeline {
                 }
             }
             slackSend(
-                    color: "$color",
-                    message: "Build Finished with ${currentBuild.currentResult} - <${env.BUILD_URL}|${env.JOB_NAME} ${env.BUILD_NUMBER}>",
-                    channel: '#qup-jenkins'
+                color: "$color",
+                message: "Build Finished with ${currentBuild.currentResult} - <${env.BUILD_URL}|${env.JOB_NAME} ${env.BUILD_NUMBER}>",
+                channel: '#qup-jenkins'
             )
         }
     }
