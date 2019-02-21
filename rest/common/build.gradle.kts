@@ -1,9 +1,7 @@
 import org.ajoberstar.grgit.Grgit
 
-group = "${ext["platformGroup"]!!}.rest.common"
-version = ext["platformVersion"]!!
 
-val currentGroup = group as String
+val currentGroup = "${ext["platformGroup"]!!}.rest.common"
 
 plugins {
     maven

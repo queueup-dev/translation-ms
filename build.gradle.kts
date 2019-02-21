@@ -6,9 +6,6 @@ ext {
     this["platformVersion"] = "0.0.1-SNAPSHOT"
 }
 
-group = ext["platformGroup"]!!
-version = ext["platformVersion"]!!
-
 //region Build script
 
 buildscript {

@@ -6,9 +6,6 @@ import io.spring.gradle.dependencymanagement.dsl.DependencyManagementExtension
 import org.ajoberstar.grgit.Grgit
 import org.springframework.boot.gradle.tasks.bundling.BootJar
 
-group = "${ext["platformGroup"]!!}.api.rest.server"
-version = ext["platformVersion"]!!
-
 val dockerRegistry = project.findProperty("dockerRegistry").let {
     if (it != null && (it as String).isNotEmpty()) "$it/" else ""
 }
