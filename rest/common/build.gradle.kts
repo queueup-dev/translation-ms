@@ -1,7 +1,7 @@
 import org.ajoberstar.grgit.Grgit
 
-
 val currentGroup = "${ext["platformGroup"]!!}.rest.common"
+val platformVersion = "${ext["platformVersion"]!!}"
 
 plugins {
     maven
@@ -44,8 +44,8 @@ tasks.getByName<Upload>("uploadArchives") {
 }
 
 fun environmentPlatformVersion(): String = when (Grgit.open(mapOf("dir" to file("../../"))).branch.current().name) {
-    "develop" -> "$version-SNAPSHOT"
-    "acceptance" -> "$version-acceptance-SNAPSHOT"
-    "master" -> "$version"
-    else -> "$version"
+    "develop" -> "$platformVersion-SNAPSHOT"
+    "acceptance" -> "$platformVersion-acceptance-SNAPSHOT"
+    "master" -> platformVersion
+    else -> platformVersion
 }
