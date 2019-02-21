@@ -67,7 +67,7 @@ tasks.register<Dockerfile>("createDockerfile") {
 }
 
 tasks.register<DockerBuildImage>("buildDockerImage") {
-    dependsOn("createDockerfile", "build")
+    dependsOn("build", "createDockerfile")
 
     val git = Grgit.open(mapOf("dir" to file(System.getProperty("user.dir"))))
     val branchName = git.branch.current().name.replace("/", "-")
