@@ -44,7 +44,7 @@ tasks.getByName<Upload>("uploadArchives") {
 }
 
 fun environmentPlatformVersion(): String = when (Grgit.open(mapOf("dir" to file("../../"))).branch.current().name) {
-    "development" -> "$version-SNAPSHOT"
+    "develop" -> "$version-SNAPSHOT"
     "acceptance" -> "$version-acceptance-SNAPSHOT"
     "master" -> "$version"
     else -> "$version"
