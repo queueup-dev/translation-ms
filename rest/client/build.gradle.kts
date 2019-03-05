@@ -1,35 +1,8 @@
-import org.ajoberstar.grgit.Grgit
-
-val currentGroup = "${ext["platformGroup"]!!}.rest.client"
-val platformVersion = "${ext["platformVersion"]!!}"
-
 apply(plugin = "io.spring.dependency-management")
 
 plugins {
     maven
-}
-
-dependencies {
-    implementation(project(":rest:common")) {
-        exclude(module = "core")
-        exclude("org.springframework.boot", "spring-boot-starter-web")
-    }
-
-    implementation("org.springframework.boot:spring-boot-starter-actuator")
-
-    implementation("org.glassfish.jersey.core:jersey-client")
-    implementation("org.glassfish.jersey.inject:jersey-hk2")
-    implementation("org.glassfish.jersey.media:jersey-media-json-jackson")
-    implementation("org.glassfish.jersey.media:jersey-media-multipart")
-
-    implementation("com.fasterxml.jackson.core:jackson-databind")
-    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
-}
-
-dependencyManagement {
-    imports {
-        mavenBom("org.springframework.cloud:spring-cloud-dependencies:Greenwich.RELEASE")
-    }
+    `maven-publish`
 }
 
 tasks.getByName<Upload>("uploadArchives") {
@@ -44,20 +17,30 @@ tasks.getByName<Upload>("uploadArchives") {
                         "authentication"("userName" to System.getenv("SONATYPE_USERNAME"), "password" to System.getenv("SONATYPE_PASSWORD"))
                     }
                 }
-
-                pom {
-                    groupId = currentGroup
-                    artifactId = "client"
-                    version = environmentPlatformVersion()
-                }
             }
         }
     }
 }
 
-fun environmentPlatformVersion(): String = when (Grgit.open(mapOf("dir" to file("../../"))).branch.current().name) {
-    "develop" -> platformVersion
-    "acceptance" -> "$platformVersion-acceptance"
-    "master" -> platformVersion
-    else -> platformVersion
+dependencies {
+    compile(project(":rest:common")) {
+        exclude(module = "core")
+        exclude("org.springframework.boot", "spring-boot-starter-web")
+    }
+
+    compile("org.springframework.boot:spring-boot-starter-actuator")
+
+    compile("org.glassfish.jersey.core:jersey-client")
+    compile("org.glassfish.jersey.inject:jersey-hk2")
+    compile("org.glassfish.jersey.media:jersey-media-json-jackson")
+    compile("org.glassfish.jersey.media:jersey-media-multipart")
+
+    compile("com.fasterxml.jackson.core:jackson-databind")
+    compile("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
+}
+
+dependencyManagement {
+    imports {
+        mavenBom("org.springframework.cloud:spring-cloud-dependencies:Greenwich.RELEASE")
+    }
 }

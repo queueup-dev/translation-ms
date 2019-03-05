@@ -48,7 +48,11 @@ plugins {
 //region Projects
 
 allprojects {
+    group = "com.sfl.tms"
+    version = "0.0.1-SNAPSHOT"
+
     repositories {
+        mavenLocal()
         mavenCentral()
         jcenter()
     }
@@ -60,6 +64,9 @@ allprojects {
 }
 
 subprojects {
+    group = "com.sfl.tms"
+    version = "0.0.1-SNAPSHOT"
+
     apply(plugin = "org.jetbrains.kotlin.jvm")
     apply(plugin = "org.jetbrains.kotlin.plugin.jpa")
     apply(plugin = "org.jetbrains.kotlin.plugin.allopen")
@@ -83,6 +90,30 @@ subprojects {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
+
+/*
+    configure<MavenPublishAction> {
+        repositories {
+            maven {
+                name = "releases"
+                url = uri("https://nexus.ci.funtrips.io/repository/maven-releases/")
+                credentials {
+                    username = System.getenv("SONATYPE_USERNAME")
+                    password = System.getenv("SONATYPE_PASSWORD")
+                }
+            }
+
+            maven {
+                name = "snapshots"
+                url = uri("https://nexus.ci.funtrips.io/repository/maven-snapshots/")
+                credentials {
+                    username = System.getenv("SONATYPE_USERNAME")
+                    password = System.getenv("SONATYPE_PASSWORD")
+                }
+            }
+        }
+    }
+*/
 
     tasks.withType<KotlinCompile> {
         kotlinOptions {

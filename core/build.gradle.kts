@@ -1,3 +1,25 @@
+plugins {
+    maven
+    `maven-publish`
+}
+
+tasks.getByName<Upload>("uploadArchives") {
+    repositories {
+        withConvention(MavenRepositoryHandlerConvention::class) {
+            mavenDeployer {
+                withGroovyBuilder {
+                    "repository"("url" to uri("https://nexus.ci.funtrips.io/repository/maven-releases/")) {
+                        "authentication"("userName" to System.getenv("SONATYPE_USERNAME"), "password" to System.getenv("SONATYPE_PASSWORD"))
+                    }
+                    "snapshotRepository"("url" to uri("https://nexus.ci.funtrips.io/repository/maven-snapshots/")) {
+                        "authentication"("userName" to System.getenv("SONATYPE_USERNAME"), "password" to System.getenv("SONATYPE_PASSWORD"))
+                    }
+                }
+            }
+        }
+    }
+}
+
 dependencies {
     compile("org.springframework.boot:spring-boot-starter-data-jpa")
     compile("org.springframework.boot:spring-boot-configuration-processor")
