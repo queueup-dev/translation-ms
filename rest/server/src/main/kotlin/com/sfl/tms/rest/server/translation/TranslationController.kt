@@ -69,7 +69,7 @@ class TranslationController : AbstractBaseController() {
 
     //endregion
 
-    //region Entity
+    //region Create entity
 
     @ValidateActionRequest
     @ApiOperation(value = "Create translatable entity", response = TranslatableEntityCreateResponseModel::class)
@@ -88,7 +88,7 @@ class TranslationController : AbstractBaseController() {
 
     //endregion
 
-    //region Field
+    //region Create field
 
     @ValidateActionRequest
     @ApiOperation(value = "Create translatable entity field", response = TranslatableEntityFieldCreateResponseModel::class)
@@ -173,11 +173,7 @@ class TranslationController : AbstractBaseController() {
 
     @ApiOperation(value = "Get translatable entity field's with translation's for provided filters", response = List::class)
     @RequestMapping(value = ["/entity/{uuid}/{label}/{type}"], method = [RequestMethod.GET])
-    fun getEntityFieldsWithTranslations(
-        @PathVariable("uuid") uuid: String,
-        @PathVariable("label") label: String,
-        @PathVariable("type") type: TranslatableEntityFieldTypeModel
-    ): ResponseEntity<ResultModel<out AbstractApiModel>> =
+    fun getEntityFieldsWithTranslations(@PathVariable("uuid") uuid: String, @PathVariable("label") label: String, @PathVariable("type") type: TranslatableEntityFieldTypeModel): ResponseEntity<ResultModel<out AbstractApiModel>> =
         try {
             ok(object :
                 AbstractApiResponseModel,
@@ -201,12 +197,7 @@ class TranslationController : AbstractBaseController() {
 
     @ApiOperation(value = "Get translatable entity field's with translation's for provided filters", response = List::class)
     @RequestMapping(value = ["/entity/{uuid}/{label}/{type}/{lang}"], method = [RequestMethod.GET])
-    fun getEntityFieldsWithTranslationsWithLanguage(
-        @PathVariable("uuid") uuid: String,
-        @PathVariable("label") label: String,
-        @PathVariable("type") type: TranslatableEntityFieldTypeModel,
-        @PathVariable("lang") lang: String
-    ): ResponseEntity<ResultModel<out AbstractApiModel>> =
+    fun getEntityFieldsWithTranslationsWithLanguage(@PathVariable("uuid") uuid: String, @PathVariable("label") label: String, @PathVariable("type") type: TranslatableEntityFieldTypeModel, @PathVariable("lang") lang: String): ResponseEntity<ResultModel<out AbstractApiModel>> =
         try {
             ok(object :
                 AbstractApiResponseModel,
@@ -229,10 +220,7 @@ class TranslationController : AbstractBaseController() {
     @ValidateActionRequest
     @ApiOperation(value = "Create/update translatable entity, field, translations", response = TranslationAggregationByEntityResponseModel::class)
     @RequestMapping(value = ["/entity/field/{type}/translation/bulk"], method = [RequestMethod.POST])
-    fun createOrUpdateTranslatableEntityWithDependencies(
-        @PathVariable("type") type: TranslatableEntityFieldTypeModel,
-        @RequestBody request: TranslationAggregationByEntityRequestModel
-    ): ResponseEntity<ResultModel<out AbstractApiModel>> =
+    fun createOrUpdateTranslatableEntityWithDependencies(@PathVariable("type") type: TranslatableEntityFieldTypeModel, @RequestBody request: TranslationAggregationByEntityRequestModel): ResponseEntity<ResultModel<out AbstractApiModel>> =
         try {
             created(translationControllerHelper.createOrUpdateTranslatableEntityWithDependencies(request, type))
         } catch (e: TranslatableEntityMissingException) {
