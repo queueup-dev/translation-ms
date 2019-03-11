@@ -1,8 +1,8 @@
-apply(plugin = "io.spring.dependency-management")
-
 plugins {
     maven
     `maven-publish`
+
+    id("io.spring.dependency-management")
 }
 
 tasks.getByName<Upload>("uploadArchives") {
@@ -28,6 +28,9 @@ dependencies {
         exclude("org.springframework.boot", "spring-boot-starter-web")
     }
 
+    compile(kotlin("stdlib", version = "1.3.21"))
+    compile(kotlin("reflect", version = "1.3.21"))
+
     compile("org.springframework.boot:spring-boot-starter-actuator")
 
     compile("org.glassfish.jersey.core:jersey-client")
@@ -41,6 +44,6 @@ dependencies {
 
 dependencyManagement {
     imports {
-        mavenBom("org.springframework.cloud:spring-cloud-dependencies:Greenwich.RELEASE")
+        mavenBom("org.springframework.boot:spring-boot-dependencies:2.1.2.RELEASE")
     }
 }
