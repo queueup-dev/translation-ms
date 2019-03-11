@@ -34,7 +34,7 @@ pipeline {
                         )
                     ]
                 ) {
-                    sh "./gradlew wrapper :core:uploadArchives :rest:common:uploadArchives :rest:client:uploadArchives"
+                    sh "./gradlew wrapper :core:publish :rest:common:publish :rest:client:publish"
                 }
             }
         }

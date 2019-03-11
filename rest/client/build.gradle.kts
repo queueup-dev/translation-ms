@@ -5,23 +5,6 @@ plugins {
     id("io.spring.dependency-management")
 }
 
-tasks.getByName<Upload>("uploadArchives") {
-    repositories {
-        withConvention(MavenRepositoryHandlerConvention::class) {
-            mavenDeployer {
-                withGroovyBuilder {
-                    "repository"("url" to uri("https://nexus.ci.funtrips.io/repository/maven-releases/")) {
-                        "authentication"("userName" to System.getenv("SONATYPE_USERNAME"), "password" to System.getenv("SONATYPE_PASSWORD"))
-                    }
-                    "snapshotRepository"("url" to uri("https://nexus.ci.funtrips.io/repository/maven-snapshots/")) {
-                        "authentication"("userName" to System.getenv("SONATYPE_USERNAME"), "password" to System.getenv("SONATYPE_PASSWORD"))
-                    }
-                }
-            }
-        }
-    }
-}
-
 dependencies {
     compile(project(":rest:common")) {
         exclude(module = "core")
@@ -45,5 +28,32 @@ dependencies {
 dependencyManagement {
     imports {
         mavenBom("org.springframework.boot:spring-boot-dependencies:2.1.2.RELEASE")
+    }
+}
+
+publishing {
+    publications {
+        create<MavenPublication>("maven") {
+            from(components["java"])
+        }
+    }
+    repositories {
+        maven {
+            name = "releases"
+            url = uri("https://nexus.ci.funtrips.io/repository/maven-releases/")
+            credentials {
+                username = System.getenv("SONATYPE_USERNAME")
+                password = System.getenv("SONATYPE_PASSWORD")
+            }
+        }
+
+        maven {
+            name = "snapshots"
+            url = uri("https://nexus.ci.funtrips.io/repository/maven-snapshots/")
+            credentials {
+                username = System.getenv("SONATYPE_USERNAME")
+                password = System.getenv("SONATYPE_PASSWORD")
+            }
+        }
     }
 }
