@@ -17,6 +17,11 @@ buildscript {
 
 //endregion
 
+allprojects {
+    group = "com.sfl.tms"
+    version = "0.0.1-SNAPSHOT"
+}
+
 subprojects {
     apply(plugin = "org.jetbrains.kotlin.jvm")
     apply(plugin = "org.jetbrains.kotlin.plugin.jpa")
