@@ -7,7 +7,7 @@ import javax.ws.rs.client.WebTarget
  * Date: 2/11/19
  * Time: 11:23 PM
  */
-interface WebTargetClientService : ClientService {
+interface WebTargetClientService : TranslationClientService {
     val languageWebTarget: WebTarget
 
     val translationWebTarget: WebTarget

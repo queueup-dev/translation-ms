@@ -2,7 +2,7 @@ package com.sfl.tms.rest.client.rs.impl
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
-import com.sfl.tms.rest.client.rs.ClientService
+import com.sfl.tms.rest.client.rs.TranslationClientService
 import org.glassfish.jersey.jackson.JacksonFeature
 import org.glassfish.jersey.media.multipart.MultiPartFeature
 import org.springframework.stereotype.Component
@@ -24,7 +24,7 @@ import javax.ws.rs.ext.ContextResolver
  * Time: 11:22 PM
  */
 @Component
-class ClientServiceImpl : ClientService {
+class TranslationClientServiceImpl : TranslationClientService {
 
     //region Properties
 

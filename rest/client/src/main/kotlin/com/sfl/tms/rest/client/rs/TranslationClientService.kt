@@ -7,6 +7,6 @@ import javax.ws.rs.client.Client
  * Date: 2/11/19
  * Time: 11:22 PM
  */
-interface ClientService {
+interface TranslationClientService {
     fun getClient(): Client
 }

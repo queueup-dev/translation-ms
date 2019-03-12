@@ -1,6 +1,6 @@
 package com.sfl.tms.rest.client.rs.impl
 
-import com.sfl.tms.rest.client.rs.ClientService
+import com.sfl.tms.rest.client.rs.TranslationClientService
 import com.sfl.tms.rest.client.rs.WebTargetClientService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
@@ -20,8 +20,8 @@ class WebTargetClientServiceImpl : WebTargetClientService {
     //region Injection
 
     @Autowired
-    @Qualifier("clientServiceImpl")
-    private lateinit var clientService: ClientService
+    @Qualifier("translationClientServiceImpl")
+    private lateinit var clientService: TranslationClientService
 
     @Value("\${translation.host}")
     private lateinit var host: String
