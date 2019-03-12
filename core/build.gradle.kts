@@ -36,20 +36,9 @@ publishing {
         }
     }
     repositories {
-/*
-        maven {
-            name = "releases"
-            url = uri("https://nexus.ci.funtrips.io/repository/maven-releases/")
-            credentials {
-                username = System.getenv("SONATYPE_USERNAME")
-                password = System.getenv("SONATYPE_PASSWORD")
-            }
-        }
-*/
-
         maven {
             name = "snapshots"
-            url = uri("https://nexus.ci.funtrips.io/repository/maven-snapshots/")
+            url = if (project.version.toString().endsWith("-SNAPSHOT")) uri("https://nexus.ci.funtrips.io/repository/maven-snapshots/") else uri("https://nexus.ci.funtrips.io/repository/maven-releases/")
             credentials {
                 username = System.getenv("SONATYPE_USERNAME")
                 password = System.getenv("SONATYPE_PASSWORD")
