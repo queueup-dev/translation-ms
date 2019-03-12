@@ -49,7 +49,7 @@ pipeline {
                         )
                     ]
                 ) {
-                    sh "./gradlew wrapper --exclude-task test pushDockerTags --project-prop dockerRegistry=$DOCKER_REGISTRY --project-prop removeImage"
+                    sh "./gradlew wrapper --exclude-task test build pushDockerTags --project-prop dockerRegistry=$DOCKER_REGISTRY --project-prop removeImage"
                 }
             }
         }

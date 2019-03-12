@@ -54,6 +54,8 @@ docker {
 //region Create and push tags to docker registry
 
 tasks.register<Dockerfile>("createDockerfile") {
+    dependsOn("build")
+
     from("openjdk:8-jre-alpine")
 
     copy {
@@ -67,7 +69,7 @@ tasks.register<Dockerfile>("createDockerfile") {
 }
 
 tasks.register<DockerBuildImage>("buildDockerImage") {
-    dependsOn("build", "createDockerfile")
+    dependsOn("createDockerfile")
 
     val git = Grgit.open(mapOf("dir" to file(System.getProperty("user.dir"))))
     val branchName = git.branch.current().name.replace("/", "-")
