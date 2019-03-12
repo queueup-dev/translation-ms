@@ -49,7 +49,6 @@ import org.springframework.web.bind.annotation.*
  * Time: 2:05 PM
  */
 @RestController
-//@CrossOrigin(origins = ["*"])
 @RequestMapping("/translation")
 class TranslationController : AbstractBaseController() {
 
@@ -207,6 +206,24 @@ class TranslationController : AbstractBaseController() {
                         .fields
                         .filter { it.type == TranslatableEntityFieldType.valueOf(type.name) }
                         .map { TranslationKeyValuePair(it.key, it.translations.filter { it.language.lang == lang }.map { it.value }.first()) }
+                ) {}
+            )
+        } catch (e: TranslatableEntityNotFoundException) {
+            notFound(TranslationControllerErrorType.TRANSLATABLE_ENTITY_NOT_FOUND_EXCEPTION)
+        }
+
+    @ApiOperation(value = "Get translatable entity field's with translation's for provided filters and languages", response = List::class)
+    @RequestMapping(value = ["/entity/{uuid}/{label}/{type}/languages/{languages}"], method = [RequestMethod.GET])
+    fun getEntityFieldsWithTranslationsForLanguages(@PathVariable("uuid") uuid: String, @PathVariable("label") label: String, @PathVariable("type") type: TranslatableEntityFieldTypeModel, @PathVariable("languages") lang: List<String>): ResponseEntity<ResultModel<out AbstractApiModel>> =
+        try {
+            ok(object :
+                AbstractApiResponseModel,
+                ArrayList<TranslationKeyValuePair>(
+                    translatableEntityService
+                        .getByUuidAndLabel(uuid, label)
+                        .fields
+                        .filter { it.type == TranslatableEntityFieldType.valueOf(type.name) }
+                        .map { TranslationKeyValuePair(it.key, it.translations.filter { lang.contains(it.language.lang) }.map { it.value }.first()) }
                 ) {}
             )
         } catch (e: TranslatableEntityNotFoundException) {
