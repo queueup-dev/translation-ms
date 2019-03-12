@@ -38,6 +38,7 @@ publishing {
         }
     }
     repositories {
+/*
         maven {
             name = "releases"
             url = uri("https://nexus.ci.funtrips.io/repository/maven-releases/")
@@ -46,6 +47,7 @@ publishing {
                 password = System.getenv("SONATYPE_PASSWORD")
             }
         }
+*/
 
         maven {
             name = "snapshots"
