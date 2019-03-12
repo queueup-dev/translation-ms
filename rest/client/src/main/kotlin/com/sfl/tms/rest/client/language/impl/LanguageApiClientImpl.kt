@@ -45,5 +45,4 @@ class LanguageApiClientImpl : LanguageApiClient {
 
         private const val LANGUAGE_QUERY_PARAMETER = "lang"
     }
-
 }

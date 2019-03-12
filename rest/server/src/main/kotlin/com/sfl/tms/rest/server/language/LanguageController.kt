@@ -34,9 +34,7 @@ class LanguageController : AbstractBaseController() {
     fun get(@RequestParam("lang") lang: String): ResponseEntity<ResultModel<out AbstractApiModel>> = try {
         lang
             .also { logger.trace("Retrieving language for provided lang - {}", lang) }
-            .let {
-                languageService.getByLang(it)
-            }
+            .let { languageService.getByLang(it) }
             .let { ok(LanguageResponseModel(it.lang)) }
             .also { logger.debug("Retrieved language for provided lang - {} ", lang) }
     } catch (e: LanguageNotFoundByLangException) {
