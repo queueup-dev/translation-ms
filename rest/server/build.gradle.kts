@@ -61,7 +61,7 @@ tasks.register<Dockerfile>("createDockerfile") {
         into(project.layout.buildDirectory.file("docker/Dockerfile").get().asFile.parentFile)
     }
 
-    copyFile("server*.jar", "/opt/jar/translation-ms.jar")
+    copyFile("server-${project.version}.jar", "/opt/jar/translation-ms.jar")
     exposePort(8080)
     entryPoint("java", "-jar", "/opt/jar/translation-ms.jar")
 }
