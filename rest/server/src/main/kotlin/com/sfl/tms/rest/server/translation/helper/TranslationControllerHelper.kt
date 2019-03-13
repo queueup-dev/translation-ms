@@ -1,4 +1,4 @@
-package com.sfl.tms.rest.common.communicator.translation.response.helper
+package com.sfl.tms.rest.server.translation.helper
 
 import com.sfl.tms.core.domain.translatable.TranslatableEntityFieldType
 import com.sfl.tms.core.service.language.LanguageService
@@ -17,7 +17,7 @@ import com.sfl.tms.rest.common.communicator.translation.request.aggregation.Tran
 import com.sfl.tms.rest.common.communicator.translation.request.aggregation.multiple.TranslationAggregationByEntityRequestModel
 import com.sfl.tms.rest.common.communicator.translation.request.aggregation.multiple.TranslationAggregationByLanguage
 import com.sfl.tms.rest.common.communicator.translation.response.aggregation.multiple.TranslationAggregationByEntityResponseModel
-import com.sfl.tms.rest.common.communicator.translation.response.helper.exception.TranslatableEntityMissingException
+import com.sfl.tms.rest.server.translation.helper.exception.TranslatableEntityMissingException
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
@@ -59,7 +59,7 @@ class TranslationControllerHelper {
                 logger.error("TranslatableEntity name missing when trying to perform create.")
                 throw TranslatableEntityMissingException()
             } else {
-                translatableEntityService.create(TranslatableEntityDto(it.uuid, it.label, it.name))
+                translatableEntityService.create(TranslatableEntityDto(it.uuid, it.label, it.name!!))
             }
         }
 

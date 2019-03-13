@@ -28,8 +28,8 @@ import com.sfl.tms.rest.common.communicator.translation.response.aggregation.sin
 import com.sfl.tms.rest.common.communicator.translation.response.aggregation.single.TranslationLanguageValuePair
 import com.sfl.tms.rest.common.communicator.translation.response.entity.TranslatableEntityCreateResponseModel
 import com.sfl.tms.rest.common.communicator.translation.response.field.TranslatableEntityFieldCreateResponseModel
-import com.sfl.tms.rest.common.communicator.translation.response.helper.TranslationControllerHelper
-import com.sfl.tms.rest.common.communicator.translation.response.helper.exception.TranslatableEntityMissingException
+import com.sfl.tms.rest.server.translation.helper.TranslationControllerHelper
+import com.sfl.tms.rest.server.translation.helper.exception.TranslatableEntityMissingException
 import com.sfl.tms.rest.common.communicator.translation.response.translation.TranslatableEntityFieldTranslationResponseModel
 import com.sfl.tms.rest.common.model.AbstractApiModel
 import com.sfl.tms.rest.common.model.ResultModel

@@ -1,4 +1,4 @@
-package com.sfl.tms.rest.common.communicator.translation.response.helper.exception
+package com.sfl.tms.rest.server.translation.helper.exception
 
 /**
  * User: Vazgen Danielyan
