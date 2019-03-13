@@ -15,7 +15,7 @@ dependencies {
     compile("org.springframework.boot:spring-boot-starter-aop")
     compile("org.springframework.boot:spring-boot-configuration-processor")
 
-    compile("com.fasterxml.jackson.module:jackson-module-kotlin")
+    compile("com.fasterxml.jackson.module:jackson-module-kotlin:2.9.8")
 
     compile("io.springfox:springfox-swagger2:2.9.2")
 
