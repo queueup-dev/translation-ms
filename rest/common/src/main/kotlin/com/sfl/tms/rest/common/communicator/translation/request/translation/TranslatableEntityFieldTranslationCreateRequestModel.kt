@@ -11,7 +11,7 @@ import org.apache.commons.lang3.StringUtils
  * Date: 12/5/18
  * Time: 4:22 PM
  */
-data class TranslatableEntityFieldTranslationCreateRequestModel(val key: String, val type: TranslatableEntityFieldTypeModel, val value: String, val uuid: String, val label: String, val lang: String) : AbstractApiRequestModel() {
+data class TranslatableEntityFieldTranslationCreateRequestModel(var key: String, var type: TranslatableEntityFieldTypeModel, var value: String, var uuid: String, var label: String, var lang: String) : AbstractApiRequestModel() {
     override fun validateRequiredFields(): List<ErrorType> = ArrayList<ErrorType>()
             .apply {
                 if (StringUtils.isEmpty(key)) {

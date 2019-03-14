@@ -1,8 +1,8 @@
 package com.sfl.tms.rest.common.communicator.translation.request.entity
 
+import com.sfl.tms.rest.common.communicator.translation.error.TranslationControllerErrorType
 import com.sfl.tms.rest.common.model.error.ErrorType
 import com.sfl.tms.rest.common.model.request.AbstractApiRequestModel
-import com.sfl.tms.rest.common.communicator.translation.error.TranslationControllerErrorType
 import org.apache.commons.lang3.StringUtils
 
 /**
@@ -10,7 +10,7 @@ import org.apache.commons.lang3.StringUtils
  * Date: 12/5/18
  * Time: 4:22 PM
  */
-data class TranslatableEntityCreateRequestModel(val uuid: String, val label: String, val name: String) : AbstractApiRequestModel() {
+data class TranslatableEntityCreateRequestModel(var uuid: String, var label: String, var name: String) : AbstractApiRequestModel() {
     override fun validateRequiredFields(): List<ErrorType> = ArrayList<ErrorType>()
             .apply {
                 if (StringUtils.isEmpty(uuid)) {

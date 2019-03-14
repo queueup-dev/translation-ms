@@ -7,4 +7,4 @@ import com.sfl.tms.rest.common.communicator.translation.request.aggregation.Tran
  * Date: 1/18/19
  * Time: 6:45 PM
  */
-data class TranslationAggregationByLanguage(val lang: String, val keys: List<TranslationKeyValuePair>)
+data class TranslationAggregationByLanguage(var lang: String, var keys: List<TranslationKeyValuePair>)

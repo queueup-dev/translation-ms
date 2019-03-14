@@ -5,4 +5,4 @@ package com.sfl.tms.rest.common.communicator.translation.response.aggregation.si
  * Date: 1/18/19
  * Time: 12:39 PM
  */
-data class TranslationAggregationByKey(val key: String, val translations: List<TranslationLanguageValuePair>)
+data class TranslationAggregationByKey(var key: String, var translations: List<TranslationLanguageValuePair>)

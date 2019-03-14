@@ -10,7 +10,7 @@ import org.apache.commons.lang3.StringUtils
  * Date: 1/18/19
  * Time: 12:39 PM
  */
-data class TranslationAggregationByEntityRequestModel(val uuid: String, val label: String, val name: String?, val languages: List<TranslationAggregationByLanguage>) : AbstractApiRequestModel() {
+data class TranslationAggregationByEntityRequestModel(var uuid: String, val label: String, var name: String?, var languages: List<TranslationAggregationByLanguage>) : AbstractApiRequestModel() {
     override fun validateRequiredFields(): List<ErrorType> = ArrayList<ErrorType>()
             .apply {
                 if (StringUtils.isEmpty(uuid)) {

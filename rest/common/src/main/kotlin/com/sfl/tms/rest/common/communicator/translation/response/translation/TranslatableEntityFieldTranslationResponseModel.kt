@@ -7,4 +7,4 @@ import com.sfl.tms.rest.common.model.response.AbstractApiResponseModel
  * Date: 12/11/18
  * Time: 6:19 PM
  */
-data class TranslatableEntityFieldTranslationResponseModel(val key: String, val value: String, val uuid: String, val label: String, val lang: String) : AbstractApiResponseModel
+data class TranslatableEntityFieldTranslationResponseModel(var key: String, var value: String, var uuid: String, var label: String, var lang: String) : AbstractApiResponseModel

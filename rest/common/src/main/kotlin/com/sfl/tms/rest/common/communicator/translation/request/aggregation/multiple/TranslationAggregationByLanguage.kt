@@ -1,9 +1,9 @@
 package com.sfl.tms.rest.common.communicator.translation.request.aggregation.multiple
 
-import com.sfl.tms.rest.common.model.error.ErrorType
-import com.sfl.tms.rest.common.model.request.AbstractApiRequestModel
 import com.sfl.tms.rest.common.communicator.translation.error.TranslationControllerErrorType
 import com.sfl.tms.rest.common.communicator.translation.request.aggregation.TranslationKeyValuePair
+import com.sfl.tms.rest.common.model.error.ErrorType
+import com.sfl.tms.rest.common.model.request.AbstractApiRequestModel
 import org.apache.commons.lang3.StringUtils
 
 /**
@@ -11,7 +11,7 @@ import org.apache.commons.lang3.StringUtils
  * Date: 1/18/19
  * Time: 6:45 PM
  */
-data class TranslationAggregationByLanguage(val lang: String, val keys: List<TranslationKeyValuePair>) : AbstractApiRequestModel() {
+data class TranslationAggregationByLanguage(var lang: String, var keys: List<TranslationKeyValuePair>) : AbstractApiRequestModel() {
     override fun validateRequiredFields(): List<ErrorType> = ArrayList<ErrorType>()
             .apply {
                 if (StringUtils.isEmpty(lang)) {
