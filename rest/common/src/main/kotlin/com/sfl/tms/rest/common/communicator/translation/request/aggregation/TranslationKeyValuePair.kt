@@ -11,6 +11,9 @@ import org.apache.commons.lang3.StringUtils
  * Time: 12:40 PM
  */
 data class TranslationKeyValuePair(var key: String, var value: String) : AbstractApiRequestModel() {
+
+    constructor() : this("", "")
+
     override fun validateRequiredFields(): List<ErrorType> = ArrayList<ErrorType>()
             .apply {
                 if (StringUtils.isEmpty(key)) {

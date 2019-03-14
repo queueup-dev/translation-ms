@@ -12,6 +12,9 @@ import org.apache.commons.lang3.StringUtils
  * Time: 6:45 PM
  */
 data class TranslationAggregationByLanguage(var lang: String, var keys: List<TranslationKeyValuePair>) : AbstractApiRequestModel() {
+
+    constructor(): this("", listOf())
+
     override fun validateRequiredFields(): List<ErrorType> = ArrayList<ErrorType>()
             .apply {
                 if (StringUtils.isEmpty(lang)) {
