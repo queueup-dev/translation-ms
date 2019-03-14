@@ -1,7 +1,5 @@
 package com.sfl.tms.rest.client.rs.impl
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import com.sfl.tms.rest.client.rs.TranslationClientService
 import org.glassfish.jersey.jackson.JacksonFeature
 import org.glassfish.jersey.media.multipart.MultiPartFeature
@@ -16,7 +14,6 @@ import javax.net.ssl.TrustManager
 import javax.net.ssl.X509TrustManager
 import javax.ws.rs.client.Client
 import javax.ws.rs.client.ClientBuilder
-import javax.ws.rs.ext.ContextResolver
 
 /**
  * User: Vazgen Danielyan
@@ -53,6 +50,5 @@ class TranslationClientServiceImpl : TranslationClientService {
         client = ClientBuilder.newBuilder().sslContext(sslContext).build()
         client.register(JacksonFeature::class.java)
         client.register(MultiPartFeature::class.java)
-        client.register(ContextResolver<ObjectMapper> { ObjectMapper().registerKotlinModule() })
     }
 }
