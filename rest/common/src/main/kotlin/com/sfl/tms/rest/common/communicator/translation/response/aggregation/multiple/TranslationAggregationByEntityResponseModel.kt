@@ -8,4 +8,6 @@ import com.sfl.tms.rest.common.model.response.AbstractApiResponseModel
  * Date: 1/18/19
  * Time: 12:39 PM
  */
-data class TranslationAggregationByEntityResponseModel(var uuid: String, var label: String, var languages: List<TranslationAggregationByLanguage>) : AbstractApiResponseModel
+data class TranslationAggregationByEntityResponseModel(var uuid: String, var label: String, var languages: List<TranslationAggregationByLanguage>) : AbstractApiResponseModel {
+    constructor() : this("", "", listOf<TranslationAggregationByLanguage>())
+}
