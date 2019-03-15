@@ -1,14 +1,15 @@
 {
   "ORDER_STATUS": {
     "CONTINUE_SHOPPING": "CONTINUE SHOPPING",
-    "SUCCESS": "Bedankt!",
+    "SUCCESS": "Success!",
     "SUCCESS_TEXT": "Je betaling is succesvol verwerkt. De entreekaartjes worden binnen enkele minuten verzonden naar het opgegeven e-mail adres, mocht je na een uur nog niets ontvangen hebben neem dan even contact op met de klantenservice. Veel plezier!",
     "SUCCESS_TEXT_BOTTOM": "Heb je een vraag? Kijk of je vraag beantwoord wordt in de veel gestelde vragen of neem contact op met queueup.",
-    "PENDING": "Excuus",
+    "PENDING": "Pending",
     "PENDING_TEXT": "We kunnen je bestelling niet afronden, omdat we nog in afwachting zijn van je betaling. Soms duurt het wat langer voordat we de betalingen ontvangen. Als jij de betaling hebt geannuleerd, ga dan terug naar de website en probeer het opnieuw. Als je de betaling niet hebt geannuleerd, dan zal je bestelling automatisch worden verwerkt.",
     "PENDING_TEXT_BOTTOM": "Indien je binnen een uur niets van ons hebt ontvangen neem dan contact op met de klantenservice:",
-    "REJECTED": "Helaas",
-    "REJECTED_TEXT": "Je betaling is niet doorgekomen. Dit kan verschillende redenen hebben. Controleer bijvoorbeeld of er voldoende saldo op je rekening staat of probeer het op een later moment nog een keer. Als het probleem zich ondanks voldoende saldo blijft voordoen, neem dan contact met de klantenservice op."
+    "REJECTED": "Rejected",
+    "REJECTED_TEXT": "Je betaling is niet doorgekomen. Dit kan verschillende redenen hebben. Controleer bijvoorbeeld of er voldoende saldo op je rekening staat of probeer het op een later moment nog een keer. Als het probleem zich ondanks voldoende saldo blijft voordoen, neem dan contact met de klantenservice op.",
+    "AVAILABLE_VOUCHERS": "You haven’t used these vouchers. You can apply them in your further purchases."
   },
   "ERRORS": {
     "FIELD_REQUIRED": "This field is required.",
@@ -25,7 +26,7 @@
     "EQUAL_TO_FIELD": "Must be equal to '{{fieldName}}' field",
     "EQUAL_TO_VALUE": "Must be equal to {{value}}",
     "CONNECTION": "Request failed.",
-    "SERVER": "Server error.",
+    "SERVER": "Something went wrong...",
     "EMAIL_EXIST": "There's an account with this email. Do you want to {{login}}?",
     "EMAILS_DONT_MATCH": "The emails don't match",
     "PASSWORDS_DONT_MATCH": "The passwords don't match",
@@ -50,24 +51,29 @@
     "PAYMENT_REQUEST_FAILURE": "Payment request failed",
     "PAYMENT_FAILURE": "Payment failed",
     "RESERVATION_NOT_PAYABLE": "You cannot proceed with this order. Please refresh the page.",
-    "ERROR": "Error",
+    "ERROR": "Oops",
     "PLEASE_SELECT_PAYMENT_METHOD": "Please select a payment method first",
-    "PLEASE_FILL_IN_ALL_THE_REQUIRED_FIELDS": "Please fill in all the required fields"
+    "PLEASE_FILL_IN_ALL_THE_REQUIRED_FIELDS": "Please fill in all the required fields",
+    "WE_NEED_THIS_INFO_FOR_ORDER": "We need this information for completing your order.",
+    "PLEASE_FIRST_ENTER_AND_SAVE_EMAIL": "Please first enter email address and save account.",
+    "LOGIN_ERROR": "Login error"
   },
   "MENU": {
     "ALL": "All",
     "HOW_IT_WORKS": "How it works",
     "CARD_CONDITIONS": "Card conditions",
-    "TERMS_AND_CONDITIONS": "Algemene voorwaarden",
-    "PRIVACY": "Privacy",
+    "TERMS_AND_CONDITIONS": "Terms and conditions",
+    "PRIVACY": "Privacy statement",
     "COOKIE_STATEMENT": "Cookie statement",
     "HELP": "FAQ",
     "HOME": "Home",
     "PROFILE_SETTINGS": "My Account",
     "LOG_OUT": "Log Out",
     "USER": "User",
-    "DESCRIPTION": "Entertainment Jaarkaart B.V. (een samenwerking tussen Cadeau Concepten B.V. en queueup B.V.)",
-    "KVK_NUMBER": "KvK nummer: {{number}}"
+    "DESCRIPTION":  "Entertainment Jaarkaart B.V. (een samenwerking tussen Cadeau Concepten B.V. en queueup B.V.)",
+    "KVK_NUMBER": "KvK nummer: 62536613",
+    "EMAIL": "info@queueup.eu",
+    "EVENTS": "Events"
   },
   "COOKIES_OPTIONS": {
     "OPTION_1_TITLE": "Perfect werkende website",
@@ -76,19 +82,34 @@
     "OPTION_2_TEXT": "Om een soepel werkende maar niet persoonlijke website te kunnen laten zien gebruiken we functionele-, analytische- en tracking cookies:",
     "OPTION_3_TITLE": "Basis werkende website",
     "OPTION_3_TEXT": "Bij deze optie worden alleen functionele- en analytische cookies gebruikt voor een website.",
+
     "DETAIL_1": "Functionele cookies: Deze cookies zorgen ervoor dat onze site goed werkt als jij hem gebruikt.",
     "DETAIL_2": "Analytische cookies: Deze cookies geven ons inzicht hoe we de site kunnen verbeteren voor gebruikers.",
     "DETAIL_3": "Tracking cookies: Deze cookies zijn van andere partijen om je online gedrag in kaart te brengen.",
     "DETAIL_4": "Profiling cookies: Deze cookies zorgen ervoor dat de reclames die je ziet relevant zijn.",
+
     "YOUR_COOKIE_PREFERENCES": "Your cookie preferences",
     "PLEASE_CHOOSE_ONE_OPTIONS_TO_ACCEPT_COOKIES": "Geef hieronder aan welke cookies je accepteert op shop.dagjeuitjaarkaart.nl",
     "COOKIE_BANNER_TEXT": "shop.dagjeuitjaarkaart.nl maakt gebruik van cookies om het gebruiksgemak te vergroten en de website zo goed mogelijk te laten functioneren. Door verder te gaan geef je aan hiermee akkoord te gaan. {{readMoreAboutCookies}}.",
-    "CHANGE_PREFERENCE": "Change preference"
+    "CHANGE_PREFERENCE" : "Change preference"
   },
+
+  "META": {
+    "DESCRIPTION": ""
+  },
+
+  "QR_CODE": {
+    "STEP_1": "1.",
+    "STEP_2": "2.",
+    "STEP_3": "3.",
+    "LOGIN_WITH_QR": "LOGIN WITH QR"
+  },
+
   "WELCOME": "WELCOME!",
-  "SIGN_UP": "SIGN UP",
+  "SIGN_UP": "Sign up",
   "LOG_OUT": "LOGOUT",
   "CREATE_AN_ACCOUNT": "CREATE AN ACCOUNT",
+  "DO_IN_MOBILE_APP": "Dit kan in de Dagjes Uit app",
   "LET_US_KNOW_ABOUT_YOU": "LET US KNOW ABOUT YOU",
   "GO_BACK": "Go back",
   "COUNTRY": "Country",
@@ -101,19 +122,22 @@
   "POSTAL_CODE": "Postal code",
   "HOUSE_NUMBER": "House number",
   "HOUSE_NUMBER_EXT": "House number 2",
+  "CITY": "City",
   "EMAIL": "Email",
-  "LOGIN": "LOGIN",
+  "LOGIN": "Login",
   "REPEAT_EMAIL": "Repeat email",
   "NEXT": "NEXT",
   "PASSWORD": "Password",
   "REPEAT_PASSWORD": "Repeat Password",
   "FORGOT_PASSWORD": "Forgot password?",
-  "BY_REGISTERING_YOUR_ACCOUNT_YOU_AGREE_WITH": "By registering your account you agree with {{ourConditions}}",
+  "BY_REGISTERING_YOUR_ACCOUNT_YOU_AGREE_WITH": "By registering your account you agree with {{ourConditions}} and {{privacyPolicy}}",
   "ALREADY_HAVE_AN_ACCOUNT_PLEASE_LOGIN": "Already have an account? Please {{login}}",
   "DONT_HAVE_AN_ACCOUNT_YET": "Don't have an account yet? {{signUp}}",
   "OUR_CONDITIONS": "Our conditions",
   "WELCOME_BACK": "Welcome back!",
   "PLEASE_LOGIN": "Please login",
+  "MR": "Mr.",
+  "MRS": "Mrs.",
   "UP_TO": "UP TO",
   "DISCOUNT": "DISCOUNT",
   "KNOW_MORE": "KNOW MORE",
@@ -207,5 +231,28 @@
   "RESERVATION_TIMEOUT_REMINDER": "Your session is about to time out. Please complete your order before that.",
   "WARNING": "WARNING",
   "SHOW_ON_MAP": "Show on map",
-  "PAY_NOW": "Pay now"
+  "PAY_NOW": "Pay now",
+  "OR_LOGIN_WITH": "Or login with",
+  "FACEBOOK": "FACEBOOK",
+  "MOBILE_APP": "MOBILE APP",
+  "OR_SIGN_UP_WITH_EMAIL": "or sign up with email",
+  "ENTER_YOUR_DISCOUNT_CODES": "Enter your discount codes",
+  "ENTER_YOUR_CODES_MANUALLY": "Enter your codes manually",
+  "ENTER_YOUR_VOUCHERS_INPUT_LABEL": "Enter your vouchers",
+  "SEE_ENTERED_VOUCHERS": "See entered vouchers",
+  "REACHED_HIGHEST_DISCOUNT": "You have reached the highest discount for this selection!",
+  "YOU_CAN_ADD_MORE_QUANTITY_VOUCHERS": "You can add up to {{vouchersCount}} vouchers",
+  "THIS_VOUCHER_IS_ALREADY_USED": "This voucher is already used",
+  "VOUCHER_ALREADY_REDEEMED": "?This voucher is already redeemed",
+  "VOUCHER_DOES_NOT_EXISTS": "The voucher is not found",
+  "VOUCHER_ALREADY_DIGITIZED": "The voucher is already available in a wallet",
+  "REDEEMED_VOUCHERS": "Redeemed vouchers",
+  "NOT_USED_VOUCHERS": "Not used vouchers",
+  "LOGIN_TO_SEE_YOUR_VOUCHERS": "Login to see your vouchers",
+  "ADD_SCANNED_CODES": "Add scanned codes from your app",
+  "SEE_DETAILS": "SEE DETAILS",
+  "WALLETS": "Wallets",
+  "UNTIL": "Until",
+  "SORRY": "Sorry",
+  "PERSONAL": "Personal"
 }
