@@ -39,6 +39,7 @@ tasks.getByName<BootJar>("bootJar") {
     mainClassName = "com.sfl.tms.ServerApplication"
     manifest {
         attributes("Start-Class" to "com.sfl.tms.ServerApplication")
+        attributes("Implementation-Version" to project.version)
     }
     launchScript()
 }
