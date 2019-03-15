@@ -17,7 +17,6 @@ import com.sfl.tms.core.service.translatable.translation.exception.TranslatableF
 import com.sfl.tms.core.service.translatable.translation.exception.TranslatableFieldTranslationNotFoundException
 import com.sfl.tms.rest.common.annotations.ValidateActionRequest
 import com.sfl.tms.rest.common.communicator.translation.error.TranslationControllerErrorType
-import com.sfl.tms.rest.server.translation.exception.TranslatableEntityMissingException
 import com.sfl.tms.rest.common.communicator.translation.model.TranslatableEntityFieldTypeModel
 import com.sfl.tms.rest.common.communicator.translation.request.aggregation.TranslationKeyValuePair
 import com.sfl.tms.rest.common.communicator.translation.request.aggregation.multiple.TranslationAggregationByEntityRequestModel
@@ -37,6 +36,7 @@ import com.sfl.tms.rest.common.model.ResultModel
 import com.sfl.tms.rest.common.model.error.ErrorType
 import com.sfl.tms.rest.common.model.response.AbstractApiResponseModel
 import com.sfl.tms.rest.server.AbstractBaseController
+import com.sfl.tms.rest.server.translation.exception.TranslatableEntityMissingException
 import io.swagger.annotations.ApiOperation
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
@@ -289,20 +289,21 @@ class TranslationController : AbstractBaseController() {
                     translatableEntityFieldService.create(TranslatableEntityFieldDto(it.key, TranslatableEntityFieldType.valueOf(type.name), entity.uuid, entity.label))
                 }
 
+                val value = it.value
+
                 try {
-                    translatableEntityFieldTranslationService.getByFieldAndLanguage(it.key, TranslatableEntityFieldType.valueOf(type.name), entity.uuid, entity.label, language.lang)
-                        .also {
-                            translatableEntityFieldTranslationService.updateValue(
-                                TranslatableEntityFieldTranslationDto(
-                                    it.field.key,
-                                    TranslatableEntityFieldType.valueOf(type.name),
-                                    it.value,
-                                    entity.uuid,
-                                    entity.label,
-                                    language.lang
-                                )
+                    translatableEntityFieldTranslationService.getByFieldAndLanguage(it.key, TranslatableEntityFieldType.valueOf(type.name), entity.uuid, entity.label, language.lang).also {
+                        translatableEntityFieldTranslationService.updateValue(
+                            TranslatableEntityFieldTranslationDto(
+                                it.field.key,
+                                TranslatableEntityFieldType.valueOf(type.name),
+                                value,
+                                entity.uuid,
+                                entity.label,
+                                language.lang
                             )
-                        }
+                        )
+                    }
                 } catch (e: TranslatableFieldTranslationNotFoundException) {
                     translatableEntityFieldTranslationService.create(TranslatableEntityFieldTranslationDto(it.key, TranslatableEntityFieldType.valueOf(type.name), it.value, entity.uuid, entity.label, language.lang))
                 }
