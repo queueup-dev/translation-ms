@@ -19,7 +19,7 @@ buildscript {
 
 allprojects {
     group = "com.sfl.tms"
-    version = "0.0.9-SNAPSHOT"
+    version = "0.0.10-SNAPSHOT"
 }
 
 subprojects {
