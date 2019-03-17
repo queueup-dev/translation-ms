@@ -271,6 +271,7 @@ class TranslationController : AbstractBaseController() {
                 throw TranslatableEntityMissingException()
             } else {
                 translatableEntityService.create(TranslatableEntityDto(it.uuid, it.label, it.name!!))
+                    .also { translatableEntityFieldService.copyStatics(it.uuid, it.label) }
             }
         }
 
