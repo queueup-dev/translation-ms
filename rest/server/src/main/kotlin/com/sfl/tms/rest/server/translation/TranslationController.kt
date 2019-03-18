@@ -193,7 +193,10 @@ class TranslationController : AbstractBaseController() {
                 ) {}
             )
         } catch (e: TranslatableEntityNotFoundException) {
-            notFound(TranslationControllerErrorType.TRANSLATABLE_ENTITY_NOT_FOUND_EXCEPTION)
+            ok(object :
+                AbstractApiResponseModel,
+                ArrayList<TranslationAggregationByKey>() {}
+            )
         }
 
     @ApiOperation(value = "Get translatable entity field's with translation's for provided filters", response = List::class)
@@ -207,11 +210,18 @@ class TranslationController : AbstractBaseController() {
                         .getByUuidAndLabel(uuid, label)
                         .fields
                         .filter { it.type == TranslatableEntityFieldType.valueOf(type.name) }
-                        .map { TranslationKeyValuePair(it.key, it.translations.filter { it.language.lang == lang }.map { it.value }.first()) }
+                        .map {
+                            val list = it.translations.filter { it.language.lang == lang }.map { it.value }
+                            val value = if (list.isEmpty()) "" else list.first()
+                            TranslationKeyValuePair(it.key, value)
+                        }
                 ) {}
             )
         } catch (e: TranslatableEntityNotFoundException) {
-            notFound(TranslationControllerErrorType.TRANSLATABLE_ENTITY_NOT_FOUND_EXCEPTION)
+            ok(object :
+                AbstractApiResponseModel,
+                ArrayList<TranslationKeyValuePair>() {}
+            )
         }
 
     @ApiOperation(value = "Get translatable entity field's with translation's for provided filters and languages", response = List::class)
@@ -225,11 +235,18 @@ class TranslationController : AbstractBaseController() {
                         .getByUuidAndLabel(uuid, label)
                         .fields
                         .filter { it.type == TranslatableEntityFieldType.valueOf(type.name) }
-                        .map { TranslationKeyValuePair(it.key, it.translations.filter { lang.contains(it.language.lang) }.map { it.value }.first()) }
+                        .map {
+                            val list = it.translations.filter { lang.contains(it.language.lang) }.map { it.value }
+                            val value = if (list.isEmpty()) "" else list.first()
+                            TranslationKeyValuePair(it.key, value)
+                        }
                 ) {}
             )
         } catch (e: TranslatableEntityNotFoundException) {
-            notFound(TranslationControllerErrorType.TRANSLATABLE_ENTITY_NOT_FOUND_EXCEPTION)
+            ok(object :
+                AbstractApiResponseModel,
+                ArrayList<TranslationKeyValuePair>() {}
+            )
         }
 
     //endregion
