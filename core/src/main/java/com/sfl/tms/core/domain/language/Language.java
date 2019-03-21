@@ -13,12 +13,12 @@ import javax.persistence.*;
  * Time: 5:16 PM
  */
 @Entity
-@Table(name = "language",
+@Table(name = "languages",
         uniqueConstraints = {
-                @UniqueConstraint(name = "uk_language_lang", columnNames = "lang")
+                @UniqueConstraint(name = "uk_languages_lang", columnNames = "lang")
         }
 )
-@SequenceGenerator(name = "sequence_generator", sequenceName = "language_seq", allocationSize = 1)
+@SequenceGenerator(name = "sequence_generator", sequenceName = "languages_seq", allocationSize = 1)
 public class Language extends AbstractEntity {
 
     private static final long serialVersionUID = 741452657069094371L;
