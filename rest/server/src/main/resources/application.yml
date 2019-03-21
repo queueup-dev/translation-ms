@@ -6,7 +6,7 @@ spring:
     password: translation
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: none
       use-new-id-generator-mappings: true
     generate-ddl: true
     show-sql: true
