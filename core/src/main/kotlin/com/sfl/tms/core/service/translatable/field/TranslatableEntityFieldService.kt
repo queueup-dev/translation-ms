@@ -16,6 +16,4 @@ interface TranslatableEntityFieldService {
     fun getByKeyAndTypeAndEntity(key: String, type: TranslatableEntityFieldType, uuid: String, label: String): TranslatableEntityField
 
     fun create(dto: TranslatableEntityFieldDto): TranslatableEntityField
-
-    fun copyStatics(uuid: String, label: String)
 }
