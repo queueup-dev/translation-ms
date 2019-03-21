@@ -3,15 +3,12 @@ package com.sfl.tms.core.service.translatable.field.impl
 import com.sfl.tms.core.domain.translatable.TranslatableEntityField
 import com.sfl.tms.core.domain.translatable.TranslatableEntityFieldType
 import com.sfl.tms.core.persistence.translatable.TranslatableEntityFieldRepository
-import com.sfl.tms.core.service.config.ServicesProperties
 import com.sfl.tms.core.service.translatable.entity.TranslatableEntityService
 import com.sfl.tms.core.service.translatable.entity.exception.TranslatableEntityNotFoundException
 import com.sfl.tms.core.service.translatable.field.TranslatableEntityFieldService
 import com.sfl.tms.core.service.translatable.field.dto.TranslatableEntityFieldDto
 import com.sfl.tms.core.service.translatable.field.exception.TranslatableEntityFieldExistsForTranslatableEntityException
 import com.sfl.tms.core.service.translatable.field.exception.TranslatableEntityFieldNotFoundException
-import com.sfl.tms.core.service.translatable.translation.TranslatableEntityFieldTranslationService
-import com.sfl.tms.core.service.translatable.translation.dto.TranslatableEntityFieldTranslationDto
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
@@ -32,9 +29,6 @@ class TranslatableEntityFieldServiceImpl : TranslatableEntityFieldService {
 
     @Autowired
     private lateinit var translatableEntityService: TranslatableEntityService
-
-    @Autowired
-    private lateinit var translatableEntityFieldTranslationService: TranslatableEntityFieldTranslationService
 
     //endregion
 
@@ -90,31 +84,6 @@ class TranslatableEntityFieldServiceImpl : TranslatableEntityFieldService {
                 }
             }
         }
-
-    //endregion
-
-    //region copyStatics
-
-    @Transactional
-    override fun copyStatics(uuid: String, label: String) {
-        logger.trace("Retrieving TranslatableEntity template.")
-        translatableEntityService
-            .getByUuidAndLabel(ServicesProperties.templateUuid, ServicesProperties.templateLabel)
-            .also { logger.debug("Successfully retrieved TranslatableEntity template.") }
-            .fields
-            .filter { it.type == TranslatableEntityFieldType.STATIC }
-            .forEach {
-                logger.trace("Creating static TranslatableEntityField with key - {} for uuid - {} and label - {}", it.key, uuid, label)
-                val field = create(TranslatableEntityFieldDto(it.key, TranslatableEntityFieldType.STATIC, uuid, label))
-                logger.debug("Successfully created static TranslatableEntityField with key - {} for uuid - {} and label - {}", it.key, uuid, label)
-
-                it.translations.forEach {
-                    logger.trace("Creating TranslatableEntityFieldTranslation with key - {}, value - {} for uuid - {} and label - {}", field.key, it.value, uuid, label)
-                    translatableEntityFieldTranslationService.create(TranslatableEntityFieldTranslationDto(field.key, field.type, it.value, uuid, label, it.language.lang))
-                    logger.debug("Successfully created TranslatableEntityFieldTranslation with key - {}, value - {} for uuid - {} and label - {}", field.key, it.value, uuid, label)
-                }
-            }
-    }
 
     //endregion
 

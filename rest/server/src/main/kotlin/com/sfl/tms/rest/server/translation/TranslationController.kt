@@ -79,8 +79,6 @@ class TranslationController : AbstractBaseController() {
         request
             .also { logger.trace("Creating new TranslatableEntity for provided request - {} ", it) }
             .let { translatableEntityService.create(TranslatableEntityDto(it.uuid, it.label, it.name)) }
-            .also { logger.trace("Copying static TranslatableEntityField for provided request - {} ", it) }
-            .also { translatableEntityFieldService.copyStatics(it.uuid, it.label) }
             .let { created(TranslatableEntityCreateResponseModel(it.uuid, it.label, it.name)) }
             .also { logger.debug("Successfully created TranslatableEntity for provided request - {} ", request) }
     } catch (e: TranslatableEntityExistsException) {
@@ -288,7 +286,6 @@ class TranslationController : AbstractBaseController() {
                 throw TranslatableEntityMissingException()
             } else {
                 translatableEntityService.create(TranslatableEntityDto(it.uuid, it.label, it.name!!))
-                    .also { translatableEntityFieldService.copyStatics(it.uuid, it.label) }
             }
         }
 

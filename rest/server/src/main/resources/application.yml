@@ -2,7 +2,6 @@ spring:
   datasource:
     driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://127.0.0.1/translation
-#    url: jdbc:postgresql://10.20.4.67/translation
     username: translation
     password: translation
   jpa:
