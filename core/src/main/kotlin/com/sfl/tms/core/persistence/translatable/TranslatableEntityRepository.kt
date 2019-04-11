@@ -14,4 +14,6 @@ interface TranslatableEntityRepository : JpaRepository<TranslatableEntity, Long>
 
     fun findByUuidAndLabel(uuid: String, label: String): TranslatableEntity?
 
+    fun findByUuid(uuid: String): List<TranslatableEntity>
+
 }

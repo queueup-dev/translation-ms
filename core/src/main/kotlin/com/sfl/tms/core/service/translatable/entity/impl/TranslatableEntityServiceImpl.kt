@@ -46,6 +46,16 @@ class TranslatableEntityServiceImpl : TranslatableEntityService {
 
     //endregion
 
+    //region findByUuidAndLabel
+
+    @Transactional(readOnly = true)
+    override fun findByUuid(uuid: String): List<TranslatableEntity> = uuid
+            .also { logger.trace("Retrieving TranslatableEntity for provided uuid - {}", uuid) }
+            .let { translatableEntityRepository.findByUuid(it) }
+            .also { logger.debug("Retrieved TranslatableEntity for provided uuid - {} and label - {}", uuid) }
+
+    //endregion
+
     //region getByUuidAndLabel
 
     @Throws(TranslatableEntityNotFoundException::class)

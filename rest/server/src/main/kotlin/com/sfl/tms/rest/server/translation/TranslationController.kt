@@ -222,6 +222,32 @@ class TranslationController : AbstractBaseController() {
             )
         }
 
+    @ApiOperation(value = "Get translatable entity field's with translation's for provided filters", response = List::class)
+    @RequestMapping(value = ["/entity/{uuid}/{type}/{lang}/name"], method = [RequestMethod.GET])
+    fun getEntityFieldsWithNameWithTranslationsWithLanguage(@PathVariable("uuid") uuid: String, @RequestParam("name") name: String, @PathVariable("type") type: TranslatableEntityFieldTypeModel, @PathVariable("lang") lang: String): ResponseEntity<ResultModel<out AbstractApiModel>> =
+            try{
+                ok(object :
+                        AbstractApiResponseModel,
+                        ArrayList<TranslationKeyValuePair>(
+                                translatableEntityService
+                                        .findByUuid(uuid)
+                                        .flatMap { it.fields }
+                                        .filter { it.type.name == type.name }
+                                        .filter { it.entity.name == name }
+                                        .map {
+                                            val list = it.translations.filter { it.language.lang == lang }.map { it.value }
+                                            val value = if (list.isEmpty()) "" else list.first()
+                                            TranslationKeyValuePair(it.key, value)
+                                        }
+                        ) {}
+                )
+            } catch (e: TranslatableEntityNotFoundException) {
+                ok(object :
+                        AbstractApiResponseModel,
+                        ArrayList<TranslationKeyValuePair>() {}
+                )
+            }
+
     @ApiOperation(value = "Get translatable entity field's with translation's for provided filters and languages", response = List::class)
     @RequestMapping(value = ["/entity/{uuid}/{label}/{type}/languages/{languages}"], method = [RequestMethod.GET])
     fun getEntityFieldsWithTranslationsForLanguages(@PathVariable("uuid") uuid: String, @PathVariable("label") label: String, @PathVariable("type") type: TranslatableEntityFieldTypeModel, @PathVariable("languages") lang: List<String>): ResponseEntity<ResultModel<out AbstractApiModel>> =

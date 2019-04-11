@@ -106,6 +106,14 @@ class TranslationApiClientImpl : TranslationApiClient {
             .request(MediaType.APPLICATION_JSON)
             .get(object : GenericType<ResultModel<GenericArrayResponse<TranslationKeyValuePair>>>() {})
 
+    override fun getEntityFieldsWithNameWithTranslationsWithLanguage(uuid: String, name: String, type: TranslatableEntityFieldTypeModel, lang: String): ResultModel<GenericArrayResponse<TranslationKeyValuePair>> =
+            target.translationWebTarget
+                    .path(String.format(GET_ENTITY_FIELDS_BY_NAME_TRANSLATION_WITH_LANGUAGE_API, uuid, type.name, lang))
+                    .queryParam("name",name)
+                    .also { logger.debug("Calling web target '{}'", it.uri) }
+                    .request(MediaType.APPLICATION_JSON)
+                    .get(object : GenericType<ResultModel<GenericArrayResponse<TranslationKeyValuePair>>>() {})
+
     override fun getEntityFieldsWithTranslationsForLanguages(uuid: String, label: String, type: TranslatableEntityFieldTypeModel, lang: List<String>): ResultModel<GenericArrayResponse<TranslationKeyValuePair>> =
         target.translationWebTarget
             .path(String.format(GET_ENTITY_FIELD_TRANSLATION_FOR_LANGUAGES_API, uuid, label, type.name, lang))
@@ -136,6 +144,7 @@ class TranslationApiClientImpl : TranslationApiClient {
         private const val UPDATE_ENTITY_FIELD_TRANSLATION_CREATE_API = "/entity/%s/%s/field/%s/%s/translation"
         private const val GET_ENTITY_FIELD_TRANSLATION_API = "/entity/%s/%s/{type}"
         private const val GET_ENTITY_FIELD_TRANSLATION_WITH_LANGUAGE_API = "/entity/%s/%s/%s/%s"
+        private const val GET_ENTITY_FIELDS_BY_NAME_TRANSLATION_WITH_LANGUAGE_API = "/entity/%s/%s/%s/name"
         private const val GET_ENTITY_FIELD_TRANSLATION_FOR_LANGUAGES_API = "/entity/%s/%s/%s/languages/%s"
         private const val CREATE_OR_UPDATE_ENTITY_FIELD_TRANSLATION_WITH_LANGUAGE_API = "/entity/field/%s/translation/bulk"
     }
