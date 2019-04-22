@@ -29,11 +29,11 @@ interface TranslationApiClient {
     fun createTranslatableEntityFieldTranslation(request: TranslatableEntityFieldTranslationCreateRequestModel): ResultModel<TranslatableEntityFieldTranslationResponseModel>
 
     fun updateTranslatableEntityFieldTranslation(
-        uuid: String,
-        label: String,
-        key: String,
-        type: TranslatableEntityFieldTypeModel,
-        request: List<TranslatableEntityFieldTranslationUpdateRequestModel>
+            uuid: String,
+            label: String,
+            key: String,
+            type: TranslatableEntityFieldTypeModel,
+            request: List<TranslatableEntityFieldTranslationUpdateRequestModel>
     ): ResultModel<GenericArrayResponse<TranslatableEntityFieldTranslationResponseModel>>
 
     fun getEntityFieldsWithTranslations(uuid: String, label: String, type: TranslatableEntityFieldTypeModel): ResultModel<GenericArrayResponse<TranslationAggregationByKey>>
@@ -43,6 +43,18 @@ interface TranslationApiClient {
     fun getEntityFieldsWithNameWithTranslationsWithLanguage(uuid: String, name: String, type: TranslatableEntityFieldTypeModel, lang: String): ResultModel<GenericArrayResponse<TranslationKeyValuePair>>
 
     fun getEntityFieldsWithTranslationsForLanguages(uuid: String, label: String, type: TranslatableEntityFieldTypeModel, lang: List<String>): ResultModel<GenericArrayResponse<TranslationKeyValuePair>>
+
+    fun getEntityFieldsWithNameWithTranslations(uuid: String,
+                                                name: String,
+                                                type: TranslatableEntityFieldTypeModel
+    ): ResultModel<GenericArrayResponse<TranslationKeyValuePair>>
+
+    fun getEntityFieldsWithNameWithTranslations(uuid: String,
+                                                labels: List<String>,
+                                                name: String,
+                                                type: TranslatableEntityFieldTypeModel,
+                                                lang: String
+    ): ResultModel<GenericArrayResponse<TranslationKeyValuePair>>
 
     fun createOrUpdateTranslatableEntityWithDependencies(type: TranslatableEntityFieldTypeModel, request: TranslationAggregationByEntityRequestModel): ResultModel<TranslationAggregationByEntityResponseModel>
 }

@@ -41,98 +41,117 @@ class TranslationApiClientImpl : TranslationApiClient {
     //region Create translatable entity
 
     override fun createTranslatableEntity(request: TranslatableEntityCreateRequestModel): ResultModel<TranslatableEntityCreateResponseModel> =
-        target.translationWebTarget
-            .path(ENTITY_CREATE_API)
-            .also { logger.debug("Calling web target '{}'", it.uri) }
-            .request(MediaType.APPLICATION_JSON)
-            .post(Entity.entity<TranslatableEntityCreateRequestModel>(request, MediaType.APPLICATION_JSON), object : GenericType<ResultModel<TranslatableEntityCreateResponseModel>>() {})
+            target.translationWebTarget
+                    .path(ENTITY_CREATE_API)
+                    .also { logger.debug("Calling web target '{}'", it.uri) }
+                    .request(MediaType.APPLICATION_JSON)
+                    .post(Entity.entity<TranslatableEntityCreateRequestModel>(request, MediaType.APPLICATION_JSON), object : GenericType<ResultModel<TranslatableEntityCreateResponseModel>>() {})
 
     //endregion
 
     //region Create translatable entity field
 
     override fun createTranslatableEntityField(request: TranslatableEntityFieldCreateRequestModel): ResultModel<TranslatableEntityFieldCreateResponseModel> =
-        target.translationWebTarget
-            .path(ENTITY_FIELD_CREATE_API)
-            .also { logger.debug("Calling web target '{}'", it.uri) }
-            .request(MediaType.APPLICATION_JSON)
-            .post(Entity.entity<TranslatableEntityFieldCreateRequestModel>(request, MediaType.APPLICATION_JSON), object : GenericType<ResultModel<TranslatableEntityFieldCreateResponseModel>>() {})
+            target.translationWebTarget
+                    .path(ENTITY_FIELD_CREATE_API)
+                    .also { logger.debug("Calling web target '{}'", it.uri) }
+                    .request(MediaType.APPLICATION_JSON)
+                    .post(Entity.entity<TranslatableEntityFieldCreateRequestModel>(request, MediaType.APPLICATION_JSON), object : GenericType<ResultModel<TranslatableEntityFieldCreateResponseModel>>() {})
 
     //endregion
 
     //region Create translatable entity field translation
 
     override fun createTranslatableEntityFieldTranslation(request: TranslatableEntityFieldTranslationCreateRequestModel): ResultModel<TranslatableEntityFieldTranslationResponseModel> =
-        target.translationWebTarget
-            .path(ENTITY_FIELD_TRANSLATION_CREATE_API)
-            .also { logger.debug("Calling web target '{}'", it.uri) }
-            .request(MediaType.APPLICATION_JSON)
-            .post(Entity.entity<TranslatableEntityFieldTranslationCreateRequestModel>(request, MediaType.APPLICATION_JSON), object : GenericType<ResultModel<TranslatableEntityFieldTranslationResponseModel>>() {})
+            target.translationWebTarget
+                    .path(ENTITY_FIELD_TRANSLATION_CREATE_API)
+                    .also { logger.debug("Calling web target '{}'", it.uri) }
+                    .request(MediaType.APPLICATION_JSON)
+                    .post(Entity.entity<TranslatableEntityFieldTranslationCreateRequestModel>(request, MediaType.APPLICATION_JSON), object : GenericType<ResultModel<TranslatableEntityFieldTranslationResponseModel>>() {})
 
     //endregion
 
     //region Update translatable entity field translation
 
     override fun updateTranslatableEntityFieldTranslation(
-        uuid: String,
-        label: String,
-        key: String,
-        type: TranslatableEntityFieldTypeModel,
-        request: List<TranslatableEntityFieldTranslationUpdateRequestModel>
+            uuid: String,
+            label: String,
+            key: String,
+            type: TranslatableEntityFieldTypeModel,
+            request: List<TranslatableEntityFieldTranslationUpdateRequestModel>
     ): ResultModel<GenericArrayResponse<TranslatableEntityFieldTranslationResponseModel>> = target.translationWebTarget
-        .path(String.format(UPDATE_ENTITY_FIELD_TRANSLATION_CREATE_API, uuid, label, key, type.name))
-        .also { logger.debug("Calling web target '{}'", it.uri) }
-        .request(MediaType.APPLICATION_JSON)
-        .put(
-            Entity.entity<List<TranslatableEntityFieldTranslationUpdateRequestModel>>(request, MediaType.APPLICATION_JSON),
-            object : GenericType<ResultModel<GenericArrayResponse<TranslatableEntityFieldTranslationResponseModel>>>() {}
-        )
+            .path(String.format(UPDATE_ENTITY_FIELD_TRANSLATION_CREATE_API, uuid, label, key, type.name))
+            .also { logger.debug("Calling web target '{}'", it.uri) }
+            .request(MediaType.APPLICATION_JSON)
+            .put(
+                    Entity.entity<List<TranslatableEntityFieldTranslationUpdateRequestModel>>(request, MediaType.APPLICATION_JSON),
+                    object : GenericType<ResultModel<GenericArrayResponse<TranslatableEntityFieldTranslationResponseModel>>>() {}
+            )
 
     //endregion
 
     //region Get entity fields with translations, with/without language
 
     override fun getEntityFieldsWithTranslations(uuid: String, label: String, type: TranslatableEntityFieldTypeModel): ResultModel<GenericArrayResponse<TranslationAggregationByKey>> =
-        target.translationWebTarget
-            .path(String.format(GET_ENTITY_FIELD_TRANSLATION_API, uuid, label))
-            .also { logger.debug("Calling web target '{}'", it.uri) }
-            .request(MediaType.APPLICATION_JSON)
-            .get(object : GenericType<ResultModel<GenericArrayResponse<TranslationAggregationByKey>>>() {})
+            target.translationWebTarget
+                    .path(String.format(GET_ENTITY_FIELD_TRANSLATION_API, uuid, label))
+                    .also { logger.debug("Calling web target '{}'", it.uri) }
+                    .request(MediaType.APPLICATION_JSON)
+                    .get(object : GenericType<ResultModel<GenericArrayResponse<TranslationAggregationByKey>>>() {})
 
     override fun getEntityFieldsWithTranslationsWithLanguage(uuid: String, label: String, type: TranslatableEntityFieldTypeModel, lang: String): ResultModel<GenericArrayResponse<TranslationKeyValuePair>> =
-        target.translationWebTarget
-            .path(String.format(GET_ENTITY_FIELD_TRANSLATION_WITH_LANGUAGE_API, uuid, label, type.name, lang))
-            .also { logger.debug("Calling web target '{}'", it.uri) }
-            .request(MediaType.APPLICATION_JSON)
-            .get(object : GenericType<ResultModel<GenericArrayResponse<TranslationKeyValuePair>>>() {})
-
-    override fun getEntityFieldsWithNameWithTranslationsWithLanguage(uuid: String, name: String, type: TranslatableEntityFieldTypeModel, lang: String): ResultModel<GenericArrayResponse<TranslationKeyValuePair>> =
             target.translationWebTarget
-                    .path(String.format(GET_ENTITY_FIELDS_BY_NAME_TRANSLATION_WITH_LANGUAGE_API, uuid, type.name, lang))
-                    .queryParam("name",name)
+                    .path(String.format(GET_ENTITY_FIELD_TRANSLATION_WITH_LANGUAGE_API, uuid, label, type.name, lang))
                     .also { logger.debug("Calling web target '{}'", it.uri) }
                     .request(MediaType.APPLICATION_JSON)
                     .get(object : GenericType<ResultModel<GenericArrayResponse<TranslationKeyValuePair>>>() {})
 
+    override fun getEntityFieldsWithNameWithTranslationsWithLanguage(uuid: String, name: String, type: TranslatableEntityFieldTypeModel, lang: String): ResultModel<GenericArrayResponse<TranslationKeyValuePair>> =
+            target.translationWebTarget
+                    .path(String.format(GET_ENTITY_FIELDS_BY_NAME_TRANSLATION_WITH_LANGUAGE_API, uuid, type.name, lang))
+                    .queryParam("name", name)
+                    .also { logger.debug("Calling web target '{}'", it.uri) }
+                    .request(MediaType.APPLICATION_JSON)
+                    .get(object : GenericType<ResultModel<GenericArrayResponse<TranslationKeyValuePair>>>() {})
+
+
+    override fun getEntityFieldsWithNameWithTranslations(uuid: String, name: String, type: TranslatableEntityFieldTypeModel): ResultModel<GenericArrayResponse<TranslationKeyValuePair>> =
+            target.translationWebTarget
+                    .path(String.format(GET_ENTITY_FIELDS_BY_NAME_TRANSLATION_API, uuid, type.name))
+                    .queryParam("name", name)
+                    .also { logger.debug("Calling web target '{}'", it.uri) }
+                    .request(MediaType.APPLICATION_JSON)
+                    .get(object : GenericType<ResultModel<GenericArrayResponse<TranslationKeyValuePair>>>() {})
+
+
+    override fun getEntityFieldsWithNameWithTranslations(uuid: String, labels: List<String>, name: String, type: TranslatableEntityFieldTypeModel, lang: String): ResultModel<GenericArrayResponse<TranslationKeyValuePair>> =
+            target.translationWebTarget
+                    .path(String.format(GET_ENTITY_FIELDS_BY_NAME_TRANSLATION_WITH_LANGUAGE_API, uuid, type.name,lang))
+                    .queryParam("name", name)
+                    .also { logger.debug("Calling web target '{}'", it.uri) }
+                    .request(MediaType.APPLICATION_JSON)
+                    .post(Entity.json(labels), object : GenericType<ResultModel<GenericArrayResponse<TranslationKeyValuePair>>>() {})
+
+
     override fun getEntityFieldsWithTranslationsForLanguages(uuid: String, label: String, type: TranslatableEntityFieldTypeModel, lang: List<String>): ResultModel<GenericArrayResponse<TranslationKeyValuePair>> =
-        target.translationWebTarget
-            .path(String.format(GET_ENTITY_FIELD_TRANSLATION_FOR_LANGUAGES_API, uuid, label, type.name, lang))
-            .also { logger.debug("Calling web target '{}'", it.uri) }
-            .request(MediaType.APPLICATION_JSON)
-            .get(object : GenericType<ResultModel<GenericArrayResponse<TranslationKeyValuePair>>>() {})
+            target.translationWebTarget
+                    .path(String.format(GET_ENTITY_FIELD_TRANSLATION_FOR_LANGUAGES_API, uuid, label, type.name, lang))
+                    .also { logger.debug("Calling web target '{}'", it.uri) }
+                    .request(MediaType.APPLICATION_JSON)
+                    .get(object : GenericType<ResultModel<GenericArrayResponse<TranslationKeyValuePair>>>() {})
 
-    //endregion
+//endregion
 
-    //region Bulk create/update
+//region Bulk create/update
 
     override fun createOrUpdateTranslatableEntityWithDependencies(type: TranslatableEntityFieldTypeModel, request: TranslationAggregationByEntityRequestModel): ResultModel<TranslationAggregationByEntityResponseModel> =
-        target.translationWebTarget
-            .path(String.format(CREATE_OR_UPDATE_ENTITY_FIELD_TRANSLATION_WITH_LANGUAGE_API, type.name))
-            .also { logger.debug("Calling web target '{}'", it.uri) }
-            .request(MediaType.APPLICATION_JSON)
-            .post(Entity.entity(request, MediaType.APPLICATION_JSON), object : GenericType<ResultModel<TranslationAggregationByEntityResponseModel>>() {})
+            target.translationWebTarget
+                    .path(String.format(CREATE_OR_UPDATE_ENTITY_FIELD_TRANSLATION_WITH_LANGUAGE_API, type.name))
+                    .also { logger.debug("Calling web target '{}'", it.uri) }
+                    .request(MediaType.APPLICATION_JSON)
+                    .post(Entity.entity(request, MediaType.APPLICATION_JSON), object : GenericType<ResultModel<TranslationAggregationByEntityResponseModel>>() {})
 
-    //endregion
+//endregion
 
     companion object {
         @JvmStatic
@@ -145,6 +164,9 @@ class TranslationApiClientImpl : TranslationApiClient {
         private const val GET_ENTITY_FIELD_TRANSLATION_API = "/entity/%s/%s/{type}"
         private const val GET_ENTITY_FIELD_TRANSLATION_WITH_LANGUAGE_API = "/entity/%s/%s/%s/%s"
         private const val GET_ENTITY_FIELDS_BY_NAME_TRANSLATION_WITH_LANGUAGE_API = "/entity/%s/%s/%s/name"
+
+        private const val GET_ENTITY_FIELDS_BY_NAME_TRANSLATION_API = "/entity/%s/%s/name"
+
         private const val GET_ENTITY_FIELD_TRANSLATION_FOR_LANGUAGES_API = "/entity/%s/%s/%s/languages/%s"
         private const val CREATE_OR_UPDATE_ENTITY_FIELD_TRANSLATION_WITH_LANGUAGE_API = "/entity/field/%s/translation/bulk"
     }

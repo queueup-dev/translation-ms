@@ -44,9 +44,14 @@ class TranslatableEntityServiceImpl : TranslatableEntityService {
         .let { translatableEntityRepository.findByUuidAndLabel(it, label) }
         .also { logger.debug("Retrieved TranslatableEntity for provided uuid - {} and label - {}", uuid, label) }
 
+    @Transactional(readOnly = true)
+    override fun findByUuidAndLabels(uuid: String, labels: List<String>): List<TranslatableEntity> = uuid
+            .also { logger.trace("Retrieving TranslatableEntity for provided uuid - {} and labels - {}", uuid, labels) }
+            .let { translatableEntityRepository.findByUuidAndLabelIn(it, labels) }
+            .also { logger.debug("Retrieved TranslatableEntity for provided uuid - {} and label - {}", uuid, labels) }
     //endregion
 
-    //region findByUuidAndLabel
+    //region findByUuid
 
     @Transactional(readOnly = true)
     override fun findByUuid(uuid: String): List<TranslatableEntity> = uuid

@@ -14,10 +14,14 @@ interface TranslatableEntityService {
 
     fun findByUuidAndLabel(uuid: String, label: String): TranslatableEntity?
 
+    fun findByUuidAndLabels(uuid: String, labels: List<String>): List<TranslatableEntity>
+
     fun findByUuid(uuid: String): List<TranslatableEntity>
 
     fun getByUuidAndLabel(uuid: String, label: String): TranslatableEntity
 
     fun create(dto: TranslatableEntityDto): TranslatableEntity
+
+
 
 }
