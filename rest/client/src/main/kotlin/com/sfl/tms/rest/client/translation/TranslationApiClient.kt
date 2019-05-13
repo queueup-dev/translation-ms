@@ -56,5 +56,11 @@ interface TranslationApiClient {
                                                 lang: String
     ): ResultModel<GenericArrayResponse<TranslationKeyValuePair>>
 
+    fun getEntityFieldsWithNameWithTranslations(uuid: String,
+                                                labels: List<String>,
+                                                name: String,
+                                                type: TranslatableEntityFieldTypeModel
+    ): ResultModel<GenericArrayResponse<TranslationKeyValuePair>>
+
     fun createOrUpdateTranslatableEntityWithDependencies(type: TranslatableEntityFieldTypeModel, request: TranslationAggregationByEntityRequestModel): ResultModel<TranslationAggregationByEntityResponseModel>
 }

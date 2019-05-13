@@ -132,6 +132,13 @@ class TranslationApiClientImpl : TranslationApiClient {
                     .request(MediaType.APPLICATION_JSON)
                     .post(Entity.json(labels), object : GenericType<ResultModel<GenericArrayResponse<TranslationKeyValuePair>>>() {})
 
+    override fun getEntityFieldsWithNameWithTranslations(uuid: String, labels: List<String>, name: String, type: TranslatableEntityFieldTypeModel): ResultModel<GenericArrayResponse<TranslationKeyValuePair>> =
+            target.translationWebTarget
+                    .path(String.format(GET_ENTITY_FIELDS_BY_NAME_TRANSLATION_API, uuid, type.name))
+                    .queryParam("name", name)
+                    .also { logger.debug("Calling web target '{}'", it.uri) }
+                    .request(MediaType.APPLICATION_JSON)
+                    .post(Entity.json(labels), object : GenericType<ResultModel<GenericArrayResponse<TranslationKeyValuePair>>>() {})
 
     override fun getEntityFieldsWithTranslationsForLanguages(uuid: String, label: String, type: TranslatableEntityFieldTypeModel, lang: List<String>): ResultModel<GenericArrayResponse<TranslationKeyValuePair>> =
             target.translationWebTarget
