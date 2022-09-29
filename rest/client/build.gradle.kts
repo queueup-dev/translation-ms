@@ -40,10 +40,10 @@ publishing {
     repositories {
         maven {
             name = "snapshots"
-            url = if (project.version.toString().endsWith("-SNAPSHOT")) uri("https://nexus.ci.funtrips.io/repository/maven-snapshots/") else uri("https://nexus.ci.funtrips.io/repository/maven-releases/")
+            url = uri("https://queueup-java-085415868203.d.codeartifact.eu-west-1.amazonaws.com/maven/qup-core/")
             credentials {
-                username = System.getenv("SONATYPE_USERNAME")
-                password = System.getenv("SONATYPE_PASSWORD")
+                username = "aws"
+                password = System.getenv("CODEARTIFACT_AUTH_TOKEN")
             }
         }
     }

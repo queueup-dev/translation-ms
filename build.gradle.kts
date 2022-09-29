@@ -1,5 +1,4 @@
 //region Build script
-
 buildscript {
     repositories {
         mavenLocal()
