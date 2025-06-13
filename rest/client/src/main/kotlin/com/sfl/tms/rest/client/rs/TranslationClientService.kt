@@ -1,6 +1,6 @@
 package com.sfl.tms.rest.client.rs
 
-import javax.ws.rs.client.Client
+import jakarta.ws.rs.client.Client
 
 /**
  * User: Vazgen Danielyan

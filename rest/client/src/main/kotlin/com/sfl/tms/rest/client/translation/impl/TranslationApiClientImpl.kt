@@ -19,9 +19,9 @@ import com.sfl.tms.rest.common.model.ResultModel
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
-import javax.ws.rs.client.Entity
-import javax.ws.rs.core.GenericType
-import javax.ws.rs.core.MediaType
+import jakarta.ws.rs.client.Entity
+import jakarta.ws.rs.core.GenericType
+import jakarta.ws.rs.core.MediaType
 
 /**
  * User: Vazgen Danielyan

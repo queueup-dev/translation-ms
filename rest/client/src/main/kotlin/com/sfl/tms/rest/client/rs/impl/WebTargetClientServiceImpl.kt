@@ -6,8 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
-import javax.ws.rs.client.Client
-import javax.ws.rs.client.WebTarget
+import jakarta.ws.rs.client.Client
+import jakarta.ws.rs.client.WebTarget
 
 /**
  * User: Vazgen Danielyan

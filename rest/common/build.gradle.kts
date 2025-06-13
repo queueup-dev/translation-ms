@@ -1,30 +1,48 @@
 plugins {
-    maven
-    `maven-publish`
+    // Kotlin
+    kotlin("jvm")            version "1.9.20"
+    kotlin("plugin.jpa")     version "1.9.20"
+    kotlin("plugin.allopen") version "1.9.20"
+    kotlin("plugin.noarg")   version "1.9.20"
 
-    id("io.spring.dependency-management")
+    // Spring Dependency Management
+    id("io.spring.dependency-management") version "1.1.2"
+
+    // Publishing
+    `maven-publish`
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
+}
+
+repositories {
+    mavenLocal()
+    mavenCentral()
 }
 
 dependencies {
-    compile(project(":core"))
+    implementation(project(":core"))
 
-    compile(kotlin("stdlib", version = "1.3.21"))
-    compile(kotlin("reflect", version = "1.3.21"))
+    implementation(kotlin("stdlib"))
+    implementation(kotlin("reflect"))
 
-    compile("org.springframework.boot:spring-boot-starter-web")
-    compile("org.springframework.boot:spring-boot-starter-aop")
-    compile("org.springframework.boot:spring-boot-configuration-processor")
+    implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("org.springframework.boot:spring-boot-starter-aop")
+    implementation("org.springframework.boot:spring-boot-configuration-processor")
 
-    compile("com.fasterxml.jackson.module:jackson-module-kotlin:2.9.8")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 
-    compile("io.springfox:springfox-swagger2:2.9.2")
+    implementation("io.springfox:springfox-swagger2:2.9.2")
 
-    compile("org.apache.commons:commons-lang3:")
+    implementation("org.apache.commons:commons-lang3:3.12.0")
 }
 
 dependencyManagement {
     imports {
-        mavenBom("org.springframework.boot:spring-boot-dependencies:2.1.2.RELEASE")
+        // Align with Spring Boot 3.4.6
+        mavenBom("org.springframework.boot:spring-boot-dependencies:3.4.6")
     }
 }
 
@@ -37,7 +55,9 @@ publishing {
     repositories {
         maven {
             name = "snapshots"
-            url = uri("https://queueup-java-085415868203.d.codeartifact.eu-west-1.amazonaws.com/maven/qup-core/")
+            url = uri(
+                "https://queueup-java-085415868203.d.codeartifact.eu-west-1.amazonaws.com/maven/qup-core/"
+            )
             credentials {
                 username = "aws"
                 password = System.getenv("CODEARTIFACT_AUTH_TOKEN")
@@ -45,3 +65,4 @@ publishing {
         }
     }
 }
+

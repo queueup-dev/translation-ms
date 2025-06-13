@@ -1,31 +1,46 @@
 plugins {
-    maven
-    `maven-publish`
+    kotlin("jvm") version "1.9.20"
+    kotlin("plugin.jpa") version "1.9.20"
+    kotlin("plugin.noarg") version "1.9.20"
+    kotlin("plugin.allopen") version "1.9.20"
 
-    id("io.spring.dependency-management")
+    id("io.spring.dependency-management") version "1.1.2"
+    `maven-publish`
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
+}
+
+repositories {
+    mavenLocal()
+    mavenCentral()
 }
 
 dependencies {
-    compile(kotlin("stdlib", version = "1.3.21"))
-    compile(kotlin("reflect", version = "1.3.21"))
+    implementation(kotlin("stdlib"))
+    implementation(kotlin("reflect"))
 
-    compile("org.springframework.boot:spring-boot-starter-data-jpa")
-    compile("org.springframework.boot:spring-boot-configuration-processor")
+    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+    implementation("org.springframework.boot:spring-boot-configuration-processor")
+    implementation("jakarta.persistence:jakarta.persistence-api:3.1.0")
 
-    compile("org.hibernate:hibernate-java8:")
-    compile("org.postgresql:postgresql:42.2.5")
+    implementation("org.hibernate:hibernate-core:6.2.7.Final")
+    implementation("org.postgresql:postgresql:42.2.5")
 
-    compile("org.apache.commons:commons-lang3:")
+    implementation("org.apache.commons:commons-lang3:3.12.0")
 
-    testCompile("org.springframework.boot:spring-boot-starter-test")
-    implementation("com.nhaarman:mockito-kotlin:1.6.0")
+    testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("junit:junit:4.13.2")
+    testImplementation("com.nhaarman:mockito-kotlin:1.6.0")
 
-    compile("net.logstash.logback:logstash-logback-encoder:5.2")
+    implementation("net.logstash.logback:logstash-logback-encoder:5.2")
 }
 
 dependencyManagement {
     imports {
-        mavenBom("org.springframework.boot:spring-boot-dependencies:2.1.2.RELEASE")
+        mavenBom("org.springframework.boot:spring-boot-dependencies:3.4.6")
     }
 }
 
@@ -45,4 +60,7 @@ publishing {
             }
         }
     }
+}
+tasks.named<Jar>("jar") {
+    enabled = true
 }

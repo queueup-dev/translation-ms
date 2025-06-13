@@ -8,12 +8,12 @@ import java.security.KeyManagementException
 import java.security.NoSuchAlgorithmException
 import java.security.SecureRandom
 import java.security.cert.X509Certificate
-import javax.annotation.PostConstruct
+import jakarta.annotation.PostConstruct
 import javax.net.ssl.SSLContext
 import javax.net.ssl.TrustManager
 import javax.net.ssl.X509TrustManager
-import javax.ws.rs.client.Client
-import javax.ws.rs.client.ClientBuilder
+import jakarta.ws.rs.client.Client
+import jakarta.ws.rs.client.ClientBuilder
 
 /**
  * User: Vazgen Danielyan

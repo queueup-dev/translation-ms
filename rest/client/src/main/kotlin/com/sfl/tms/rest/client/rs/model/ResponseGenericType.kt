@@ -1,7 +1,7 @@
 package com.sfl.tms.rest.client.rs.model
 
 import com.sfl.tms.rest.common.model.AbstractApiModel
-import javax.ws.rs.core.GenericType
+import jakarta.ws.rs.core.GenericType
 
 /**
  * User: Vazgen Danielyan
