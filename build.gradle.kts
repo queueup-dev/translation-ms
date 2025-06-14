@@ -18,7 +18,7 @@ plugins {
 
 allprojects {
     group = "com.sfl.tms"
-    version = "0.1.0-SNAPSHOT"
+    version = "0.1.7-SNAPSHOT"
 
     repositories {
         mavenCentral()

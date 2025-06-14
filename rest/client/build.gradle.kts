@@ -41,6 +41,8 @@ dependencies {
     implementation("jakarta.ws.rs:jakarta.ws.rs-api:3.1.0")
     implementation("com.fasterxml.jackson.core:jackson-databind")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
+
+    api("com.sfl.tms:common")
 }
 
 dependencyManagement {

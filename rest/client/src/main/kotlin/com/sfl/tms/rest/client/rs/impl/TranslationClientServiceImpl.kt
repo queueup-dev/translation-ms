@@ -21,7 +21,7 @@ import jakarta.ws.rs.client.ClientBuilder
  * Time: 11:22 PM
  */
 @Component
-class TranslationClientServiceImpl : TranslationClientService {
+open class TranslationClientServiceImpl : TranslationClientService {
 
     //region Properties
 

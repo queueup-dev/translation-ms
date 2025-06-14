@@ -29,7 +29,7 @@ import jakarta.ws.rs.core.MediaType
  * Time: 12:37 AM
  */
 @Service
-class TranslationApiClientImpl : TranslationApiClient {
+open class TranslationApiClientImpl : TranslationApiClient {
 
     //region Injection
 

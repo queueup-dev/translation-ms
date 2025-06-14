@@ -64,3 +64,6 @@ publishing {
 tasks.named<Jar>("jar") {
     enabled = true
 }
+tasks.withType<Jar> {
+    exclude("META-INF/persistence.xml")
+}

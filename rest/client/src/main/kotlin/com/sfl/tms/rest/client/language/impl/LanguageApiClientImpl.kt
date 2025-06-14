@@ -18,7 +18,7 @@ import jakarta.ws.rs.core.MediaType
  * Time: 11:38 PM
  */
 @Service
-class LanguageApiClientImpl : LanguageApiClient {
+open class LanguageApiClientImpl : LanguageApiClient {
 
     //region Injection
 

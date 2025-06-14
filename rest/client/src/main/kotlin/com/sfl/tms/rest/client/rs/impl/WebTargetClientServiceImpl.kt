@@ -15,7 +15,7 @@ import jakarta.ws.rs.client.WebTarget
  * Time: 11:24 PM
  */
 @Service
-class WebTargetClientServiceImpl : WebTargetClientService {
+open class WebTargetClientServiceImpl : WebTargetClientService {
 
     //region Injection
 

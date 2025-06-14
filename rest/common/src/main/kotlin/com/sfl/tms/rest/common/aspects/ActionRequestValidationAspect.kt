@@ -20,7 +20,7 @@ import java.util.*
  */
 @Aspect
 @Component
-class ActionRequestValidationAspect {
+open class ActionRequestValidationAspect {
 
     @Around("@annotation(com.sfl.tms.rest.common.annotations.ValidateActionRequest)")
     @Throws(Throwable::class)
